@@ -1,0 +1,12 @@
+{
+  "name": "spark-proxy",
+  "version": "1.0.0",
+  "description": "Anthropic API proxy for Spark couples app",
+  "main": "proxy.js",
+  "scripts": {
+    "start": "node proxy.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
