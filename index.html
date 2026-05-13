@@ -674,6 +674,7 @@ const KINK_CATS = [
     { id:'g_teasing',    label:'Teasing',              split:true },
     { id:'g_stripping',  label:'Stripping / Disrobing', split:true },
     { id:'g_mutual_mast',label:'Mutual / shared masturbation', split:false },
+    { id:'g_cumplay',    label:'Cum play',                       split:false },
     { id:'g_self_humil', label:'Self-injury / Self-humiliation', split:false },
   ]},
   { id:'penetration', label:'Penetration', sub:'Giving · Receiving', advanced:false, items:[
@@ -806,7 +807,6 @@ const KINK_CATS = [
     { id:'adv_blood',  label:'Blood',      split:false },
     { id:'adv_water',  label:'Watersports',split:false },
     { id:'adv_scat',   label:'Scat',       split:false },
-    { id:'adv_cumplay',label:'Cum play',   split:false },
   ]},
   { id:'adv_pain', label:'Extreme Pain', sub:'Giving · Receiving', advanced:true, items:[
     { id:'adv_burn',         label:'Burning',         split:true },
@@ -1467,14 +1467,15 @@ Props available: ${propList}
 
 WRITING RULES
 =============
-- Second-person directive style ("Alex, run your hand down...").
+- Second-person directive style ("Alex, put your hand on...").
 - Use each partner's exact name throughout.
-- Use custom body-part names naturally mid-sentence: "take their cock into your mouth", "spank their ass".
-- Every scene MUST include at least one explicit physical act on a named body part.
-- Literary erotic tone — evocative, not clinical.
+- Use body-part names directly: "take their cock into your mouth", "spank their ass".
+- Every scene MUST describe at least one specific physical act on a named body part.
+- Tone: direct and explicit. Describe what happens, not how it feels. No flowery adjectives.
+- Short, clear sentences. Active voice. Instructions over impressions.
 - NEVER include anything from either partner's hard nos list.
 - No safety disclaimers or meta-commentary.
-- Length: 3–5 sentences for main scene; 2–4 for escalation.`.trim();
+- Length: 2–4 sentences for main scene; 2–3 sentences for escalation.`.trim();
 }
 
 /** Stream Claude response into targetEl. Resolves when done. */
@@ -1672,7 +1673,7 @@ function generateScene() {
     .join(', ');
 
   const ctx    = buildSceneContext(piA, piB);
-  const system = `You are a creative erotica writer for a couples intimacy app called Spark. Write vivid, literary, second-person directive scenes based on the couple's preferences.\n\n${ctx}`;
+  const system = `You write short, direct, explicit intimacy scenes for a couples app called Spark. Instructions are practical and specific — what to do, in what order, to which body part. No purple prose, no metaphors, no elaborate adjectives. Just clear directions.\n\n${ctx}`;
   const prompt = `Write the main scene narrative.
 
 Scene concept: "${currentScene.title}"
@@ -1680,7 +1681,7 @@ Focus activities: ${likedKinks || 'sensual touch and oral pleasure'}
 Giver / initiator: ${currentA}
 Receiver: ${currentB}
 
-3–5 sentences, second-person directive. Start immediately with ${currentA}'s name and an action. Include at least one explicit physical act on a named body part. Literary erotic tone. No heading. Just the scene text.`;
+2–4 sentences. Start with ${currentA}'s name and a physical action. Name at least one body part explicitly. Direct and practical — what to do, not how it feels. No heading, no preamble.`;
 
   callClaudeStream(system, prompt, narrativeEl, (text) => {
     if (text) currentScene._lastNarrative = text;
@@ -1702,12 +1703,12 @@ function revealEscalation() {
   // Use whatever narrative is available (may be partial if stream was skipped early)
   const prev = currentScene?._lastNarrative || currentScene?.title || '';
   const ctx    = buildSceneContext(currentPiA, currentPiB);
-  const system = `You are a creative erotica writer for Spark. Continue an existing scene to its conclusion.\n\n${ctx}`;
+  const system = `You write short, direct intimacy scene continuations for Spark. Plain language, specific actions, no flowery description.\n\n${ctx}`;
   const prompt = `The couple has been doing the following:
 
 "${prev}"
 
-Write the escalation / finish: 3–4 sentences continuing naturally to climax. Include aftercare or intimate closing. Use both names. Do not restate the setup — just continue forward.`;
+Write the finish: 2–3 sentences. Describe exactly how they finish — specific acts, body parts, who does what. End with one brief aftercare beat. Use both names. No restatement, just continuation.`;
 
   callClaudeStream(system, prompt, escalEl, null);
 }
