@@ -787,7 +787,7 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
   <div class="results-hero"><h2>Shared interests</h2><p>Only things you both said yes to or are interested in.</p></div>
   <div id="resultsContent"></div>
   <div class="btn-stack" style="margin-top:1.2rem;">
-    <button class="btn btn-ink" onclick="goPlay()">Start session →</button>
+    <button class="btn btn-ink" onclick="showScreen('screenPreScene');window.scrollTo(0,0)">Start session →</button>
     <div style="text-align:center;margin-top:.4rem;"><button class="btn-ghost" onclick="goSetup()">← Settings</button></div>
   </div>
 </div>
@@ -1540,10 +1540,10 @@ function toggleProp(id, chip) {
 
 function onWillingToggle() {
   const on = willingAll();
-  document.getElementById('willingStatus').textContent = on ? 'On' : 'Off';
-  document.getElementById('willingStatus').className = 'toggle-status' + (on ? ' on' : '');
-  document.getElementById('setupContinueBtn').textContent = on ? 'Continue' : 'Set preferences →';
-  // "Open to anything" counts as preferences being set
+  const ws = document.getElementById('willingStatus');
+  const sb = document.getElementById('setupContinueBtn');
+  if (ws) { ws.textContent = on ? 'On' : 'Off'; ws.className = 'toggle-status' + (on ? ' on' : ''); }
+  if (sb) sb.textContent = on ? 'Continue' : 'Set preferences →';
   if (on) markPrefsSet();
 }
 
@@ -1571,9 +1571,15 @@ function setupContinue() {
   localStorage.setItem('spark_name2', n2);
 
   if (willingAll()) {
+    // Open to anything — set full defaults and go home
     kinkPrefs = [mkDefaultKinkPrefs(), mkDefaultKinkPrefs()];
+    markPrefsSet();
+    goHome();
+  } else {
+    // Wants to set preferences — go to survey
+    surveyIdx = 0;
+    showSurveyScreen(0);
   }
-  goHome();
 }
 
 function goHome() {
@@ -2023,8 +2029,11 @@ function setKink(id, val) {
 
 function surveyNext() {
   markPrefsSet();
-  if (surveyIdx === 0) showSurveyScreen(1);
-  else showMatches();
+  if (surveyIdx === 0) {
+    showSurveyScreen(1);
+  } else {
+    showMatches();
+  }
 }
 
 // ═══════════════════════════════════════════
@@ -2144,37 +2153,47 @@ function buildPrefsNarrative(pi) {
   ].filter(Boolean).join('\n');
 }
 
-function buildSceneContext(piA = currentPiA, piB = currentPiB) {
+function buildSceneContext(piA, piB) {
+  if (piA === undefined) piA = currentPiA;
+  if (piB === undefined) piB = currentPiB;
   const pA = buildPrefsNarrative(piA);
   const pB = buildPrefsNarrative(piB);
   const propList = props.has('none') ? 'none' : [...props].join(', ');
-  return `COUPLE DETAILS
-==============
-Partner A (initiator / giver):
-${pA}
 
-Partner B (receiver):
-${pB}
+  let ctx = 'COUPLE DETAILS\n==============\n';
+  ctx += 'Partner A (initiator / giver):\n' + pA + '\n\n';
+  ctx += 'Partner B (receiver):\n' + pB + '\n\n';
+  ctx += 'Props available: ' + propList + '\n\n';
+  ctx += 'WRITING RULES\n=============\n';
+  ctx += '- Second-person directive style ("Alex, put your hand on...").\n';
+  ctx += '- Use each partner\u2019s exact name throughout.\n';
+  ctx += '- Use body-part names directly in sentences.\n';
+  ctx += '- Every scene MUST describe at least one specific physical act on a named body part.\n';
+  ctx += '- Tone: direct and explicit. No flowery adjectives.\n';
+  ctx += '- Short, clear sentences. Active voice.\n';
+  ctx += '- NEVER include anything from either partner\u2019s hard nos list.\n';
+  ctx += '- No safety disclaimers or meta-commentary.';
+  ctx += '- Length: 2-4 sentences for main scene; 2-3 sentences for escalation.';
 
-Props available: ${propList}
+  if (currentMood || currentNote || photoSuggest) {
+    ctx += '\n\nSESSION MODIFIERS (override defaults)\n=====================================';
+    if (currentMood) {
+      const intensityMap = {
+        light: 'Light — sensual and intimate. No explicit penetration or graphic acts.',
+        medium: 'Medium — direct and sexual but not extreme.',
+        hard: 'Hardcore — fully explicit, graphic, nothing held back.'
+      };
+      ctx += '\n- Intensity today: ' + (intensityMap[currentMood] || '');
+    }
+    if (currentNote) {
+      ctx += '\n- Specific request from the couple: "' + currentNote + '" — incorporate this directly.';
+    }
+    if (photoSuggest) {
+      ctx += '\n- Photo moment: at one natural point, add a line starting with exactly "\uD83D\uDCF8 Photo:" followed by a specific practical instruction — what to capture, who is in frame, what angle. One sentence only.';
+    }
+  }
 
-WRITING RULES
-=============
-- Second-person directive style ("Alex, put your hand on...").
-- Use each partner's exact name throughout.
-- Use body-part names directly: "take their cock into your mouth", "spank their ass".
-- Every scene MUST describe at least one specific physical act on a named body part.
-- Tone: direct and explicit. Describe what happens, not how it feels. No flowery adjectives.
-- Short, clear sentences. Active voice. Instructions over impressions.
-- NEVER include anything from either partner's hard nos list.
-- No safety disclaimers or meta-commentary.
-- Length: 2–4 sentences for main scene; 2–3 sentences for escalation.\${currentMood || currentNote ? `
-
-SESSION MODIFIERS (override defaults)
-=====================================\${currentMood ? `
-- Intensity today: \${({light:'Light — keep it sensual and non-graphic. No explicit penetration or graphic acts.',medium:'Medium — direct and sexual but not extreme.',hard:'Hardcore — fully explicit, graphic, nothing held back.'  })[currentMood]}` : ''}\${currentNote ? `
-- Specific request from the couple: "\${currentNote}" — incorporate this directly.` : ''}${photoSuggest ? `
-- Photo moment: at one natural point in the scene or escalation, add a single line starting with exactly "📸 Photo:" followed by a specific, practical instruction — what to capture, who is in frame, what angle. One sentence only.` : ''}` : ''}\`.trim();
+  return ctx;
 }
 
 /** Stream Claude response into targetEl. Resolves when done. */
@@ -2694,7 +2713,7 @@ function setProxyStatus(state, message) {
     const bad = state==='err'||state==='none';
     hwarn.classList.toggle('visible', bad);
     const hwt = document.getElementById('homeWarnText');
-    if (hwt) hwt.textContent = state==='checking' ? 'Checking AI connection…' : 'AI not connected — scenes won't generate';
+    if (hwt) hwt.textContent = state==='checking' ? 'Checking AI connection…' : 'AI not connected — scenes won\'t generate';
   }
   // Auto-close AI panel when connected
   if (state==='ok') {
