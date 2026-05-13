@@ -237,6 +237,26 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 .play-row{display:flex;gap:.5rem;margin-bottom:.5rem}
 .play-row .btn{font-size:.9rem;padding:.85rem}
 
+/* MOOD SELECTOR */
+.mood-bar{display:flex;gap:.4rem;margin-bottom:.6rem}
+.mood-chip{flex:1;padding:.55rem .4rem;border:1.5px solid var(--border);border-radius:var(--rs);
+  background:var(--bg);text-align:center;cursor:pointer;transition:all .18s;user-select:none;
+  font-family:'DM Sans',sans-serif}
+.mood-chip:hover{border-color:var(--border2);background:#fff}
+.mood-chip.active-light{background:var(--sage-bg);border-color:var(--sage-mid)}
+.mood-chip.active-medium{background:var(--amber-bg);border-color:var(--amber-mid)}
+.mood-chip.active-hard{background:var(--blush-bg);border-color:var(--blush-mid)}
+.mood-chip-icon{font-size:1rem;display:block;margin-bottom:.15rem}
+.mood-chip-name{font-size:.7rem;font-weight:600;display:block;color:var(--ink2)}
+.mood-chip.active-light .mood-chip-name{color:var(--sage)}
+.mood-chip.active-medium .mood-chip-name{color:var(--amber)}
+.mood-chip.active-hard .mood-chip-name{color:var(--blush)}
+.mood-note{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--rs);
+  color:var(--ink);font-family:'DM Sans',sans-serif;font-size:.88rem;padding:.65rem .9rem;
+  outline:none;resize:none;transition:border-color .18s;line-height:1.45}
+.mood-note:focus{border-color:var(--sky);box-shadow:0 0 0 3px var(--sky-bg)}
+.mood-note::placeholder{color:var(--faint)}
+
 /* Notif */
 .notif-section{background:var(--sky-bg);border:1px solid var(--sky);border-radius:var(--rs);
   padding:1rem 1.2rem;margin-bottom:.75rem}
@@ -466,6 +486,31 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
       <div class="timer-btns" id="timerBtns"></div>
     </div>
   </div>
+  <!-- Mood + note modifier -->
+  <div style="margin-bottom:.65rem;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.4rem;">
+      <div class="label" style="margin:0;">Tonight's mood</div>
+      <button onclick="clearMood()" style="background:none;border:none;font-size:.68rem;color:var(--muted);cursor:pointer;font-family:inherit;padding:.1rem .3rem;">Clear</button>
+    </div>
+    <div class="mood-bar">
+      <div class="mood-chip" id="moodLight" onclick="setMood('light')">
+        <span class="mood-chip-icon">🌸</span>
+        <span class="mood-chip-name">Light</span>
+      </div>
+      <div class="mood-chip" id="moodMedium" onclick="setMood('medium')">
+        <span class="mood-chip-icon">🔥</span>
+        <span class="mood-chip-name">Medium</span>
+      </div>
+      <div class="mood-chip" id="moodHard" onclick="setMood('hard')">
+        <span class="mood-chip-icon">⚡</span>
+        <span class="mood-chip-name">Hardcore</span>
+      </div>
+    </div>
+    <textarea class="mood-note" id="moodNote" rows="2"
+      placeholder="Anything specific today? e.g. I want cum play, focus on oral, use the blindfold…"
+      oninput="onMoodNoteChange()"></textarea>
+  </div>
+
   <div class="play-row">
     <button class="btn btn-ink" id="newSceneBtn" onclick="generateScene()" style="flex:2;">New scene</button>
     <button class="btn btn-outline" onclick="goSetup()" style="flex:1;">Settings</button>
@@ -942,6 +987,8 @@ let notifsEnabled  = false,   notifInterval  = null;
 let timerInterval  = null,    timerRunning   = false, totalSecs = 300, remainSecs = 300;
 let escalationRevealed = false;
 let isGenerating   = false;          // guards concurrent AI calls
+let currentMood    = null;            // 'light' | 'medium' | 'hard' | null
+let currentNote    = '';              // free-text user request for today
 let streamController = null;         // AbortController for active stream
 
 function gN(i) {
@@ -1418,6 +1465,34 @@ function showMatches() {
 }
 
 // ═══════════════════════════════════════════
+//  MOOD & NOTE
+// ═══════════════════════════════════════════
+function setMood(level) {
+  currentMood = (currentMood === level) ? null : level; // toggle off if tapping same
+  updateMoodUI();
+}
+
+function clearMood() {
+  currentMood = null;
+  currentNote = '';
+  const noteEl = document.getElementById('moodNote');
+  if (noteEl) noteEl.value = '';
+  updateMoodUI();
+}
+
+function onMoodNoteChange() {
+  currentNote = document.getElementById('moodNote')?.value.trim() || '';
+}
+
+function updateMoodUI() {
+  ['light','medium','hard'].forEach(level => {
+    const el = document.getElementById('mood' + level.charAt(0).toUpperCase() + level.slice(1));
+    if (!el) return;
+    el.className = 'mood-chip' + (currentMood === level ? ' active-' + level : '');
+  });
+}
+
+// ═══════════════════════════════════════════
 //  AI GENERATION
 // ═══════════════════════════════════════════
 
@@ -1475,7 +1550,12 @@ WRITING RULES
 - Short, clear sentences. Active voice. Instructions over impressions.
 - NEVER include anything from either partner's hard nos list.
 - No safety disclaimers or meta-commentary.
-- Length: 2–4 sentences for main scene; 2–3 sentences for escalation.`.trim();
+- Length: 2–4 sentences for main scene; 2–3 sentences for escalation.\${currentMood || currentNote ? `
+
+SESSION MODIFIERS (override defaults)
+=====================================\${currentMood ? `
+- Intensity today: \${({light:'Light — keep it sensual and non-graphic. No explicit penetration or graphic acts.',medium:'Medium — direct and sexual but not extreme.',hard:'Hardcore — fully explicit, graphic, nothing held back.'  })[currentMood]}` : ''}\${currentNote ? `
+- Specific request from the couple: "\${currentNote}" — incorporate this directly.` : ''}` : ''}\`.trim();
 }
 
 /** Stream Claude response into targetEl. Resolves when done. */
