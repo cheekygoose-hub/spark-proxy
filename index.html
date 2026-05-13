@@ -1,0 +1,1901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spark</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F7F5F2;--card:#FFF;--border:#E8E4DF;--border2:#D4CEC7;
+  --ink:#1A1714;--ink2:#4A4540;--muted:#9A948E;--faint:#C8C2BB;
+  --sage:#6B8C6E;--sage-bg:#EDF2ED;--sage-mid:#B8CEB9;
+  --blush:#C4796A;--blush-bg:#F9F0EE;--blush-mid:#DFB0A8;
+  --amber:#B8883A;--amber-bg:#FBF4E8;--amber-mid:#D9BA80;
+  --sky:#4A7FA5;--sky-bg:#EBF3FA;
+  --fav:#9B59B6;--fav-bg:#F5EEF8;--fav-mid:#C39BD3;
+  --r:14px;--rs:9px;
+  --sh:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.04);
+  --shm:0 2px 8px rgba(0,0,0,.08),0 8px 32px rgba(0,0,0,.06);
+}
+body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;font-size:15px;
+  line-height:1.5;min-height:100vh;display:flex;flex-direction:column;align-items:center;
+  padding:2rem 1rem 5rem;-webkit-font-smoothing:antialiased}
+.container{width:100%;max-width:600px}
+
+header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
+.wordmark{font-family:'DM Serif Display',serif;font-size:clamp(2.4rem,8vw,3.6rem);
+  font-weight:400;letter-spacing:-.01em;color:var(--ink);line-height:1}
+.wordmark .dot{color:var(--blush)}
+.tagline{font-size:.8rem;color:var(--muted);margin-top:.35rem;font-weight:300}
+
+.screen{display:none}
+.screen.active{display:block;animation:rise .3s cubic-bezier(.16,1,.3,1) forwards}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:.35}50%{opacity:.9}}
+.generating{animation:pulse 1.4s ease-in-out infinite;color:var(--muted);font-style:italic}
+.kink-legend-sticky{position:sticky;top:0;z-index:10;background:var(--bg);
+  padding:.5rem 0 .4rem;border-bottom:1px solid var(--border);margin-bottom:.75rem}
+.return-banner{background:var(--amber-bg);border:1px solid var(--amber-mid);border-radius:var(--rs);
+  padding:.65rem 1rem;margin-bottom:.75rem;display:none;align-items:center;justify-content:space-between;gap:.75rem}
+.return-banner span{font-size:.8rem;color:var(--amber);font-weight:500}
+.return-banner button{background:var(--amber);border:none;border-radius:var(--rs);
+  color:#fff;font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:600;
+  padding:.38rem .85rem;cursor:pointer}
+
+.label{font-size:.7rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:.6rem}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem 1.4rem;margin-bottom:.75rem;box-shadow:var(--sh)}
+
+/* TOGGLE */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.toggle-text strong{display:block;font-size:.95rem;font-weight:600;color:var(--ink)}
+.toggle-text span{display:block;font-size:.78rem;color:var(--muted);margin-top:.15rem}
+.toggle-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:.3rem}
+.toggle-switch{position:relative;width:48px;height:26px;flex-shrink:0}
+.toggle-switch input{opacity:0;width:0;height:0}
+.toggle-slider{position:absolute;inset:0;background:var(--faint);border-radius:26px;cursor:pointer;transition:background .2s}
+.toggle-slider::before{content:'';position:absolute;width:20px;height:20px;left:3px;top:3px;background:#fff;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,.15);transition:transform .2s}
+.toggle-switch input:checked+.toggle-slider{background:var(--sage)}
+.toggle-switch input:checked+.toggle-slider::before{transform:translateX(22px)}
+.toggle-status{font-size:.7rem;font-weight:500;color:var(--muted)}
+.toggle-status.on{color:var(--sage)}
+
+/* INPUTS */
+.names-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem}
+.field{display:flex;flex-direction:column;gap:.35rem}
+.field label{font-size:.7rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.field input,.field select{background:var(--bg);border:1.5px solid var(--border);border-radius:var(--rs);
+  color:var(--ink);font-family:'DM Sans',sans-serif;font-size:.95rem;
+  padding:.65rem .9rem;outline:none;transition:border-color .18s,box-shadow .18s;width:100%}
+.field input::placeholder{color:var(--faint)}
+.field input:focus,.field select:focus{border-color:var(--sky);box-shadow:0 0 0 3px var(--sky-bg)}
+.field select{cursor:pointer;appearance:none;-webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239A948E' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right .9rem center;padding-right:2.2rem}
+
+/* GENDER GRID — removed (dead rules, select used instead) */
+
+/* BODY ASSETS */
+.asset-section{background:var(--card);border:1px solid var(--border);border-radius:var(--r);
+  padding:1.1rem 1.2rem;margin-bottom:.75rem;box-shadow:var(--sh);display:none}
+.asset-section.visible{display:block}
+.asset-grid{display:flex;flex-direction:column;gap:.5rem;margin-top:.5rem}
+.asset-row{display:flex;align-items:center;gap:.5rem}
+.asset-toggle{width:20px;height:20px;border-radius:5px;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;flex-shrink:0;transition:all .15s;
+  display:flex;align-items:center;justify-content:center;font-size:.75rem}
+.asset-toggle.checked{background:var(--sage);border-color:var(--sage);color:#fff}
+.asset-row-label{font-size:.82rem;color:var(--ink2);flex:1}
+.asset-name-input{background:var(--bg);border:1px solid var(--border);border-radius:6px;
+  color:var(--ink);font-family:'DM Sans',sans-serif;font-size:.8rem;padding:.35rem .6rem;
+  outline:none;width:110px;flex-shrink:0}
+.asset-name-input:focus{border-color:var(--sky)}
+.asset-name-input::placeholder{color:var(--faint)}
+
+/* CHIPS */
+.chip-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:.4rem}
+.chip{background:var(--bg);border:1.5px solid var(--border);border-radius:50px;padding:.45rem .85rem;
+  font-size:.75rem;font-weight:500;color:var(--muted);cursor:pointer;transition:all .16s;
+  user-select:none;text-align:center;white-space:nowrap}
+.chip:hover{border-color:var(--border2);color:var(--ink2)}
+.chip.on-sage{background:var(--sage-bg);border-color:var(--sage-mid);color:var(--sage)}
+.chip.on-amber{background:var(--amber-bg);border-color:var(--amber-mid);color:var(--amber)}
+
+/* INT PILLS */
+.int-pills{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.75rem}
+.int-pill{flex:1;min-width:80px;background:var(--bg);border:1.5px solid var(--border);
+  border-radius:var(--rs);padding:.6rem .5rem;text-align:center;cursor:pointer;transition:all .18s;
+  font-family:'DM Sans',sans-serif;user-select:none}
+.int-pill:hover{border-color:var(--border2);background:#fff}
+.int-pill.active{background:var(--ink);border-color:var(--ink);color:#fff}
+.int-pill-icon{font-size:1.1rem;margin-bottom:.15rem}
+.int-pill-name{font-size:.72rem;font-weight:600;display:block}
+.int-pill-hint{font-size:.6rem;color:var(--muted);display:block;margin-top:.1rem}
+.int-pill.active .int-pill-hint{color:rgba(255,255,255,.5)}
+
+/* BUTTONS */
+.btn{display:block;width:100%;padding:.9rem 1.2rem;border:none;border-radius:var(--rs);
+  font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:600;letter-spacing:.01em;
+  cursor:pointer;transition:transform .15s,box-shadow .15s}
+.btn-ink{background:var(--ink);color:#fff;box-shadow:0 2px 12px rgba(26,23,20,.18)}
+.btn-ink:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(26,23,20,.22)}
+.btn-ink:active{transform:none}
+.btn-outline{background:transparent;color:var(--ink2);border:1.5px solid var(--border2)}
+.btn-outline:hover{border-color:var(--ink);color:var(--ink)}
+.btn-ghost{background:transparent;border:none;color:var(--muted);font-size:.8rem;font-weight:500;
+  cursor:pointer;font-family:'DM Sans',sans-serif;padding:.5rem}
+.btn-ghost:hover{color:var(--ink2)}
+.btn-stack{display:flex;flex-direction:column;gap:.5rem}
+.tease-btn{display:flex;align-items:center;justify-content:center;gap:.5rem;
+  padding:.75rem 1rem;background:var(--bg);border:1.5px solid var(--border);
+  border-radius:var(--rs);color:var(--ink2);font-family:'DM Sans',sans-serif;
+  font-size:.88rem;font-weight:500;cursor:pointer;transition:all .18s;box-shadow:var(--sh)}
+.tease-btn:hover{border-color:var(--amber-mid);background:var(--amber-bg);color:var(--amber)}
+
+/* KINK SURVEY */
+.survey-hero{text-align:center;margin-bottom:1.5rem}
+.survey-hero h2{font-family:'DM Serif Display',serif;font-size:1.8rem;font-weight:400;color:var(--ink)}
+.survey-hero p{font-size:.82rem;color:var(--muted);margin-top:.3rem}
+.progress-track{height:3px;background:var(--border);border-radius:99px;margin-bottom:1.5rem;overflow:hidden}
+.progress-fill{height:100%;background:var(--ink);border-radius:99px;transition:width .4s ease}
+
+/* Kink rating buttons — 5-state */
+.kink-group{margin-bottom:1.5rem}
+.kink-group-header{display:flex;align-items:center;gap:.5rem;margin-bottom:.6rem;
+  padding-bottom:.5rem;border-bottom:1px solid var(--border)}
+.kink-group-title{font-size:.78rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink2)}
+.kink-group-sub{font-size:.68rem;color:var(--muted);margin-left:auto}
+
+.kink-items{display:flex;flex-direction:column;gap:.3rem}
+.kink-item{background:var(--card);border:1px solid var(--border);border-radius:var(--rs);
+  padding:.65rem .9rem;display:flex;align-items:center;gap:.6rem;box-shadow:var(--sh);
+  transition:border-color .15s}
+.kink-item-label{font-size:.85rem;color:var(--ink);flex:1;line-height:1.35}
+.kink-item-sub{font-size:.68rem;color:var(--muted);display:block;margin-top:.1rem}
+.kink-btns{display:flex;gap:.25rem;flex-shrink:0}
+.kink-btn{width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:transparent;
+  font-size:.8rem;cursor:pointer;transition:all .12s;display:flex;align-items:center;
+  justify-content:center;flex-shrink:0;line-height:1}
+.kink-btn:hover{border-color:var(--border2);transform:scale(1.05)}
+.kink-btn.k-fav{background:var(--fav-bg);border-color:var(--fav-mid);color:var(--fav)}
+.kink-btn.k-like{background:var(--sage-bg);border-color:var(--sage-mid);color:var(--sage)}
+.kink-btn.k-int{background:var(--amber-bg);border-color:var(--amber-mid);color:var(--amber)}
+.kink-btn.k-no{background:var(--blush-bg);border-color:var(--blush-mid);color:var(--blush)}
+.kink-btn.k-none{background:var(--bg);border-color:var(--border);color:var(--faint)}
+
+/* Legend */
+.kink-legend{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem;align-items:center}
+.legend-item{display:flex;align-items:center;gap:.25rem;font-size:.68rem;color:var(--muted)}
+.legend-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+
+/* Advanced toggle banner */
+.advanced-banner{background:var(--blush-bg);border:1px solid var(--blush-mid);border-radius:var(--rs);
+  padding:.7rem 1rem;margin-bottom:1rem;display:flex;align-items:center;gap:.75rem}
+.advanced-banner p{font-size:.78rem;color:var(--blush);flex:1}
+
+/* RESULTS */
+.results-hero{text-align:center;margin-bottom:1.5rem}
+.results-hero h2{font-family:'DM Serif Display',serif;font-size:1.8rem;color:var(--ink)}
+.results-hero p{font-size:.82rem;color:var(--muted);margin-top:.3rem}
+.results-section{margin-bottom:1rem}
+.results-section-header{display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem}
+.results-section-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.results-section-title{font-size:.78rem;font-weight:600;color:var(--ink2)}
+.results-section-count{margin-left:auto;font-size:.68rem;font-weight:600;padding:.1rem .5rem;border-radius:50px}
+.match-list{display:flex;flex-direction:column;gap:.3rem}
+.match-pill{background:var(--card);border:1px solid var(--border);border-radius:50px;
+  padding:.5rem .85rem;font-size:.82rem;color:var(--ink2);box-shadow:var(--sh)}
+
+/* PLAY */
+.scene-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);
+  overflow:hidden;margin-bottom:.75rem;box-shadow:var(--shm)}
+.scene-pill{display:inline-block;font-size:.65rem;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;padding:.25rem .6rem;border-radius:50px;margin-bottom:1rem}
+.pill-spark{background:var(--blush-bg);color:var(--blush)}
+.pill-ambush{background:var(--sky-bg);color:var(--sky)}
+.scene-body{padding:1.6rem}
+.scene-title{font-size:.75rem;font-weight:600;color:var(--muted);margin-bottom:.55rem;letter-spacing:.04em}
+.scene-narrative{font-family:'DM Serif Display',serif;font-size:clamp(1.05rem,3.2vw,1.22rem);
+  font-weight:400;line-height:1.75;color:var(--ink)}
+.scene-narrative .n-name{color:var(--blush);font-style:italic}
+.scene-narrative .n-body{color:var(--amber);font-style:italic}
+
+/* Escalation */
+.escalation-panel{border-top:2px solid var(--amber-mid);padding:1.4rem 1.6rem;
+  background:linear-gradient(to bottom,var(--amber-bg),var(--card));display:none}
+.escalation-label{font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--amber);margin-bottom:.4rem}
+.escalation-title{font-size:.88rem;font-weight:600;color:var(--ink2);margin-bottom:.55rem}
+.escalation-text{font-family:'DM Serif Display',serif;font-size:clamp(1rem,3vw,1.18rem);
+  font-weight:400;line-height:1.7;color:var(--ink)}
+.escalation-text .n-name{color:var(--blush);font-style:italic}
+.escalation-text .n-body{color:var(--amber);font-style:italic}
+
+/* Timer */
+.timer-area{background:var(--bg);border-top:1px solid var(--border);padding:1.4rem 1.6rem;text-align:center}
+.timer-tag{font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.25rem}
+.timer-num{font-family:'DM Serif Display',serif;font-size:3.4rem;font-weight:400;
+  letter-spacing:-.02em;line-height:1;color:var(--ink);margin-bottom:.3rem;transition:color .3s}
+.timer-num.warn{color:var(--blush)}
+.timer-num.done{color:var(--sage)}
+.timer-hint{font-size:.72rem;color:var(--muted);margin-bottom:1.1rem}
+.timer-btns{display:flex;gap:.45rem;justify-content:center;flex-wrap:wrap}
+.t-btn{padding:.5rem 1.1rem;border-radius:50px;border:1.5px solid var(--border);background:var(--card);
+  color:var(--ink2);font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:500;
+  cursor:pointer;transition:all .15s;box-shadow:var(--sh)}
+.t-btn:hover{border-color:var(--border2)}
+.t-btn.t-go{background:var(--ink);border-color:var(--ink);color:#fff;box-shadow:none}
+.t-btn.t-go:hover{opacity:.88}
+.t-btn.t-skip{background:var(--amber-bg);border-color:var(--amber-mid);color:var(--amber);font-weight:600}
+.t-btn.t-skip:hover{background:var(--amber);color:#fff;border-color:var(--amber)}
+.t-btn.t-keep{background:var(--sage-bg);border-color:var(--sage-mid);color:var(--sage);font-weight:600}
+.t-btn.t-keep:hover{background:var(--sage);color:#fff}
+
+.no-opts{background:var(--blush-bg);border:1px solid var(--blush-mid);border-radius:var(--r);
+  padding:1.2rem 1.4rem;text-align:center;color:var(--blush);font-size:.85rem;line-height:1.5;margin-bottom:.75rem;display:none}
+.play-row{display:flex;gap:.5rem;margin-bottom:.5rem}
+.play-row .btn{font-size:.9rem;padding:.85rem}
+
+/* Notif */
+.notif-section{background:var(--sky-bg);border:1px solid var(--sky);border-radius:var(--rs);
+  padding:1rem 1.2rem;margin-bottom:.75rem}
+.notif-header{display:flex;align-items:center;justify-content:space-between;gap:.75rem}
+.notif-title{font-size:.88rem;font-weight:600;color:var(--sky)}
+.notif-sub{font-size:.72rem;color:var(--muted);margin-top:.1rem}
+
+/* Ambush modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(26,23,20,.4);z-index:100;
+  display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal-sheet{background:var(--card);border-radius:var(--r) var(--r) 0 0;width:100%;max-width:600px;
+  padding:1.5rem 1.4rem 2.5rem;transform:translateY(100%);transition:transform .3s cubic-bezier(.16,1,.3,1)}
+.modal-overlay.open .modal-sheet{transform:translateY(0)}
+.modal-handle{width:36px;height:4px;background:var(--faint);border-radius:99px;margin:0 auto 1.4rem}
+.modal-title{font-family:'DM Serif Display',serif;font-size:1.4rem;font-weight:400;color:var(--ink);margin-bottom:.3rem}
+.modal-sub{font-size:.8rem;color:var(--muted);margin-bottom:1.2rem}
+.ambush-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);
+  padding:1.1rem 1.2rem;margin-bottom:.6rem;cursor:pointer;transition:all .18s}
+.ambush-card:hover{border-color:var(--amber-mid);background:var(--amber-bg)}
+.ambush-card-title{font-size:.88rem;font-weight:600;color:var(--ink);margin-bottom:.25rem}
+.ambush-card-text{font-family:'DM Serif Display',serif;font-size:.95rem;line-height:1.55;color:var(--ink2)}
+.ambush-card-text .n-name{color:var(--blush);font-style:italic}
+.ambush-card-text .n-body{color:var(--amber);font-style:italic}
+
+/* Ref table */
+
+@media(max-width:480px){
+  .names-grid,.gender-grid{grid-template-columns:1fr 1fr}
+  .play-row{flex-direction:column}
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <div class="wordmark">Spark<span class="dot">.</span></div>
+  <div class="tagline">Connection by design</div>
+</header>
+
+<!-- ════════ SETUP ════════ -->
+<div class="screen active" id="screenSetup">
+  <div class="return-banner" id="returnBanner">
+    <span>⏱ A scene is in progress</span>
+    <button onclick="showScreen('screenPlay');window.scrollTo(0,0)">Return to scene</button>
+  </div>
+
+  <!-- Notifications -->
+  <div class="notif-section" id="notifSection">
+    <div class="notif-header">
+      <div><div class="notif-title">📳 Tease notifications</div><div class="notif-sub">Random prompts during the day</div></div>
+      <button class="btn btn-outline" id="notifToggleBtn" onclick="toggleNotifications()" style="width:auto;padding:.45rem 1rem;font-size:.78rem;">Enable</button>
+    </div>
+    <div id="notifConfig" style="display:none;margin-top:1rem;">
+      <div class="label">Notification intensity</div>
+      <div class="int-pills" id="notifIntensityPills">
+        <div class="int-pill active" data-level="light" onclick="setNotifIntensity('light',this)"><div class="int-pill-icon">🌸</div><span class="int-pill-name">Light</span><span class="int-pill-hint">Subtle</span></div>
+        <div class="int-pill" data-level="moderate" onclick="setNotifIntensity('moderate',this)"><div class="int-pill-icon">🔥</div><span class="int-pill-name">Moderate</span><span class="int-pill-hint">Suggestive</span></div>
+        <div class="int-pill" data-level="explicit" onclick="setNotifIntensity('explicit',this)"><div class="int-pill-icon">⚡</div><span class="int-pill-name">Explicit</span><span class="int-pill-hint">Graphic</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI Setup -->
+  <div class="card" style="margin-bottom:.75rem;">
+    <div class="label" style="margin-bottom:.5rem;">AI Connection</div>
+
+    <div id="proxyStatus" style="display:flex;align-items:center;gap:.5rem;padding:.55rem .75rem;
+      border-radius:var(--rs);margin-bottom:.75rem;font-size:.78rem;font-weight:500;
+      background:var(--bg);border:1.5px solid var(--border);">
+      <span id="proxyDot" style="width:8px;height:8px;border-radius:50%;background:var(--faint);flex-shrink:0;transition:background .3s;"></span>
+      <span id="proxyText" style="flex:1;">Not connected</span>
+      <button onclick="detectProxy()" style="background:none;border:none;font-size:.68rem;color:var(--sky);cursor:pointer;font-family:inherit;padding:.1rem .3rem;">Retry</button>
+    </div>
+
+    <div class="field" style="margin-bottom:.85rem;">
+      <label for="proxyUrl" style="font-size:.7rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);">Proxy URL</label>
+      <input id="proxyUrl" type="url"
+        placeholder="Leave blank — auto-configured when hosted on Railway"
+        style="font-size:.82rem;font-family:monospace;"
+        autocomplete="off" spellcheck="false"
+        oninput="onProxyUrlChange()" onblur="detectProxy()">
+      <div style="font-size:.68rem;color:var(--muted);margin-top:.35rem;line-height:1.5;">
+        Your Railway deployment URL ending in <code style="background:var(--border);padding:.1rem .25rem;border-radius:3px;">/v1/messages</code>
+      </div>
+    </div>
+
+    <div class="field" style="margin-bottom:.5rem;">
+      <label for="apiKey" style="font-size:.7rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);">Anthropic API Key</label>
+      <input id="apiKey" type="password" placeholder="sk-ant-…"
+        style="font-family:monospace;font-size:.82rem;letter-spacing:.04em;"
+        autocomplete="off" spellcheck="false"
+        oninput="onApiKeyChange()">
+      <div style="font-size:.68rem;color:var(--muted);margin-top:.35rem;line-height:1.5;">
+        From <a href="https://console.anthropic.com/settings/keys" target="_blank" style="color:var(--sky);">console.anthropic.com</a> — or set in Railway Variables to leave this blank.
+      </div>
+    </div>
+
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-top:.75rem;">
+      <div style="display:flex;align-items:center;gap:.5rem;">
+        <input type="checkbox" id="rememberKey" style="width:15px;height:15px;cursor:pointer;accent-color:var(--sage);">
+        <label for="rememberKey" style="font-size:.72rem;color:var(--muted);cursor:pointer;">Remember on this device</label>
+      </div>
+      <button onclick="clearStoredKey()" style="background:none;border:none;font-size:.7rem;color:var(--blush);cursor:pointer;padding:.2rem .4rem;font-family:inherit;">Clear</button>
+    </div>
+    <div id="apiKeyStatus" style="font-size:.7rem;margin-top:.4rem;color:var(--muted);"></div>
+  </div>
+
+  <div class="card">
+    <div class="toggle-row">
+      <div class="toggle-text"><strong>Open to anything</strong><span>Skip the preference survey and start immediately</span></div>
+      <div class="toggle-wrap">
+        <label class="toggle-switch"><input type="checkbox" id="willingAll" checked onchange="onWillingToggle()"><span class="toggle-slider"></span></label>
+        <div class="toggle-status on" id="willingStatus">On</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Partner 1 -->
+  <div class="label">Partner 1</div>
+  <div class="card" style="padding:1rem 1.2rem;">
+    <div class="names-grid" style="margin-bottom:.75rem;">
+      <div class="field"><label>Name</label><input id="name1" type="text" placeholder="Name…" maxlength="20"></div>
+      <div class="field"><label>They are</label>
+        <select id="gender1" onchange="onGenderChange(0)">
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+          <option value="other">Other / Custom</option>
+        </select>
+      </div>
+    </div>
+    <div class="asset-section" id="assets0">
+      <div class="label" style="margin-bottom:.5rem;">Body — tick what applies &amp; name it</div>
+      <div class="asset-grid" id="assetGrid0"></div>
+    </div>
+  </div>
+
+  <!-- Partner 2 -->
+  <div class="label">Partner 2</div>
+  <div class="card" style="padding:1rem 1.2rem;">
+    <div class="names-grid" style="margin-bottom:.75rem;">
+      <div class="field"><label>Name</label><input id="name2" type="text" placeholder="Name…" maxlength="20"></div>
+      <div class="field"><label>They are</label>
+        <select id="gender2" onchange="onGenderChange(1)">
+          <option value="female">Female</option>
+          <option value="male">Male</option>
+          <option value="other">Other / Custom</option>
+        </select>
+      </div>
+    </div>
+    <div class="asset-section" id="assets1">
+      <div class="label" style="margin-bottom:.5rem;">Body — tick what applies &amp; name it</div>
+      <div class="asset-grid" id="assetGrid1"></div>
+    </div>
+  </div>
+
+  <div class="label" style="margin-top:.25rem;">What you have available</div>
+  <div class="chip-grid" id="propsGrid" style="margin-bottom:.75rem;"></div>
+
+  <div class="btn-stack" style="margin-top:1rem;">
+    <button class="btn btn-ink" id="setupContinueBtn" onclick="setupContinue()">Continue</button>
+    <button class="tease-btn" onclick="openAmbushModal()"><span>⚡</span>Quick tease — right now</button>
+  </div>
+</div>
+
+<!-- ════════ SURVEY ════════ (KinkSheet format) -->
+<div class="screen" id="screenSurvey">
+  <div class="survey-hero">
+    <h2 id="surveyTitle">Your preferences</h2>
+    <p id="surveySubtitle">Private. Your partner won't see individual answers.</p>
+  </div>
+  <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:10%"></div></div>
+
+  <!-- Legend — sticky so it's always visible while scrolling -->
+  <div class="kink-legend-sticky">
+    <div class="kink-legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--fav)"></div>★ Fav</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--sage)"></div>✓ Like</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--amber)"></div>~ Maybe</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--blush)"></div>✕ No</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--faint)"></div>— Skip</div>
+    </div>
+  </div>
+
+  <!-- Advanced toggle -->
+  <div class="advanced-banner" id="advancedBanner">
+    <p>Advanced categories (blood, scat, etc.) are hidden by default.</p>
+    <label class="toggle-switch" style="flex-shrink:0;">
+      <input type="checkbox" id="showAdvanced" onchange="rebuildSurvey()">
+      <span class="toggle-slider"></span>
+    </label>
+  </div>
+
+  <div id="surveyItems"></div>
+
+  <div class="btn-stack">
+    <button class="btn btn-ink" id="surveyNextBtn" onclick="surveyNext()">Continue →</button>
+    <div style="text-align:center;margin-top:.4rem;"><button class="btn-ghost" onclick="goSetup()">← Back</button></div>
+  </div>
+</div>
+
+<!-- ════════ RESULTS ════════ -->
+<div class="screen" id="screenResults">
+  <div class="results-hero"><h2>Shared interests</h2><p>Only things you both said yes to or are interested in.</p></div>
+  <div id="resultsContent"></div>
+  <div class="btn-stack" style="margin-top:1.2rem;">
+    <button class="btn btn-ink" onclick="goPlay()">Start session →</button>
+    <div style="text-align:center;margin-top:.4rem;"><button class="btn-ghost" onclick="goSetup()">← Settings</button></div>
+  </div>
+</div>
+
+<!-- ════════ PLAY ════════ -->
+<div class="screen" id="screenPlay">
+  <div class="no-opts" id="noOpts">No matching scenes found. Go back to settings and adjust preferences.</div>
+  <div class="scene-card" id="sceneCard">
+    <div id="sceneContent"></div>
+    <div class="escalation-panel" id="escalationPanel">
+      <div class="escalation-label">Keep going →</div>
+      <div class="escalation-title" id="escalationTitle">How it finishes</div>
+      <div class="escalation-text" id="escalationText"></div>
+    </div>
+    <div class="timer-area">
+      <div class="timer-tag" id="timerPhaseLabel">Duration</div>
+      <div class="timer-num" id="timerDisplay">05:00</div>
+      <div class="timer-hint" id="timerSub">Minimum 5 minutes</div>
+      <div class="timer-btns" id="timerBtns"></div>
+    </div>
+  </div>
+  <div class="play-row">
+    <button class="btn btn-ink" id="newSceneBtn" onclick="generateScene()" style="flex:2;">New scene</button>
+    <button class="btn btn-outline" onclick="goSetup()" style="flex:1;">Settings</button>
+  </div>
+
+</div>
+
+</div><!-- /container -->
+
+<!-- AMBUSH MODAL -->
+<div class="modal-overlay" id="ambushModal" onclick="closeAmbushModal(event)">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Quick tease</div>
+    <div class="modal-sub">An interruption for right now. Choose intensity.</div>
+    <div class="label">Intensity</div>
+    <div class="int-pills" id="ambushIntensityPills" style="margin-bottom:1rem;">
+      <div class="int-pill active" data-level="light" onclick="setAmbushIntensity('light',this)"><div class="int-pill-icon">🌸</div><span class="int-pill-name">Light</span><span class="int-pill-hint">Subtle</span></div>
+      <div class="int-pill" data-level="moderate" onclick="setAmbushIntensity('moderate',this)"><div class="int-pill-icon">🔥</div><span class="int-pill-name">Moderate</span><span class="int-pill-hint">Loaded</span></div>
+      <div class="int-pill" data-level="explicit" onclick="setAmbushIntensity('explicit',this)"><div class="int-pill-icon">⚡</div><span class="int-pill-name">Explicit</span><span class="int-pill-hint">Direct</span></div>
+    </div>
+    <div id="ambushList"></div>
+    <button class="btn btn-outline" onclick="renderAmbushList()" style="margin-top:.5rem;font-size:.85rem;padding:.7rem;">↻ Shuffle</button>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+//  UTILITIES
+// ═══════════════════════════════════════════
+
+/** Escape HTML to prevent XSS in innerHTML contexts */
+function esc(s) {
+  return String(s ?? '')
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
+
+/** Unbiased Fisher-Yates shuffle — returns new array */
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+// ═══════════════════════════════════════════
+//  BODY ASSETS
+// ═══════════════════════════════════════════
+
+const ASSET_DEFS = [
+  { id:'cock',     label:'Penis / Cock',   defaultName:'cock',   genderDefault:['male'] },
+  { id:'pussy',    label:'Vulva / Pussy',  defaultName:'pussy',  genderDefault:['female'] },
+  { id:'breasts',  label:'Breasts',        defaultName:'breasts',genderDefault:['female'] },
+  { id:'ass',      label:'Ass',            defaultName:'ass',    genderDefault:['male','female'] },
+  { id:'chest',    label:'Chest / Pecs',   defaultName:'chest',  genderDefault:['male'] },
+  { id:'mouth',    label:'Mouth',          defaultName:'mouth',  genderDefault:['male','female'] },
+  { id:'thighs',   label:'Thighs',         defaultName:'thighs', genderDefault:['male','female'] },
+];
+
+let body = [buildDefaultBody(0), buildDefaultBody(1)];
+
+function buildDefaultBody(partnerIdx) {
+  const gender = partnerIdx === 0 ? 'male' : 'female';
+  const b = {};
+  ASSET_DEFS.forEach(a => {
+    b[a.id] = { on: a.genderDefault.includes(gender), name: a.defaultName };
+  });
+  return b;
+}
+
+function buildAssetGrid(partnerIdx) {
+  const grid = document.getElementById('assetGrid' + partnerIdx);
+  grid.innerHTML = '';
+  ASSET_DEFS.forEach(a => {
+    const checked = body[partnerIdx][a.id].on;
+    const nm = body[partnerIdx][a.id].name;
+    const row = document.createElement('div');
+    row.className = 'asset-row';
+    // Use data attributes and textContent to avoid XSS in names
+    const toggle = document.createElement('div');
+    toggle.className = 'asset-toggle' + (checked ? ' checked' : '');
+    toggle.id = `at${partnerIdx}_${a.id}`;
+    toggle.setAttribute('role', 'checkbox');
+    toggle.setAttribute('aria-checked', checked ? 'true' : 'false');
+    toggle.setAttribute('tabindex', '0');
+    toggle.textContent = checked ? '✓' : '';
+    toggle.onclick = () => toggleAsset(partnerIdx, a.id);
+    toggle.onkeydown = e => { if (e.key==='Enter'||e.key===' ') { e.preventDefault(); toggleAsset(partnerIdx, a.id); } };
+
+    const lbl = document.createElement('div');
+    lbl.className = 'asset-row-label';
+    lbl.textContent = a.label;
+
+    const inp = document.createElement('input');
+    inp.className = 'asset-name-input';
+    inp.type = 'text';
+    inp.placeholder = 'Call it…';
+    inp.id = `an${partnerIdx}_${a.id}`;
+    inp.value = checked ? nm : '';
+    inp.disabled = !checked;
+    inp.style.opacity = checked ? '' : '.4';
+    inp.oninput = () => updateAssetName(partnerIdx, a.id, inp.value);
+
+    row.appendChild(toggle); row.appendChild(lbl); row.appendChild(inp);
+    grid.appendChild(row);
+  });
+}
+
+function toggleAsset(pi, aid) {
+  body[pi][aid].on = !body[pi][aid].on;
+  const tog = document.getElementById(`at${pi}_${aid}`);
+  const inp = document.getElementById(`an${pi}_${aid}`);
+  const on = body[pi][aid].on;
+  tog.classList.toggle('checked', on);
+  tog.textContent = on ? '✓' : '';
+  tog.setAttribute('aria-checked', on ? 'true' : 'false');
+  inp.disabled = !on;
+  inp.style.opacity = on ? '' : '.4';
+  if (on && !inp.value) {
+    inp.value = ASSET_DEFS.find(a => a.id === aid).defaultName;
+    body[pi][aid].name = inp.value;
+  }
+}
+
+function updateAssetName(pi, aid, val) {
+  body[pi][aid].name = val || ASSET_DEFS.find(a => a.id === aid).defaultName;
+}
+
+function onGenderChange(pi) {
+  const gender = document.getElementById('gender' + (pi + 1)).value;
+  const section = document.getElementById('assets' + pi);
+  body[pi] = {};
+  ASSET_DEFS.forEach(a => {
+    body[pi][a.id] = {
+      on: gender === 'other' ? false : a.genderDefault.includes(gender),
+      name: a.defaultName,
+    };
+  });
+  section.classList.toggle('visible', gender === 'other');
+  if (gender === 'other') buildAssetGrid(pi);
+}
+
+/** Get named asset for partner pi — returns null if not applicable */
+function getAsset(pi, aid) {
+  if (body[pi]?.[aid]?.on) return body[pi][aid].name;
+  const g = document.getElementById('gender' + (pi + 1))?.value || (pi === 0 ? 'male' : 'female');
+  const fallbacks = { cock: g==='male'?'cock':null, pussy: g==='female'?'pussy':null,
+    breasts: g==='female'?'breasts':null, ass:'ass', chest:'chest', mouth:'mouth', thighs:'thighs' };
+  return fallbacks[aid] ?? null;
+}
+
+function genital(pi) {
+  return getAsset(pi,'cock') || getAsset(pi,'pussy') || 'genitals';
+}
+
+// ═══════════════════════════════════════════
+//  KINK SURVEY DATA (exact KinkSheet)
+// ═══════════════════════════════════════════
+
+const KINK_CATS = [
+  { id:'intimacy', label:'Intimacy', sub:'General', advanced:false, items:[
+    { id:'ki_romance',    label:'Romance / Affection',  split:false },
+    { id:'ki_hugging',    label:'Hugging',              split:false },
+    { id:'ki_kiss_body',  label:'Kissing (body)',  tip:'Planting kisses on various bodyparts.', split:false },
+    { id:'ki_kiss_mouth', label:'Kissing (mouth)',      split:false },
+    { id:'ki_spoon',      label:'Spooning', tip:'Holding the partner close, often back to chest.', split:false },
+    { id:'ki_real_names', label:'Using real names', tip:'Referring to partner by real name instead of pet names.', split:false },
+    { id:'ki_sleepover',  label:'Sleepover', tip:'Staying with your sexual partner overnight.', split:false },
+  ]},
+  { id:'clothing', label:'Clothing', sub:'Self · Partner', advanced:false, items:[
+    { id:'c_clothed',   label:'Clothed sex',    split:false },
+    { id:'c_lingerie',  label:'Lingerie',        split:false },
+    { id:'c_stockings', label:'Stockings',       split:false },
+    { id:'c_heels',     label:'Heels',           split:false },
+    { id:'c_leather',   label:'Leather',         split:false },
+    { id:'c_latex',     label:'Latex',           split:false },
+    { id:'c_uniform',   label:'Uniform',         split:false },
+    { id:'c_cosplay',   label:'Cosplay',         split:false },
+    { id:'c_crossdress',label:'Cross-dressing',  split:false },
+    { id:'c_formal',    label:'Formal clothing', split:false },
+  ]},
+  { id:'groupings', label:'Groupings', sub:'General', advanced:false, items:[
+    { id:'gr_1male',   label:'You and 1 male',           split:false },
+    { id:'gr_1female', label:'You and 1 female',         split:false },
+    { id:'gr_mf',      label:'You and 1 male, 1 female', split:false },
+    { id:'gr_2male',   label:'You and 2 males',          split:false },
+    { id:'gr_2female', label:'You and 2 females',        split:false },
+    { id:'gr_orgy',    label:'Orgy setting',             split:false },
+  ]},
+  { id:'general', label:'General', sub:'Giving · Receiving', advanced:false, items:[
+    { id:'g_handjob',    label:'Handjobs / fingering', tip:'Stimulating the genitalia using mainly hands.', split:true },
+    { id:'g_blowjob',    label:'Blowjobs',             split:true },
+    { id:'g_deepthroat', label:'Deep throating',       split:true },
+    { id:'g_swallow',    label:'Swallowing',           split:true },
+    { id:'g_facial',     label:'Facials', tip:'Ejaculating directly on the face of the partner.', split:true },
+    { id:'g_cunniling',  label:'Cunnilingus',          split:true },
+    { id:'g_facesit',    label:'Face-sitting',         split:true },
+    { id:'g_edging',     label:'Edging', tip:'Bringing partner close to orgasm repeatedly without release.', split:true },
+    { id:'g_teasing',    label:'Teasing',              split:true },
+    { id:'g_stripping',  label:'Stripping / Disrobing', split:true },
+    { id:'g_mutual_mast',label:'Mutual / shared masturbation', split:false },
+    { id:'g_self_humil', label:'Self-injury / Self-humiliation', split:false },
+  ]},
+  { id:'penetration', label:'Penetration', sub:'Giving · Receiving', advanced:false, items:[
+    { id:'p_penetration',label:'Penetration',           split:true },
+    { id:'p_strapon',    label:'Strap-on penetration',  split:true },
+    { id:'p_bareback',   label:'Barebacking',           split:true },
+    { id:'p_tantric',    label:'Tantric/Yoni stimulation', split:true },
+    { id:'p_fingering',  label:'Fingering',             split:true },
+    { id:'p_object',     label:'Object insertion',      split:true },
+    { id:'p_fisting',    label:'Fisting',               split:true },
+  ]},
+  { id:'positions', label:'Special Positions', sub:'Giving · Receiving', advanced:false, items:[
+    { id:'pos_swing',   label:'Free-hanging / loveswings', split:false },
+    { id:'pos_wall',    label:'Up against walls',          split:true  },
+    { id:'pos_69',      label:"69'ing",                    split:false },
+    { id:'pos_suspend', label:'Rope/chain suspension',     split:true  },
+    { id:'pos_unseen',  label:'Unseen actor',              split:true  },
+    { id:'pos_stealth', label:'Stealth penetration',       split:true  },
+  ]},
+  { id:'butt', label:'Butt stuff', sub:'Giving · Receiving', advanced:false, items:[
+    { id:'b_tease',  label:'Anal teasing / threats', split:true },
+    { id:'b_toy',    label:'Anal toys / plugging',   split:true },
+    { id:'b_sex',    label:'Anal sex, pegging',      split:true },
+    { id:'b_rimming',label:'Rimming',                split:true },
+    { id:'b_dp',     label:'Double penetration',     split:false },
+    { id:'b_fist',   label:'Anal fisting',           split:true },
+  ]},
+  { id:'restrictive', label:'Restrictive', sub:'Self · Partner', advanced:false, items:[
+    { id:'r_gag',     label:'Gag', tip:'Placed in the mouth, making the wearer unable to speak.', split:false },
+    { id:'r_collar',  label:'Collar',  split:false },
+    { id:'r_leash',   label:'Leash',   tip:'Rope between the wearer and the master.', split:false },
+    { id:'r_rope',    label:'Rope bondage', split:false },
+    { id:'r_mitts',   label:'Mitts',   tip:'Makes the wearer unable to grab objects with their fingers.', split:false },
+    { id:'r_cuffs',   label:'Cufflings', tip:'Wrapped around wrists and ankles; makes it easy for the master to restrict the wearer.', split:false },
+    { id:'r_wall',    label:'Wall/cross mounting', split:false },
+    { id:'r_stockade',label:'Stockades', tip:'Freestanding rigs that restrict the head and arms or legs.', split:false },
+    { id:'r_chastity',label:'Chastity gear', split:false },
+    { id:'r_encase',  label:'Encasement', tip:'Full encagement — cage, rope harness, or ducttape, restricting to minimal movement.', split:false },
+    { id:'r_blindfold',label:'Blindfolds', split:false },
+    { id:'r_sensory', label:'Sensory deprivation', tip:'Covering both ears and eyes completely.', split:false },
+  ]},
+  { id:'toys', label:'Toys', sub:'On Self · On Others', advanced:false, items:[
+    { id:'t_dildo',  label:'Dildos',      split:false },
+    { id:'t_plug',   label:'Plugs',       split:false },
+    { id:'t_vibe',   label:'Vibrators',   tip:'Phallic shaped devices with internal vibration.', split:false },
+    { id:'t_wand',   label:'Magic wands', tip:'Delivers strong vibration over a larger area.', split:false },
+    { id:'t_sybian', label:'Sybians',     split:false },
+    { id:'t_machine',label:'Sex Machines', split:false },
+  ]},
+  { id:'domination', label:'Domination', sub:'As Dom · As Sub', advanced:false, items:[
+    { id:'d_domsub',     label:'Dominant / Submissive', split:false },
+    { id:'d_servitude',  label:'Domestic servitude',    split:false },
+    { id:'d_slavery',    label:'Slavery',               split:false },
+    { id:'d_ddlg',       label:'DD/lg, MD/lb',          split:false },
+    { id:'d_discipline', label:'Discipline',            split:false },
+    { id:'d_begging',    label:'Begging',               split:false },
+    { id:'d_forced_org', label:'Forced orgasm',         split:false },
+    { id:'d_org_control',label:'Orgasm control',        split:false },
+    { id:'d_org_denial', label:'Orgasm denial',         split:false },
+  ]},
+  { id:'scenarios', label:'Scenarios', sub:'Being Center · Participating', advanced:false, items:[
+    { id:'sc_glory',      label:'Glory hole', tip:'Isolating a person using holes in the wall.', split:false },
+    { id:'sc_humil',      label:'Humiliation',  split:false },
+    { id:'sc_exhib',      label:'Exhibitionism',split:false },
+    { id:'sc_voyeur',     label:'Voyeurism',    split:false },
+    { id:'sc_medical',    label:'Medical',      split:false },
+    { id:'sc_pet_soft',   label:'Pet play (soft)', split:false },
+    { id:'sc_pet_hard',   label:'Pet play (hard)', split:false },
+    { id:'sc_furniture',  label:'Human furniture', split:false },
+    { id:'sc_auction',    label:'Human auctioning / appraisal', split:false },
+    { id:'sc_slave_train',label:'Slave training', split:false },
+    { id:'sc_interrogate',label:'Interrogation',  split:false },
+    { id:'sc_gangbang',   label:'Gangbang',       split:false },
+    { id:'sc_kidnap',     label:'Kidnapping',     split:false },
+    { id:'sc_sleep',      label:'Sleep play',     split:false },
+    { id:'sc_hypno',      label:'Hypnotism',      split:false },
+    { id:'sc_freeuse',    label:'Unaware / Freeuse', split:false },
+    { id:'sc_fake_public',label:'Fake public use',  split:false },
+    { id:'sc_sex_ed',     label:'Practical sex ed', split:false },
+  ]},
+  { id:'touch', label:'Touch & Stimulation', sub:'Actor · Subject', advanced:false, items:[
+    { id:'ts_cock_worship',label:'Cock/Pussy worship', split:false },
+    { id:'ts_ass_worship', label:'Ass worship',        split:false },
+    { id:'ts_foot',        label:'Foot play',          split:false },
+    { id:'ts_tickle',      label:'Tickling',           split:false },
+    { id:'ts_sensation',   label:'Sensation play',     split:false },
+    { id:'ts_electro',     label:'Electro stimulation',split:false },
+    { id:'ts_breath',      label:'Breath play',        split:false },
+  ]},
+  { id:'pain', label:'Pain', sub:'Giving · Receiving', advanced:false, items:[
+    { id:'pa_light',      label:'Light pain',           split:true },
+    { id:'pa_heavy',      label:'Heavy pain',           split:true },
+    { id:'pa_hickies',    label:'Hickies',              split:true },
+    { id:'pa_nipclamp',   label:'Nipple clamps',        split:true },
+    { id:'pa_clothespin', label:'Clothes pins / ZipStrips', split:true },
+    { id:'pa_slap_body',  label:'Body slapping',        split:true },
+    { id:'pa_slap_face',  label:'Facial slapping',      split:true },
+    { id:'pa_spank',      label:'Spanking',             split:true },
+    { id:'pa_cane',       label:'Caning',               split:true },
+    { id:'pa_flog',       label:'Flogging',             split:true },
+    { id:'pa_beat',       label:'Beatings',             split:true },
+    { id:'pa_whip',       label:'Whips',                split:true },
+    { id:'pa_paddle',     label:'Paddles',              split:true },
+    { id:'pa_genital_slap',label:'Cock/Pussy slapping', split:true },
+    { id:'pa_wax',        label:'Hot Wax',              split:true },
+    { id:'pa_scratch',    label:'Scratching',           split:true },
+    { id:'pa_bite',       label:'Biting',               split:true },
+    { id:'pa_bruise',     label:'Bruising (short-lasting)', split:true },
+    { id:'pa_mark',       label:'Markings (long-lasting)',  split:true },
+  ]},
+  // ── ADVANCED ──
+  { id:'adv_taboo', label:'Taboo Scenarios', sub:'Participating · Observing', advanced:true, items:[
+    { id:'adv_incest',  label:'Incest',  tip:'Simulated fantasy of relations with family-like structures.', split:false },
+    { id:'adv_ageplay', label:'Ageplay', tip:'Acting much younger or older than your actual age.', split:false },
+    { id:'adv_noncon',  label:'Non-con / rapeplay', split:false },
+    { id:'adv_necro',   label:'Necrophilia', tip:'Simulated concept of a deceased participant.', split:false },
+    { id:'adv_nazi',    label:'Nazi/War symbolism', split:false },
+    { id:'adv_cheat',   label:'Cheating',  split:false },
+    { id:'adv_pub_real',label:'Real public use', split:false },
+  ]},
+  { id:'adv_surreal', label:'Surrealism', sub:'Self · Observing', advanced:true, items:[
+    { id:'adv_futanari', label:'Futanari', tip:'Fully female characters with male genitalia.', split:false },
+    { id:'adv_furry',    label:'Furry',    split:false },
+    { id:'adv_transform',label:'Transformation', tip:'Character transformation or body-swapping fantasy.', split:false },
+    { id:'adv_tentacle', label:'Tentacles', split:false },
+    { id:'adv_monster',  label:'Monster/Beast', split:false },
+    { id:'adv_alien',    label:'Alien', split:false },
+  ]},
+  { id:'adv_fluids', label:'Fluids', sub:'General', advanced:true, items:[
+    { id:'adv_blood',  label:'Blood',      split:false },
+    { id:'adv_water',  label:'Watersports',split:false },
+    { id:'adv_scat',   label:'Scat',       split:false },
+    { id:'adv_cumplay',label:'Cum play',   split:false },
+  ]},
+  { id:'adv_pain', label:'Extreme Pain', sub:'Giving · Receiving', advanced:true, items:[
+    { id:'adv_burn',         label:'Burning',         split:true },
+    { id:'adv_cut',          label:'Cutting',         split:true },
+    { id:'adv_sound',        label:'Sounding', tip:'Inserting something into the urethra.', split:true },
+    { id:'adv_breast_tort',  label:'Breast torture',  split:true },
+    { id:'adv_genital_tort', label:'Cock/Pussy torture', split:true },
+  ]},
+];
+
+// Flatten: split items produce _give + _receive entries
+const ALL_KINK_ITEMS = [];
+KINK_CATS.forEach(cat => {
+  cat.items.forEach(item => {
+    if (item.split) {
+      ALL_KINK_ITEMS.push({ id:item.id+'_give',    label:item.label+' — Giving',    tip:item.tip, cat:cat.id, advanced:cat.advanced, base:item.id });
+      ALL_KINK_ITEMS.push({ id:item.id+'_receive', label:item.label+' — Receiving', tip:item.tip, cat:cat.id, advanced:cat.advanced, base:item.id });
+    } else {
+      ALL_KINK_ITEMS.push({ ...item, cat:cat.id, advanced:cat.advanced });
+    }
+  });
+});
+
+let kinkPrefs = [{}, {}];
+
+function mkDefaultKinkPrefs() {
+  const p = {};
+  ALL_KINK_ITEMS.forEach(i => { p[i.id] = i.advanced ? null : 'like'; });
+  return p;
+}
+
+function isKinkAvail(itemId) {
+  const eff = pi => { const r = kinkPrefs[pi][itemId]; return (r===null||r===undefined) ? 'like' : r; };
+  return eff(0) !== 'no' && eff(1) !== 'no';
+}
+
+// ═══════════════════════════════════════════
+//  SCENES (metadata only — AI generates text)
+// ═══════════════════════════════════════════
+
+const SCENES = [
+  { id:'oral_restrained', title:'Hands above your head',       cat:'general',    kinks:['g_blowjob_give','g_cunniling_give','g_blowjob_receive','g_cunniling_receive'], req:[] },
+  { id:'manual_whisper',  title:"Don't stop talking",          cat:'general',    kinks:['g_handjob_give','g_handjob_receive','g_teasing_give'],                         req:[] },
+  { id:'penetrative_slow',title:'As slow as you can stand it', cat:'penetration',kinks:['p_penetration_give','p_penetration_receive','ki_kiss_mouth'],                  req:[] },
+  { id:'fingering_eye',   title:'Keep looking at me',          cat:'general',    kinks:['g_handjob_give','p_fingering_give'],                                           req:[] },
+  { id:'striptease_edge', title:"Look but don't touch",        cat:'general',    kinks:['g_stripping_give','g_edging_give','g_teasing_give'],                           req:[] },
+  { id:'nipple_oral',     title:'Two things at once',          cat:'general',    kinks:['g_cunniling_give','g_handjob_give'],                                           req:[] },
+  { id:'oral_69',         title:'Give and take',               cat:'general',    kinks:['g_blowjob_give','g_blowjob_receive','g_cunniling_give','g_cunniling_receive','pos_69'], req:[] },
+  { id:'bound_kneel',     title:'Bound and kneeling',          cat:'domination', kinks:['d_domsub','r_cuffs','g_blowjob_receive','g_blowjob_give'],                    req:[] },
+  { id:'wand_edging',     title:"You can't move",              cat:'domination', kinks:['d_org_control','d_org_denial','t_wand'],                                       req:['vibrator'] },
+  { id:'blindfold_oral',  title:'No sight, just feeling',      cat:'restrictive',kinks:['r_blindfold','g_cunniling_give','g_blowjob_give'],                             req:['blindfold'] },
+  { id:'hair_oral',       title:'Hands in my hair',            cat:'pain',       kinks:['g_cunniling_give','g_blowjob_give','pa_scratch_give'],                         req:[] },
+  { id:'spanking_lap',    title:'Across your lap',             cat:'pain',       kinks:['pa_spank_give','pa_spank_receive','d_domsub'],                                 req:[] },
+  { id:'choking_sex',     title:'Hand on throat',              cat:'touch',      kinks:['ts_breath','p_penetration_give','p_penetration_receive'],                      req:[] },
+  { id:'restrained_oral', title:'Tied and tasted',             cat:'restrictive',kinks:['r_cuffs','g_cunniling_give','g_blowjob_give','d_domsub'],                     req:['restraints'] },
+  { id:'sensation_ice',   title:'Cold before warm',            cat:'touch',      kinks:['ts_sensation','r_blindfold'],                                                  req:['icewax','blindfold'] },
+  { id:'folded_digital',  title:'Deep and held open',          cat:'penetration',kinks:['p_fingering_give','p_fingering_receive','d_domsub'],                           req:[] },
+  { id:'rimming_prone',   title:'Face down, completely',       cat:'butt',       kinks:['b_rimming_give','b_tease_give'],                                               req:[] },
+  { id:'mirror_kneel',    title:'Watch yourself in the mirror',cat:'positions',  kinks:['pos_mirror','g_cunniling_give','g_blowjob_give'],                              req:['mirror'] },
+  { id:'dom_commands',    title:'Tell me exactly what you want',cat:'domination',kinks:['d_domsub','d_discipline','p_penetration_give','p_penetration_receive'],         req:[] },
+  { id:'public_whisper',  title:'Only you know',               cat:'scenarios',  kinks:['sc_exhib','g_teasing_give'],                                                   req:[] },
+  { id:'lingerie_tease',  title:'Keep it on',                  cat:'clothing',   kinks:['c_lingerie','g_teasing_give'],                                                 req:[] },
+  { id:'foot_oral',       title:'Start at the bottom',         cat:'touch',      kinks:['ts_foot','g_cunniling_give','g_blowjob_give'],                                 req:[] },
+  { id:'stranger_roleplay',title:"We don't know each other",   cat:'scenarios',  kinks:['sc_humil','sc_gangbang','p_penetration_give','p_penetration_receive'],          req:[] },
+];
+
+// ═══════════════════════════════════════════
+//  AMBUSH PROMPTS (static fallback)
+// ═══════════════════════════════════════════
+
+const n = name => `<span class="n-name">${esc(name)}</span>`;
+const b = txt  => `<span class="n-body">${esc(txt)}</span>`;
+
+const AMBUSHES = {
+  light:[
+    { title:'The look',        fn:(A,B,pA,pB)=>`${n(A)}, find ${n(B)} across the room. Hold eye contact for five full seconds. Look away first. Say nothing.` },
+    { title:'The slow pass',   fn:(A,B,pA,pB)=>`${n(A)}, walk past ${n(B)} and drag one hand slowly across the back of their neck. No eye contact. Keep walking.` },
+    { title:'The countdown',   fn:(A,B,pA,pB)=>`${n(A)}, send ${n(B)} a single number right now. Every hour today, send one lower. No explanation.` },
+    { title:'The hand',        fn:(A,B,pA,pB)=>`${n(A)}, sit next to ${n(B)} and rest your hand on their inner thigh. Slight pressure. Thirty seconds. Remove it and carry on.` },
+    { title:'The mirror hold', fn:(A,B,pA,pB)=>`${n(A)}, pull ${n(B)} in front of a mirror and hold them tightly from behind for thirty seconds — both of you watching the reflection.` },
+  ],
+  moderate:[
+    { title:'The wall-pin',      fn:(A,B,pA,pB)=>`${n(A)}, back ${n(B)} against a wall. Hold both their wrists against it. Say nothing for fifteen seconds. Look at them. Release and leave the room.` },
+    { title:'The whisper plant', fn:(A,B,pA,pB)=>`${n(A)}, walk past ${n(B)} and whisper exactly what you plan to do to their ${b(genital(pB))} tonight — one sentence. Keep walking.` },
+    { title:'The neck grip',     fn:(A,B,pA,pB)=>`${n(A)}, place one hand firmly around the back of ${n(B)}'s neck. Pull them until your mouths almost touch. Hold five seconds. Release. Leave.` },
+    { title:'The hair pull',     fn:(A,B,pA,pB)=>`${n(A)}, slide your fingers into ${n(B)}'s hair and pull slowly until their chin lifts. Look at them. Release. Walk away.` },
+    { title:'The belt pull',     fn:(A,B,pA,pB)=>`${n(A)}, grab ${n(B)}'s waistband and pull them flush against you for thirty seconds. Release and walk away.` },
+  ],
+  explicit:[
+    { title:'The 30-second sprint', fn:(A,B,pA,pB)=>`${n(A)}, find ${n(B)} in another room. Work their ${b(genital(pB))} hard with your hand for thirty seconds — then stop. Walk away without a word.` },
+    { title:'The deep intake',      fn:(A,B,pA,pB)=>`${n(A)}, drop to your knees and take their ${b(genital(pB))} into your mouth for thirty seconds — full intensity, total silence. Stand up and leave.` },
+    { title:'The freeze edge',      fn:(A,B,pA,pB)=>`${n(A)}, tell ${n(B)} to freeze. Use your hand on their ${b(genital(pB))} at full speed for thirty seconds — stop at the peak. Walk away.` },
+    { title:'The ear drop',         fn:(A,B,pA,pB)=>`${n(A)}, describe in detail what your mouth is going to do to their ${b(genital(pB))} tonight. Take your time. Then walk away as if nothing happened.` },
+    { title:'The drive-by spank',   fn:(A,B,pA,pB)=>`${n(A)}, deliver ten hard, deliberate strikes to ${n(B)}'s ${b(getAsset(pB,'ass')??'ass')}. No words. Exit the room immediately.` },
+  ],
+};
+
+const NOTIF_TEASES = {
+  light:[
+    (A,B)=>`${A} is thinking about you.`,
+    (A,B)=>`Something's planned for later, ${B}.`,
+    (A,B)=>`${A} hasn't stopped thinking about you today.`,
+    (A,B)=>`Don't forget what's waiting for you tonight.`,
+  ],
+  moderate:[
+    (A,B)=>`${A} wants to pin you against a wall tonight, ${B}.`,
+    (A,B)=>`${A} keeps thinking about the sound you make.`,
+    (A,B)=>`${B}, ${A} wants their hands in your hair tonight.`,
+    (A,B)=>`You've been on ${A}'s mind in a very specific way today.`,
+  ],
+  explicit:[
+    (A,B)=>`${A} is going to take their time going down on you tonight, ${B}.`,
+    (A,B)=>`${B}, ${A} wants you on your knees tonight. Hold that.`,
+    (A,B)=>`${A} wants to make you finish with their mouth. Just that thought, for now.`,
+    (A,B)=>`Tonight ${A} isn't stopping until you beg them to, ${B}.`,
+  ],
+};
+
+const PROPS_DEF = [
+  {id:'vibrator',label:'Vibrator / Wand'},{id:'restraints',label:'Restraints'},
+  {id:'blindfold',label:'Blindfold'},{id:'mirror',label:'Mirror'},
+  {id:'icewax',label:'Ice / Wax'},{id:'massage_oil',label:'Massage oil'},{id:'none',label:'No props'},
+];
+
+// ═══════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════
+let props          = new Set(['vibrator','blindfold','massage_oil']);
+let surveyIdx      = 0;
+let currentScene   = null, currentA = '', currentB = '', currentPiA = 0, currentPiB = 1;
+let ambushIntensity= 'light', notifIntensity = 'light';
+let notifsEnabled  = false,   notifInterval  = null;
+let timerInterval  = null,    timerRunning   = false, totalSecs = 300, remainSecs = 300;
+let escalationRevealed = false;
+let isGenerating   = false;          // guards concurrent AI calls
+let streamController = null;         // AbortController for active stream
+
+function gN(i) {
+  const v = document.getElementById('name' + (i + 1)).value.trim();
+  return v || 'Partner ' + (i + 1);
+}
+function willingAll() { return document.getElementById('willingAll').checked; }
+
+// ─── Scene availability: role-aware kink check ────────────────────
+function sceneAvailForRoles(scene, piA, piB) {
+  if (scene.req?.length) {
+    if (props.has('none')) return false;
+    if (!scene.req.every(r => props.has(r))) return false;
+  }
+  if (willingAll()) return true;
+  return scene.kinks.every(k => {
+    // _give → check the giver (piA); _receive → check the receiver (piB)
+    if (k.endsWith('_give')) {
+      const r = kinkPrefs[piA][k]; return (r===null||r===undefined||r!=='no');
+    }
+    if (k.endsWith('_receive')) {
+      const r = kinkPrefs[piB][k]; return (r===null||r===undefined||r!=='no');
+    }
+    return isKinkAvail(k);
+  });
+}
+function sceneAvail(scene) { return sceneAvailForRoles(scene, currentPiA, currentPiB); }
+
+// ═══════════════════════════════════════════
+//  SCREENS
+// ═══════════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+function goSetup() {
+  // Reset generating state so returning to play always works
+  isGenerating = false;
+  if (streamController) { try { streamController.abort(); } catch {} streamController = null; }
+  const btn = document.getElementById('newSceneBtn');
+  if (btn) { btn.disabled = false; btn.textContent = 'New scene'; }
+  // Show "return to scene" banner if a scene is active
+  const banner = document.getElementById('returnBanner');
+  if (banner) banner.style.display = currentScene ? 'flex' : 'none';
+  showScreen('screenSetup');
+}
+
+// ═══════════════════════════════════════════
+//  SETUP INIT
+// ═══════════════════════════════════════════
+(function initSetup() {
+  buildAssetGrid(0);
+  buildAssetGrid(1);
+
+  const grid = document.getElementById('propsGrid');
+  PROPS_DEF.forEach(p => {
+    const chip = document.createElement('div');
+    chip.className = 'chip' + (props.has(p.id) ? ' on-sage' : '');
+    chip.dataset.id = p.id;
+    chip.textContent = p.label;
+    chip.setAttribute('role', 'checkbox');
+    chip.setAttribute('aria-checked', props.has(p.id) ? 'true' : 'false');
+    chip.setAttribute('tabindex', '0');
+    chip.onclick = () => toggleProp(p.id, chip);
+    chip.onkeydown = e => { if (e.key==='Enter'||e.key===' ') { e.preventDefault(); toggleProp(p.id, chip); } };
+    grid.appendChild(chip);
+  });
+})();
+
+function toggleProp(id, chip) {
+  if (id === 'none') {
+    props.clear(); props.add('none');
+    document.querySelectorAll('#propsGrid .chip').forEach(c => {
+      const on = c.dataset.id === 'none';
+      c.classList.toggle('on-sage', on);
+      c.setAttribute('aria-checked', on ? 'true' : 'false');
+    });
+    return;
+  }
+  props.delete('none');
+  const noneChip = document.querySelector('#propsGrid [data-id="none"]');
+  if (noneChip) { noneChip.classList.remove('on-sage'); noneChip.setAttribute('aria-checked','false'); }
+  const on = props.has(id) ? (props.delete(id), false) : (props.add(id), true);
+  chip.classList.toggle('on-sage', on);
+  chip.setAttribute('aria-checked', on ? 'true' : 'false');
+}
+
+function onWillingToggle() {
+  const on = willingAll();
+  document.getElementById('willingStatus').textContent = on ? 'On' : 'Off';
+  document.getElementById('willingStatus').className = 'toggle-status' + (on ? ' on' : '');
+  document.getElementById('setupContinueBtn').textContent = on ? 'Continue' : 'Set preferences →';
+}
+
+function setupContinue() {
+  if (willingAll()) {
+    kinkPrefs = [mkDefaultKinkPrefs(), mkDefaultKinkPrefs()];
+    goPlay();
+  } else {
+    surveyIdx = 0;
+    showSurveyScreen(0);
+  }
+}
+
+// ═══════════════════════════════════════════
+//  API KEY — sessionStorage default, localStorage opt-in
+// ═══════════════════════════════════════════
+function getApiKey() {
+  // If proxy is handling auth via its env var, key field can be empty — return sentinel
+  if (window._sparkProxyAuthHandled) return '__proxy__';
+  const field = document.getElementById('apiKey');
+  if (field?.value.trim()) return field.value.trim();
+  return sessionStorage.getItem('spark_api_key') || localStorage.getItem('spark_api_key') || '';
+}
+
+function onApiKeyChange() {
+  const key    = document.getElementById('apiKey').value.trim();
+  const status = document.getElementById('apiKeyStatus');
+  const remember = document.getElementById('rememberKey');
+
+  if (key.startsWith('sk-ant-') && key.length > 20) {
+    if (remember?.checked) {
+      localStorage.setItem('spark_api_key', key);
+    } else {
+      sessionStorage.setItem('spark_api_key', key);
+      localStorage.removeItem('spark_api_key');
+    }
+    status.textContent = '✓ Key saved' + (remember?.checked ? ' on this device.' : ' for this session.');
+    status.style.color = 'var(--sage)';
+    // Re-check proxy status now that we have a key
+    if (window._sparkProxyUrl) detectProxy();
+  } else if (key.length > 0) {
+    status.textContent = 'Key looks incomplete — should start with sk-ant-…';
+    status.style.color = 'var(--amber)';
+  } else {
+    sessionStorage.removeItem('spark_api_key');
+    status.textContent = 'Keys are only sent to api.anthropic.com.';
+    status.style.color = 'var(--muted)';
+  }
+}
+
+function clearStoredKey() {
+  sessionStorage.removeItem('spark_api_key');
+  localStorage.removeItem('spark_api_key');
+  localStorage.removeItem('spark_proxy_url');
+  window._sparkProxyUrl = null;
+  window._sparkProxyAuthHandled = false;
+  const field      = document.getElementById('apiKey');
+  const proxyField = document.getElementById('proxyUrl');
+  const status     = document.getElementById('apiKeyStatus');
+  if (field)      field.value = '';
+  if (proxyField) proxyField.value = '';
+  if (status) { status.textContent = 'Cleared.'; status.style.color = 'var(--muted)'; }
+  setProxyStatus('none', 'Enter proxy URL above');
+}
+
+document.getElementById('rememberKey')?.addEventListener('change', () => {
+  const key = document.getElementById('apiKey').value.trim();
+  if (!key) return;
+  if (document.getElementById('rememberKey').checked) {
+    localStorage.setItem('spark_api_key', key);
+    sessionStorage.removeItem('spark_api_key');
+  } else {
+    sessionStorage.setItem('spark_api_key', key);
+    localStorage.removeItem('spark_api_key');
+  }
+});
+
+// Restore saved API key and proxy URL on load
+(function restoreSettings() {
+  // API key
+  const saved   = sessionStorage.getItem('spark_api_key') || localStorage.getItem('spark_api_key');
+  const isLocal = !!localStorage.getItem('spark_api_key');
+  if (saved) {
+    const field = document.getElementById('apiKey');
+    if (field) field.value = saved;
+    const status = document.getElementById('apiKeyStatus');
+    if (status) {
+      status.textContent = '✓ Key saved' + (isLocal ? ' on this device.' : ' for this session.');
+      status.style.color = 'var(--sage)';
+    }
+    const remember = document.getElementById('rememberKey');
+    if (isLocal && remember) remember.checked = true;
+  }
+
+  // Proxy URL — if served from Railway (/v1/messages is on same domain), use relative URL.
+  // Otherwise restore from localStorage.
+  const savedProxy = localStorage.getItem('spark_proxy_url') || '';
+  const proxyField = document.getElementById('proxyUrl');
+  const isHosted   = window.location.protocol === 'https:' || window.location.hostname !== 'localhost';
+  if (isHosted && !savedProxy) {
+    // Served over HTTP(S) — proxy is on same domain
+    window._sparkProxyUrl = '/v1/messages';
+    if (proxyField) proxyField.value = '';
+    if (proxyField) proxyField.placeholder = 'Using ' + window.location.hostname + '/v1/messages';
+  } else if (savedProxy) {
+    if (proxyField) proxyField.value = savedProxy;
+    const base = savedProxy.replace(/\/v1\/messages\/?$/, '').replace(/\/$/, '');
+    window._sparkProxyUrl = base + '/v1/messages';
+  }
+})();
+
+// ═══════════════════════════════════════════
+//  NOTIFICATIONS
+// ═══════════════════════════════════════════
+function setNotifIntensity(level, el) {
+  notifIntensity = level;
+  document.querySelectorAll('#notifIntensityPills .int-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+}
+
+async function toggleNotifications() {
+  if (notifsEnabled) { disableNotifications(); return; }
+  if (!('Notification' in window)) { alert('Notifications not supported in this browser.'); return; }
+  const perm = await Notification.requestPermission();
+  if (perm !== 'granted') { alert('Notification permission denied.'); return; }
+  notifsEnabled = true;
+  document.getElementById('notifConfig').style.display = 'block';
+  document.getElementById('notifToggleBtn').textContent = 'Disable';
+  clearInterval(notifInterval);
+  notifInterval = setInterval(() => {
+    // Re-check permission in case it was revoked
+    if (Notification.permission !== 'granted') { disableNotifications(); return; }
+    const hour = new Date().getHours();
+    if (hour < 8 || hour >= 22) return;
+    if (Math.random() < 0.3) {
+      const A = gN(0), B = gN(1);
+      new Notification('Spark ✦', { body: pick(NOTIF_TEASES[notifIntensity])(A, B) });
+    }
+  }, 30 * 60 * 1000);
+}
+
+function disableNotifications() {
+  notifsEnabled = false;
+  clearInterval(notifInterval); notifInterval = null;
+  document.getElementById('notifConfig').style.display = 'none';
+  document.getElementById('notifToggleBtn').textContent = 'Enable';
+}
+
+// ═══════════════════════════════════════════
+//  AMBUSH MODAL
+// ═══════════════════════════════════════════
+function setAmbushIntensity(level, el) {
+  ambushIntensity = level;
+  document.querySelectorAll('#ambushIntensityPills .int-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  renderAmbushList();
+}
+
+function openAmbushModal() { renderAmbushList(); document.getElementById('ambushModal').classList.add('open'); }
+function closeAmbushModal(e) {
+  if (e.target === document.getElementById('ambushModal'))
+    document.getElementById('ambushModal').classList.remove('open');
+}
+
+let ambushGenerating = false;
+
+function renderAmbushList() {
+  if (ambushGenerating) return;
+  const A = gN(0), B = gN(1), piA = 0, piB = 1;
+  const pool = AMBUSHES[ambushIntensity];
+  const shown = shuffle(pool).slice(0, 3);
+  const list = document.getElementById('ambushList'); list.innerHTML = '';
+  const shuffleBtn = document.querySelector('#ambushModal .btn-outline');
+
+  const key = getApiKey();
+
+  if (key) {
+    ambushGenerating = true;
+    if (shuffleBtn) { shuffleBtn.disabled = true; shuffleBtn.textContent = 'Writing…'; }
+    let done = 0;
+    shown.forEach(a => {
+      const card = document.createElement('div'); card.className = 'ambush-card';
+      const titleEl = document.createElement('div'); titleEl.className = 'ambush-card-title'; titleEl.textContent = a.title;
+      const textEl  = document.createElement('div'); textEl.className  = 'ambush-card-text';
+      card.appendChild(titleEl); card.appendChild(textEl); list.appendChild(card);
+
+      const ctx = buildSceneContext(piA, piB);
+      const intensityDesc = { light:'subtle and non-explicit — a physical gesture or look', moderate:'suggestive and loaded with intent', explicit:'direct and sexually explicit, naming body parts' }[ambushIntensity];
+      const system = `You are writing short intimate tease prompts for a couples app. Style: ${intensityDesc}. Use their names. 1–2 sentences max.\n\n${ctx}`;
+      // Strip HTML from static fallback to get concept text
+      const concept = a.fn(A, B, piA, piB).replace(/<[^>]+>/g, '');
+      const prompt  = `Write a "${esc(a.title)}" tease for ${esc(A)} to do to ${esc(B)} right now. Intensity: ${ambushIntensity}. Concept: ${concept}. Rewrite fresh and vivid. 1–2 sentences.`;
+      callClaudeStream(system, prompt, textEl, () => {
+        done++;
+        if (done === shown.length) {
+          ambushGenerating = false;
+          if (shuffleBtn) { shuffleBtn.disabled = false; shuffleBtn.textContent = '↻ Shuffle'; }
+        }
+      });
+    });
+  } else {
+    shown.forEach(a => {
+      const card = document.createElement('div'); card.className = 'ambush-card';
+      const titleEl = document.createElement('div'); titleEl.className = 'ambush-card-title'; titleEl.textContent = a.title;
+      const textEl  = document.createElement('div'); textEl.className  = 'ambush-card-text';
+      textEl.innerHTML = a.fn(A, B, piA, piB);
+      card.appendChild(titleEl); card.appendChild(textEl); list.appendChild(card);
+    });
+  }
+}
+
+// ═══════════════════════════════════════════
+//  SURVEY
+// ═══════════════════════════════════════════
+function showSurveyScreen(pi) {
+  surveyIdx = pi;
+  if (!kinkPrefs[pi] || Object.keys(kinkPrefs[pi]).length === 0) kinkPrefs[pi] = mkDefaultKinkPrefs();
+  document.getElementById('surveyTitle').textContent = `${gN(pi)}'s preferences`;
+  document.getElementById('surveySubtitle').textContent =
+    pi === 0 ? "Private — your partner won't see your answers" : `${gN(0)} is done. Now ${gN(1)}'s turn.`;
+  document.getElementById('progressFill').style.width = pi === 0 ? '10%' : '55%';
+  document.getElementById('surveyNextBtn').textContent = pi === 0 ? `Done — ${gN(1)}'s turn →` : 'See shared interests →';
+  rebuildSurvey();
+  showScreen('screenSurvey');
+  // Scroll after paint to avoid browser reset
+  requestAnimationFrame(() => window.scrollTo(0, 0));
+}
+
+function kinkBtnsHTML(id, cur) {
+  // Use data-value attributes for reliable value mapping
+  const states = [
+    { v:'fav',  cls:'k-fav',  lbl:'★', title:'Favourite'  },
+    { v:'like', cls:'k-like', lbl:'✓', title:'Like'       },
+    { v:'int',  cls:'k-int',  lbl:'~', title:'Interested' },
+    { v:'no',   cls:'k-no',   lbl:'✕', title:'No'         },
+    { v:'none', cls:'k-none', lbl:'—', title:'Not entered' },
+  ];
+  return states.map(s => {
+    const active = (s.v === 'none' ? cur === null : cur === s.v) ? ` ${s.cls}` : '';
+    const realVal = s.v === 'none' ? 'null' : s.v;
+    return `<button class="kink-btn${active}" data-id="${esc(id)}" data-value="${realVal}" title="${s.title}" aria-label="${s.title}" aria-pressed="${active ? 'true' : 'false'}">${s.lbl}</button>`;
+  }).join('');
+}
+
+function rebuildSurvey() {
+  const showAdv = document.getElementById('showAdvanced').checked;
+  const container = document.getElementById('surveyItems'); container.innerHTML = '';
+  const cats = showAdv ? KINK_CATS : KINK_CATS.filter(c => !c.advanced);
+
+  cats.forEach(cat => {
+    const group = document.createElement('div'); group.className = 'kink-group';
+    const header = document.createElement('div'); header.className = 'kink-group-header';
+    const titleEl = document.createElement('div'); titleEl.className = 'kink-group-title'; titleEl.textContent = cat.label;
+    const subEl   = document.createElement('div'); subEl.className   = 'kink-group-sub';   subEl.textContent   = cat.sub;
+    header.appendChild(titleEl); header.appendChild(subEl);
+    const itemsEl = document.createElement('div'); itemsEl.className = 'kink-items'; itemsEl.id = `kg_${cat.id}`;
+    group.appendChild(header); group.appendChild(itemsEl);
+    container.appendChild(group);
+
+    cat.items.forEach(item => {
+      if (item.split) {
+        const parentRow = document.createElement('div');
+        parentRow.className = 'kink-item kink-item-parent';
+        parentRow.style.cssText = 'background:var(--bg);border-color:transparent;padding:.4rem .9rem .1rem;box-shadow:none;';
+        const lbl = document.createElement('div');
+        lbl.className = 'kink-item-label';
+        lbl.style.cssText = 'font-weight:600;font-size:.82rem;';
+        lbl.textContent = item.label;
+        if (item.tip) {
+          const tip = document.createElement('span'); tip.className = 'kink-item-sub'; tip.textContent = item.tip;
+          lbl.appendChild(tip);
+        }
+        parentRow.appendChild(lbl); itemsEl.appendChild(parentRow);
+
+        ['_give','_receive'].forEach(suffix => {
+          const sid = item.id + suffix;
+          const cur = kinkPrefs[surveyIdx][sid] ?? null;
+          const row = document.createElement('div'); row.className = 'kink-item kink-item-sub-row'; row.id = `ki_${sid}`;
+          row.style.cssText = 'margin-left:1rem;border-left:2px solid var(--border);border-radius:0 var(--rs) var(--rs) 0;' + (suffix==='_receive'?'margin-top:-1px;':'');
+          const slbl = document.createElement('div'); slbl.className = 'kink-item-label'; slbl.style.cssText = 'font-size:.78rem;color:var(--ink2);';
+          slbl.textContent = suffix === '_give' ? 'Giving' : 'Receiving';
+          const btns = document.createElement('div'); btns.className = 'kink-btns';
+          btns.innerHTML = kinkBtnsHTML(sid, cur);
+          row.appendChild(slbl); row.appendChild(btns); itemsEl.appendChild(row);
+        });
+      } else {
+        const cur = kinkPrefs[surveyIdx][item.id] ?? null;
+        const row = document.createElement('div'); row.className = 'kink-item'; row.id = `ki_${item.id}`;
+        const lbl = document.createElement('div'); lbl.className = 'kink-item-label'; lbl.textContent = item.label;
+        if (item.tip) {
+          const tip = document.createElement('span'); tip.className = 'kink-item-sub'; tip.textContent = item.tip;
+          lbl.appendChild(tip);
+        }
+        const btns = document.createElement('div'); btns.className = 'kink-btns';
+        btns.innerHTML = kinkBtnsHTML(item.id, cur);
+        row.appendChild(lbl); row.appendChild(btns); itemsEl.appendChild(row);
+      }
+    });
+  });
+
+  // Single delegated event listener on container
+  container.onclick = e => {
+    const btn = e.target.closest('.kink-btn');
+    if (!btn) return;
+    const id  = btn.dataset.id;
+    const raw = btn.dataset.value;
+    const val = raw === 'null' ? null : raw;
+    setKink(id, val);
+  };
+}
+
+function setKink(id, val) {
+  kinkPrefs[surveyIdx][id] = val;
+  const row = document.getElementById(`ki_${id}`);
+  if (!row) return;
+  row.querySelectorAll('.kink-btn').forEach(btn => {
+    const bVal = btn.dataset.value === 'null' ? null : btn.dataset.value;
+    const active = bVal === val;
+    const cls = { fav:'k-fav', like:'k-like', int:'k-int', no:'k-no', null:'k-none' }[String(bVal)];
+    btn.className = 'kink-btn' + (active && cls ? ' ' + cls : '');
+    btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+  });
+}
+
+function surveyNext() {
+  if (surveyIdx === 0) showSurveyScreen(1);
+  else showMatches();
+}
+
+// ═══════════════════════════════════════════
+//  MATCHES
+// ═══════════════════════════════════════════
+function showMatches() {
+  const favM = [], likeM = [], intM = [];
+  const seen = new Set();
+
+  ALL_KINK_ITEMS.forEach(item => {
+    if (item.advanced) return;
+    const v0 = kinkPrefs[0][item.id] ?? 'like';
+    const v1 = kinkPrefs[1][item.id] ?? 'like';
+    if (v0 === 'no' || v1 === 'no') return;
+    const displayId    = item.base || item.id;
+    const displayLabel = item.base ? item.label.replace(/ — (Giving|Receiving)$/, '') : item.label;
+    if (seen.has(displayId)) return;
+    seen.add(displayId);
+    const tier = (v0==='fav'&&v1==='fav') ? 'fav' :
+                 (v0==='fav'||v1==='fav'||v0==='like'||v1==='like') ? 'like' : 'int';
+    const entry = { displayId, label: displayLabel, tier };
+    if (tier === 'fav')  favM.push(entry);
+    else if (tier === 'like') likeM.push(entry);
+    else intM.push(entry);
+  });
+
+  const content = document.getElementById('resultsContent'); content.innerHTML = '';
+
+  const makeSection = (items, color, title, countBg) => {
+    if (!items.length) return;
+    const sec = document.createElement('div'); sec.className = 'results-section';
+    const hdr = document.createElement('div'); hdr.className = 'results-section-header';
+    hdr.innerHTML = `<div class="results-section-dot" style="background:${color}"></div>
+      <div class="results-section-title">${esc(title)}</div>
+      <span class="results-section-count" style="background:${countBg};color:${color}">${items.length}</span>`;
+    const list = document.createElement('div'); list.className = 'match-list';
+    items.forEach(i => { const p = document.createElement('div'); p.className='match-pill'; p.textContent=i.label; list.appendChild(p); });
+    sec.appendChild(hdr); sec.appendChild(list); content.appendChild(sec);
+  };
+
+  if (!favM.length && !likeM.length && !intM.length) {
+    const msg = document.createElement('div'); msg.className='card';
+    msg.style.cssText='text-align:center;color:var(--muted);font-size:.85rem;line-height:1.6;';
+    msg.textContent='No overlapping interests found. Go back and update preferences.';
+    content.appendChild(msg);
+  } else {
+    makeSection(favM,  'var(--fav)',  'Both favourites','var(--fav-bg)');
+    makeSection(likeM, 'var(--sage)', 'Both enjoy',     'var(--sage-bg)');
+    makeSection(intM,  'var(--amber)','Worth exploring', 'var(--amber-bg)');
+  }
+  document.getElementById('progressFill').style.width = '100%';
+  showScreen('screenResults');
+}
+
+// ═══════════════════════════════════════════
+//  AI GENERATION
+// ═══════════════════════════════════════════
+
+function buildPrefsNarrative(pi) {
+  const name = gN(pi);
+  const g    = document.getElementById('gender' + (pi + 1))?.value || (pi === 0 ? 'male' : 'female');
+  const willing = willingAll();  // cache — avoids repeated DOM reads in loop
+  const favs = [], likes = [], nos = [];
+
+  ALL_KINK_ITEMS.forEach(item => {
+    if (item.advanced) return;
+    const r = kinkPrefs[pi]?.[item.id] ?? (item.advanced ? null : 'like');
+    if (!r) return;
+    const short = item.label.replace(/ — (Giving|Receiving)$/, t => t === ' — Giving' ? ' (giving)' : ' (receiving)');
+    if (r === 'fav')  favs.push(short);
+    else if (r === 'like' && !willing) likes.push(short);
+    else if (r === 'no')   nos.push(short);
+  });
+
+  const assets = ASSET_DEFS
+    .filter(a => body[pi]?.[a.id]?.on)
+    .map(a => `${a.label} (call it: "${body[pi][a.id].name}")`);
+
+  return [
+    `Name: ${name}`,
+    `Gender/body: ${g}`,
+    assets.length ? `Body parts to reference: ${assets.join(', ')}` : '',
+    favs.length   ? `Favourites: ${favs.slice(0, 12).join(', ')}` : '',
+    !willing && likes.length ? `Likes: ${likes.slice(0, 15).join(', ')}` : '',
+    nos.length    ? `Hard nos (NEVER include): ${nos.join(', ')}` : '',
+  ].filter(Boolean).join('\n');
+}
+
+function buildSceneContext(piA = currentPiA, piB = currentPiB) {
+  const pA = buildPrefsNarrative(piA);
+  const pB = buildPrefsNarrative(piB);
+  const propList = props.has('none') ? 'none' : [...props].join(', ');
+  return `COUPLE DETAILS
+==============
+Partner A (initiator / giver):
+${pA}
+
+Partner B (receiver):
+${pB}
+
+Props available: ${propList}
+
+WRITING RULES
+=============
+- Second-person directive style ("Alex, run your hand down...").
+- Use each partner's exact name throughout.
+- Use custom body-part names naturally mid-sentence: "take their cock into your mouth", "spank their ass".
+- Every scene MUST include at least one explicit physical act on a named body part.
+- Literary erotic tone — evocative, not clinical.
+- NEVER include anything from either partner's hard nos list.
+- No safety disclaimers or meta-commentary.
+- Length: 3–5 sentences for main scene; 2–4 for escalation.`.trim();
+}
+
+/** Stream Claude response into targetEl. Resolves when done. */
+async function callClaudeStream(systemPrompt, userPrompt, targetEl, onDone) {
+  const key = getApiKey();
+  if (!key) {
+    targetEl.innerHTML = '<span style="color:var(--blush);font-size:.85rem;">No API key — add one in Settings.</span>';
+    if (onDone) onDone('');
+    return;
+  }
+  // Allow proxy sentinel through without showing as error
+  const usingProxy = key === '__proxy__';
+
+  targetEl.innerHTML = '<span class="generating">Writing your scene…</span>';
+  let fullText = '';
+
+  // Only abort a previous stream if one is actually in flight, not this call itself
+  const prevController = streamController;
+  if (prevController) { try { prevController.abort(); } catch {} }
+  const myController = new AbortController();
+  streamController = myController;
+
+  try {
+    const endpoint = window._sparkProxyUrl;
+    if (!endpoint) {
+      targetEl.innerHTML = '<span style="color:var(--blush);font-size:.85rem;">No proxy URL set — add your Railway URL in Settings.</span>';
+      if (onDone) onDone('');
+      return;
+    }
+    const resp = await fetch(endpoint, {
+      method: 'POST',
+      signal: myController.signal,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(key !== '__proxy__' ? { 'x-api-key': key } : {}),
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-5',
+        max_tokens: 600,
+        stream: true,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: userPrompt }],
+      }),
+    });
+
+    if (!resp.ok) {
+      // Try to parse error body; fall back gracefully
+      let errMsg = 'Unknown error';
+      try {
+        const errBody = await resp.json();
+        errMsg = errBody?.error?.message || errMsg;
+      } catch {}
+      targetEl.innerHTML = `<span style="color:var(--blush);font-size:.85rem;">API error ${resp.status}: ${esc(errMsg)}</span>`;
+      if (onDone) onDone('');
+      return;
+    }
+
+    const reader = resp.body.getReader();
+    const decoder = new TextDecoder();
+    let buf = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buf += decoder.decode(value, { stream: true });
+      const lines = buf.split('\n');
+      buf = lines.pop() ?? '';
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        const raw = line.slice(6).trim();
+        if (raw === '[DONE]') break;
+        try {
+          const evt = JSON.parse(raw);
+          if (evt.type === 'content_block_delta' && evt.delta?.type === 'text_delta') {
+            fullText += evt.delta.text;
+          }
+        } catch { /* ignore malformed SSE chunks */ }
+      }
+    }
+
+    // Render once at end — not per-chunk
+    if (fullText) {
+      targetEl.innerHTML = formatNarrative(fullText);
+    } else {
+      targetEl.innerHTML = '<span style="color:var(--blush);font-size:.85rem;">No content returned — check your API key and try again.</span>';
+    }
+    if (onDone) onDone(fullText);
+
+  } catch (e) {
+    if (e.name === 'AbortError') {
+      // Intentional abort — silently clean up, don't show error
+      return;
+    }
+    const isCors = e.message?.includes('Failed to fetch') || e.message?.includes('NetworkError');
+    const hint   = isCors ? ' (Likely a CORS block — the Anthropic API requires a server-side proxy for browser use.)' : '';
+    targetEl.innerHTML = `<span style="color:var(--blush);font-size:.85rem;">Network error: ${esc(e.message)}.${hint}</span>`;
+    if (onDone) onDone('');
+  } finally {
+    // Clear our controller reference if it's still the active one
+    if (streamController === myController) streamController = null;
+  }
+}
+
+/** Format AI output: escape, highlight names and body terms.
+ *  Processes longest terms first to avoid nested replacement. */
+function formatNarrative(text) {
+  let html = text
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/\n/g,'<br>');
+
+  // Build sorted replacement map (longest first to avoid substring conflicts)
+  const replacements = [];
+  [gN(0), gN(1)].forEach(name => {
+    if (!name || name.startsWith('Partner')) return;
+    replacements.push({ term: name, cls: 'n-name' });
+  });
+  [0, 1].forEach(pi => {
+    ASSET_DEFS.forEach(a => {
+      const nm = body[pi]?.[a.id]?.name;
+      if (nm && nm.length >= 3) replacements.push({ term: nm, cls: 'n-body' });
+    });
+  });
+  // Sort longest first, deduplicate
+  const seen = new Set();
+  replacements
+    .sort((a, b) => b.term.length - a.term.length)
+    .filter(r => { if (seen.has(r.term.toLowerCase())) return false; seen.add(r.term.toLowerCase()); return true; })
+    .forEach(({ term, cls }) => {
+      const safe = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      html = html.replace(new RegExp(`\\b(${safe})\\b`, 'gi'), `<span class="${cls}">$1</span>`);
+    });
+
+  return html;
+}
+
+// ═══════════════════════════════════════════
+//  PLAY
+// ═══════════════════════════════════════════
+function goPlay() {
+  showScreen('screenPlay');
+  generateScene();
+}
+
+function generateScene() {
+  if (isGenerating) return;  // guard concurrent calls
+
+  // Try both role assignments, pick one that has available scenes
+  let piA = Math.random() < .5 ? 0 : 1;
+  let piB = 1 - piA;
+  let avScenes = SCENES.filter(s => sceneAvailForRoles(s, piA, piB));
+  if (!avScenes.length) { // try swapping
+    [piA, piB] = [piB, piA];
+    avScenes = SCENES.filter(s => sceneAvailForRoles(s, piA, piB));
+  }
+
+  const noOpts = document.getElementById('noOpts');
+  const card   = document.getElementById('sceneCard');
+
+  if (!avScenes.length) {
+    noOpts.style.display = 'block'; card.style.display = 'none'; return;
+  }
+  noOpts.style.display = 'none'; card.style.display = 'block';
+
+  currentPiA = piA; currentPiB = piB;
+  currentA   = gN(piA); currentB = gN(piB);
+  currentScene = pick(avScenes);
+  if (currentScene) delete currentScene._lastNarrative;
+  escalationRevealed = false;
+
+  const content = document.getElementById('sceneContent');
+  const narrativeEl = document.createElement('div');
+  narrativeEl.className = 'scene-narrative';
+  content.innerHTML = '';
+  const sceneBody = document.createElement('div'); sceneBody.className = 'scene-body';
+  const pill = document.createElement('span'); pill.className = 'scene-pill pill-spark'; pill.textContent = 'Tonight';
+  const titleEl = document.createElement('div'); titleEl.className = 'scene-title'; titleEl.textContent = currentScene.title;
+  sceneBody.appendChild(pill); sceneBody.appendChild(titleEl); sceneBody.appendChild(narrativeEl);
+  content.appendChild(sceneBody);
+
+  document.getElementById('escalationPanel').style.display = 'none';
+  resetTimer(300);
+  document.getElementById('timerPhaseLabel').textContent = 'Duration';
+  document.getElementById('timerSub').textContent = 'Minimum 5 minutes';
+
+  // Disable "New scene" while generating
+  isGenerating = true;
+  const newSceneBtn = document.getElementById('newSceneBtn');
+  if (newSceneBtn) { newSceneBtn.disabled = true; newSceneBtn.textContent = 'Writing…'; }
+
+  const likedKinks = currentScene.kinks
+    .map(k => ALL_KINK_ITEMS.find(i => i.id === k))
+    .filter(Boolean)
+    .map(i => i.label.replace(/ — (Giving|Receiving)$/, t => t === ' — Giving' ? ' (giving)' : ' (receiving)'))
+    .join(', ');
+
+  const ctx    = buildSceneContext(piA, piB);
+  const system = `You are a creative erotica writer for a couples intimacy app called Spark. Write vivid, literary, second-person directive scenes based on the couple's preferences.\n\n${ctx}`;
+  const prompt = `Write the main scene narrative.
+
+Scene concept: "${currentScene.title}"
+Focus activities: ${likedKinks || 'sensual touch and oral pleasure'}
+Giver / initiator: ${currentA}
+Receiver: ${currentB}
+
+3–5 sentences, second-person directive. Start immediately with ${currentA}'s name and an action. Include at least one explicit physical act on a named body part. Literary erotic tone. No heading. Just the scene text.`;
+
+  callClaudeStream(system, prompt, narrativeEl, (text) => {
+    if (text) currentScene._lastNarrative = text;
+    isGenerating = false;
+    const btn = document.getElementById('newSceneBtn');
+    if (btn) { btn.disabled = false; btn.textContent = 'New scene'; }
+  });
+}
+
+function revealEscalation() {
+  if (escalationRevealed) return;
+  escalationRevealed = true;
+
+  const panel       = document.getElementById('escalationPanel');
+  const escalEl     = document.getElementById('escalationText');
+  panel.style.display = 'block';
+  panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+  // Use whatever narrative is available (may be partial if stream was skipped early)
+  const prev = currentScene?._lastNarrative || currentScene?.title || '';
+  const ctx    = buildSceneContext(currentPiA, currentPiB);
+  const system = `You are a creative erotica writer for Spark. Continue an existing scene to its conclusion.\n\n${ctx}`;
+  const prompt = `The couple has been doing the following:
+
+"${prev}"
+
+Write the escalation / finish: 3–4 sentences continuing naturally to climax. Include aftercare or intimate closing. Use both names. Do not restate the setup — just continue forward.`;
+
+  callClaudeStream(system, prompt, escalEl, null);
+}
+
+// ═══════════════════════════════════════════
+//  TIMER
+// ═══════════════════════════════════════════
+function fmt(s) { return `${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`; }
+
+function setTimerBtns(state) {
+  const el = document.getElementById('timerBtns');
+  if (state === 'idle') {
+    el.innerHTML = `
+      <button class="t-btn t-go" onclick="startTimer()">Start</button>
+      <button class="t-btn" onclick="resetTimerBtn()">Reset</button>
+      <button class="t-btn" onclick="addTime(5)">+5 min</button>
+      <button class="t-btn t-skip" onclick="skipAhead()">Skip ahead</button>`;
+  } else if (state === 'running') {
+    el.innerHTML = `
+      <button class="t-btn t-go" onclick="startTimer()">Pause</button>
+      <button class="t-btn" onclick="resetTimerBtn()">Reset</button>
+      <button class="t-btn" onclick="addTime(5)">+5 min</button>
+      <button class="t-btn t-skip" onclick="skipAhead()">Skip ahead</button>`;
+  } else if (state === 'done') {
+    el.innerHTML = `
+      <button class="t-btn t-keep" onclick="keepGoing()">Keep going</button>
+      <button class="t-btn" onclick="generateScene()">New scene</button>`;
+  }
+}
+
+function updateTimerDisplay() {
+  const el = document.getElementById('timerDisplay'); if (!el) return;
+  el.textContent = fmt(remainSecs);
+  el.className = 'timer-num' + (remainSecs <= 30 && remainSecs > 0 ? ' warn' : '');
+}
+
+function onTimerDone() {
+  clearInterval(timerInterval); timerInterval = null; timerRunning = false;
+  document.getElementById('timerDisplay').textContent = 'Time';
+  document.getElementById('timerDisplay').className = 'timer-num done';
+  document.getElementById('timerSub').textContent = 'Timer complete';
+  setTimerBtns('done');
+}
+
+function keepGoing() {
+  revealEscalation();
+  resetTimer(600);
+  document.getElementById('timerPhaseLabel').textContent = 'Extended';
+  document.getElementById('timerSub').textContent = 'Take your time';
+  startTimer();
+}
+
+function skipAhead() {
+  clearInterval(timerInterval); timerInterval = null; timerRunning = false;
+  revealEscalation();
+  document.getElementById('timerDisplay').textContent = 'Skipped';
+  document.getElementById('timerDisplay').className = 'timer-num done';
+  document.getElementById('timerSub').textContent = 'Escalation unlocked';
+  setTimerBtns('done');
+}
+
+function resetTimer(main = 300) {
+  clearInterval(timerInterval); timerInterval = null; timerRunning = false;
+  totalSecs = main; remainSecs = main;
+  updateTimerDisplay();
+  setTimerBtns('idle');
+}
+function resetTimerBtn() { resetTimer(Math.max(totalSecs, 300)); }
+
+function startTimer() {
+  if (timerRunning) {
+    clearInterval(timerInterval); timerInterval = null; timerRunning = false;
+    setTimerBtns('idle'); return;
+  }
+  timerRunning = true;
+  setTimerBtns('running');
+  timerInterval = setInterval(() => {
+    if (remainSecs <= 0) { onTimerDone(); return; }
+    remainSecs--; updateTimerDisplay();
+  }, 1000);
+}
+
+function addTime(m) { totalSecs += m * 60; remainSecs += m * 60; updateTimerDisplay(); }
+
+
+
+// ═══════════════════════════════════════════
+//  PROXY DETECTION
+// ═══════════════════════════════════════════
+function onProxyUrlChange() {
+  const raw = document.getElementById('proxyUrl')?.value.trim() || '';
+  if (raw) localStorage.setItem('spark_proxy_url', raw);
+  else localStorage.removeItem('spark_proxy_url');
+}
+
+function setProxyStatus(state, message) {
+  const dot  = document.getElementById('proxyDot');
+  const text = document.getElementById('proxyText');
+  const colors = { ok:'var(--sage)', warn:'var(--amber)', err:'var(--blush)', none:'var(--faint)', checking:'var(--sky)' };
+  if (dot)  dot.style.background = colors[state] || colors.none;
+  if (text) text.textContent = message;
+}
+
+async function detectProxy() {
+  const field  = document.getElementById('proxyUrl');
+  const stored = localStorage.getItem('spark_proxy_url') || '';
+
+  // Populate field from storage if empty
+  if (field && !field.value && stored) field.value = stored;
+
+  const raw = (field?.value.trim() || stored).trim();
+  if (!raw) {
+    setProxyStatus('none', 'Enter your Railway proxy URL above');
+    return;
+  }
+
+  // Normalise: strip trailing /v1/messages or slash, then re-append
+  const base     = raw.replace(/\/v1\/messages\/?$/, '').replace(/\/$/, '');
+  const endpoint = base + '/v1/messages';
+
+  // Save normalised base (without /v1/messages) — we append it in callClaudeStream
+  window._sparkProxyUrl = endpoint;
+
+  setProxyStatus('checking', 'Connecting…');
+
+  try {
+    const probe = await fetch(endpoint, {
+      method: 'OPTIONS',
+      signal: AbortSignal.timeout(8000),
+    });
+
+    // Any response that isn't a network failure means the server is reachable.
+    // 204 = CORS preflight handled. 404/405 = server up but wrong path (URL error).
+    if (probe.status === 404 || probe.status === 405) {
+      setProxyStatus('err', `Proxy URL may be wrong — server replied ${probe.status}. Check the URL ends with /v1/messages`);
+      return;
+    }
+    if (probe.status >= 500) {
+      setProxyStatus('err', `Proxy server error (${probe.status}) — check Railway logs`);
+      return;
+    }
+
+    // Server is reachable. Now check if it has its own API key set.
+    // Send a keyless POST — 401 means it needs a key from the app, anything else means it has one.
+    let authHandled = false;
+    try {
+      const authProbe = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'anthropic-version': '2023-06-01' },
+        body: JSON.stringify({ model: 'claude-haiku-4-5', max_tokens: 1,
+          messages: [{ role: 'user', content: 'ping' }] }),
+        signal: AbortSignal.timeout(10000),
+      });
+      authHandled = authProbe.status !== 401;
+    } catch {}
+
+    window._sparkProxyAuthHandled = authHandled;
+
+    if (authHandled) {
+      setProxyStatus('ok', 'Connected — API key set in Railway ✓');
+    } else {
+      const hasKey = !!(document.getElementById('apiKey')?.value.trim() ||
+                        sessionStorage.getItem('spark_api_key') ||
+                        localStorage.getItem('spark_api_key'));
+      setProxyStatus(hasKey ? 'ok' : 'warn',
+        hasKey ? 'Connected — using API key from app ✓'
+               : 'Connected — enter your Anthropic API key below');
+    }
+
+  } catch (e) {
+    window._sparkProxyUrl = null;
+    window._sparkProxyAuthHandled = false;
+    if (e.name === 'TimeoutError' || e.name === 'AbortError') {
+      setProxyStatus('err', 'Timed out — is Railway deployed and the URL correct?');
+    } else {
+      // Log the real error to help debugging
+      console.error('Proxy probe failed:', e);
+      setProxyStatus('err', `Cannot reach proxy: ${e.message}`);
+    }
+  }
+}
+
+detectProxy();
+
+// ═══════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════
+onWillingToggle();
+updateTimerDisplay();
+setTimerBtns('idle');
+</script>
+</body>
+</html>

@@ -1,10 +1,24 @@
 const http  = require('http');
 const https = require('https');
+const fs    = require('fs');
+const path  = require('path');
 
-// Railway injects PORT automatically — fallback to 3001 for local use
 const PORT = process.env.PORT || 3001;
 
+// Serve the Spark app HTML
+const HTML_PATH = path.join(__dirname, 'index.html');
+const HTML = fs.readFileSync(HTML_PATH, 'utf8');
+
 const server = http.createServer((req, res) => {
+
+  // ── Serve the app ──────────────────────────────────────────────────────
+  if (req.method === 'GET' && (req.url === '/' || req.url === '/index.html')) {
+    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+    res.end(HTML);
+    return;
+  }
+
+  // ── CORS headers for all API routes ───────────────────────────────────
   res.setHeader('Access-Control-Allow-Origin',  '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers',
@@ -14,7 +28,7 @@ const server = http.createServer((req, res) => {
   if (req.method !== 'POST')    { res.writeHead(405); res.end('Method not allowed'); return; }
   if (req.url !== '/v1/messages') { res.writeHead(404); res.end('Not found'); return; }
 
-  // Key: env var (set in Railway dashboard) takes priority, then app header
+  // ── Proxy to Anthropic ─────────────────────────────────────────────────
   const apiKey = process.env.ANTHROPIC_API_KEY || req.headers['x-api-key'] || '';
   if (!apiKey) {
     res.writeHead(401, { 'Content-Type': 'application/json' });
@@ -57,7 +71,6 @@ const server = http.createServer((req, res) => {
   });
 });
 
-// Must bind 0.0.0.0 on Railway (not 127.0.0.1)
 server.listen(PORT, '0.0.0.0', () => {
-  console.log(`Spark proxy listening on port ${PORT}`);
+  console.log(`Spark running on port ${PORT}`);
 });
