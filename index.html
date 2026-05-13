@@ -1130,18 +1130,20 @@ document.getElementById('rememberKey')?.addEventListener('change', () => {
 
   // Proxy URL — if served from Railway (/v1/messages is on same domain), use relative URL.
   // Otherwise restore from localStorage.
+  // Clear stale /api/proxy value left over from old Netlify attempts
+  const _raw = localStorage.getItem('spark_proxy_url') || '';
+  if (_raw === '/api/proxy' || _raw === '/api/proxy/v1/messages') {
+    localStorage.removeItem('spark_proxy_url');
+  }
   const savedProxy = localStorage.getItem('spark_proxy_url') || '';
   const proxyField = document.getElementById('proxyUrl');
-  const isHosted   = window.location.protocol === 'https:' || window.location.hostname !== 'localhost';
-  if (isHosted && !savedProxy) {
-    // Served over HTTP(S) — proxy is on same domain
-    window._sparkProxyUrl = '/v1/messages';
-    if (proxyField) proxyField.value = '';
-    if (proxyField) proxyField.placeholder = 'Using ' + window.location.hostname + '/v1/messages';
-  } else if (savedProxy) {
+  if (savedProxy) {
     if (proxyField) proxyField.value = savedProxy;
-    const base = savedProxy.replace(/\/v1\/messages\/?$/, '').replace(/\/$/, '');
-    window._sparkProxyUrl = base + '/v1/messages';
+    window._sparkProxyUrl = normaliseProxyUrl(savedProxy);
+  } else if (window.location.protocol === 'https:' && window.location.hostname !== 'localhost') {
+    // Served from Railway — proxy is on same origin
+    window._sparkProxyUrl = '/v1/messages';
+    if (proxyField) proxyField.placeholder = 'Auto: ' + window.location.hostname + '/v1/messages';
   }
 })();
 
@@ -1795,10 +1797,27 @@ function addTime(m) { totalSecs += m * 60; remainSecs += m * 60; updateTimerDisp
 // ═══════════════════════════════════════════
 //  PROXY DETECTION
 // ═══════════════════════════════════════════
+function normaliseProxyUrl(raw) {
+  if (!raw || !raw.trim()) return '';
+  let s = raw.trim();
+  // Strip the /v1/messages suffix if present — we always append it ourselves
+  s = s.replace(/\/v1\/messages\/?$/, '').replace(/\/$/, '');
+  // Must start with https:// — prepend if missing
+  if (!s.startsWith('http://') && !s.startsWith('https://') && !s.startsWith('/')) {
+    s = 'https://' + s;
+  }
+  return s + '/v1/messages';
+}
+
 function onProxyUrlChange() {
   const raw = document.getElementById('proxyUrl')?.value.trim() || '';
-  if (raw) localStorage.setItem('spark_proxy_url', raw);
-  else localStorage.removeItem('spark_proxy_url');
+  if (raw) {
+    // Save the raw value; normaliseProxyUrl fixes it at use time
+    localStorage.setItem('spark_proxy_url', raw);
+  } else {
+    localStorage.removeItem('spark_proxy_url');
+    window._sparkProxyUrl = null;
+  }
 }
 
 function setProxyStatus(state, message) {
@@ -1822,11 +1841,11 @@ async function detectProxy() {
     return;
   }
 
-  // Normalise: strip trailing /v1/messages or slash, then re-append
-  const base     = raw.replace(/\/v1\/messages\/?$/, '').replace(/\/$/, '');
-  const endpoint = base + '/v1/messages';
-
-  // Save normalised base (without /v1/messages) — we append it in callClaudeStream
+  const endpoint = normaliseProxyUrl(raw);
+  if (!endpoint) {
+    setProxyStatus('err', 'Invalid URL — paste your full Railway URL');
+    return;
+  }
   window._sparkProxyUrl = endpoint;
 
   setProxyStatus('checking', 'Connecting…');
