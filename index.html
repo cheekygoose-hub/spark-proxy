@@ -30,6 +30,102 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 .wordmark .dot{color:var(--blush)}
 .tagline{font-size:.8rem;color:var(--muted);margin-top:.35rem;font-weight:300}
 
+/* ONBOARDING */
+.onboard-screen{display:flex;flex-direction:column;min-height:80vh;padding:1rem 0}
+.onboard-slides{flex:1;position:relative;overflow:hidden}
+.onboard-slide{display:none;text-align:center;padding:1rem 0 2rem;animation:rise .35s ease forwards}
+.onboard-slide.active{display:block}
+.onboard-icon{font-size:3.5rem;margin-bottom:1.2rem;display:block}
+.onboard-title{font-family:'DM Serif Display',serif;font-size:1.8rem;font-weight:400;
+  color:var(--ink);margin-bottom:.75rem;line-height:1.2}
+.onboard-body{font-size:.9rem;color:var(--ink2);line-height:1.65;max-width:400px;margin:0 auto}
+.onboard-body strong{color:var(--ink);font-weight:600}
+.onboard-dots{display:flex;justify-content:center;gap:.5rem;margin:1.5rem 0}
+.onboard-dot{width:8px;height:8px;border-radius:50%;background:var(--faint);
+  transition:all .2s;cursor:pointer}
+.onboard-dot.active{background:var(--ink);width:20px;border-radius:4px}
+.onboard-nav{display:flex;gap:.75rem;margin-top:auto}
+.onboard-nav .btn{flex:1}
+.onboard-skip{background:none;border:none;color:var(--muted);font-family:'DM Sans',sans-serif;
+  font-size:.8rem;cursor:pointer;padding:.5rem;text-align:center;display:block;width:100%;
+  margin-top:.5rem}
+
+/* AI SETUP — hidden by default, expandable */
+.ai-setup-collapsed{display:flex;align-items:center;justify-content:space-between;
+  padding:.75rem 1rem;background:var(--card);border:1px solid var(--border);
+  border-radius:var(--rs);cursor:pointer;margin-bottom:.75rem;box-shadow:var(--sh)}
+.ai-setup-collapsed-left{display:flex;align-items:center;gap:.6rem}
+.ai-setup-status-dot{width:8px;height:8px;border-radius:50%;background:var(--faint);
+  flex-shrink:0;transition:background .3s}
+.ai-setup-collapsed-text{font-size:.82rem;font-weight:500;color:var(--ink2)}
+.ai-setup-collapsed-sub{font-size:.68rem;color:var(--muted);display:block;margin-top:.05rem}
+.ai-setup-chevron{font-size:.75rem;color:var(--muted);transition:transform .2s}
+.ai-setup-chevron.open{transform:rotate(180deg)}
+.ai-setup-panel{display:none;margin-bottom:.75rem}
+.ai-setup-panel.open{display:block}
+
+/* HOME — connection warning banner */
+.home-warn{background:var(--amber-bg);border:1px solid var(--amber-mid);
+  border-radius:var(--rs);padding:.7rem 1rem;margin-bottom:1rem;
+  display:none;align-items:center;gap:.6rem;font-size:.78rem;color:var(--amber)}
+.home-warn.visible{display:flex}
+.home-warn-icon{font-size:1rem;flex-shrink:0}
+.home-warn button{margin-left:auto;background:var(--amber);border:none;border-radius:6px;
+  color:#fff;font-family:'DM Sans',sans-serif;font-size:.7rem;font-weight:600;
+  padding:.25rem .6rem;cursor:pointer;white-space:nowrap}
+
+/* HEADER — compact on play screen */
+.header-compact header{margin-bottom:1rem}
+.header-compact .wordmark{font-size:1.6rem}
+.header-compact .tagline{display:none}
+
+/* PROGRESS LABEL */
+.survey-progress-label{font-size:.72rem;color:var(--muted);text-align:right;margin-bottom:.3rem}
+
+/* CATEGORY SELECT ALL */
+.cat-select-all{background:none;border:none;font-size:.65rem;color:var(--sky);
+  cursor:pointer;font-family:'DM Sans',sans-serif;padding:.15rem .4rem;
+  font-weight:600;letter-spacing:.04em}
+
+/* TIMER STICKY */
+.timer-sticky-wrap{position:sticky;bottom:0;background:var(--bg);
+  border-top:1px solid var(--border);padding:.75rem 0 .5rem;margin-top:.5rem;z-index:20}
+
+/* PHASE ORIENTATION */
+.phase-hint{font-size:.75rem;color:var(--muted);text-align:center;
+  margin-bottom:1rem;line-height:1.5;padding:.5rem .75rem;
+  background:var(--card);border-radius:var(--rs);border:1px solid var(--border)}
+
+/* LOADING INDICATOR in prep */
+.prep-loading{display:flex;align-items:center;gap:.75rem;padding:.5rem 0}
+.prep-loading-dots span{display:inline-block;width:6px;height:6px;border-radius:50%;
+  background:var(--sage);margin:0 2px;animation:bounce .8s infinite}
+.prep-loading-dots span:nth-child(2){animation-delay:.15s}
+.prep-loading-dots span:nth-child(3){animation-delay:.3s}
+@keyframes bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-6px)}}
+.prep-loading-text{font-size:.78rem;color:var(--muted)}
+
+/* ESCALATION back link */
+.escalation-back{font-size:.7rem;color:var(--muted);cursor:pointer;background:none;
+  border:none;font-family:'DM Sans',sans-serif;padding:.25rem 0;display:block;
+  margin-bottom:.75rem}
+.escalation-back:hover{color:var(--ink2)}
+
+/* BODY ASSET rename — available for all genders */
+.asset-rename-link{font-size:.65rem;color:var(--sky);cursor:pointer;background:none;
+  border:none;font-family:'DM Sans',sans-serif;padding:0;margin-left:.5rem}
+
+/* PHOTO TOGGLE inside scene card */
+.scene-photo-toggle{display:flex;align-items:center;gap:.5rem;padding:.6rem .9rem;
+  border-top:1px solid var(--border);background:var(--bg);cursor:pointer;
+  transition:background .15s}
+.scene-photo-toggle:hover{background:#fff}
+.scene-photo-toggle-label{font-size:.75rem;color:var(--muted);flex:1}
+.scene-photo-toggle.active .scene-photo-toggle-label{color:var(--ink2)}
+.scene-photo-check{width:16px;height:16px;border-radius:4px;border:1.5px solid var(--border);
+  background:transparent;display:flex;align-items:center;justify-content:center;font-size:.65rem}
+.scene-photo-toggle.active .scene-photo-check{background:var(--ink);border-color:var(--ink);color:#fff}
+
 .screen{display:none}
 .screen.active{display:block;animation:rise .3s cubic-bezier(.16,1,.3,1) forwards}
 @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
@@ -214,6 +310,7 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 
 /* Timer */
 .timer-area{background:var(--bg);border-top:1px solid var(--border);padding:1.4rem 1.6rem;text-align:center}
+.timer-inner{text-align:center;background:var(--bg)}
 .timer-tag{font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.25rem}
 .timer-num{font-family:'DM Serif Display',serif;font-size:3.4rem;font-weight:400;
   letter-spacing:-.02em;line-height:1;color:var(--ink);margin-bottom:.3rem;transition:color .3s}
@@ -256,7 +353,103 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
   outline:none;resize:none;transition:border-color .18s;line-height:1.45}
 .mood-note:focus{border-color:var(--sky);box-shadow:0 0 0 3px var(--sky-bg)}
 .mood-note::placeholder{color:var(--faint)}
+.photo-toggle{display:flex;align-items:center;gap:.55rem;padding:.6rem .85rem;
+  background:var(--bg);border:1.5px solid var(--border);border-radius:var(--rs);
+  cursor:pointer;transition:all .18s;user-select:none;margin-top:.5rem}
+.photo-toggle:hover{border-color:var(--border2)}
+.photo-toggle.active{background:#1a1714;border-color:#1a1714}
+.photo-toggle-icon{font-size:1rem;flex-shrink:0}
+.photo-toggle-text{flex:1}
+.photo-toggle-title{font-size:.78rem;font-weight:600;color:var(--ink2);display:block}
+.photo-toggle.active .photo-toggle-title{color:#fff}
+.photo-toggle-sub{font-size:.65rem;color:var(--muted);display:block;margin-top:.1rem}
+.photo-toggle.active .photo-toggle-sub{color:rgba(255,255,255,.5)}
+.photo-check{width:18px;height:18px;border-radius:5px;border:1.5px solid var(--border);
+  background:transparent;flex-shrink:0;display:flex;align-items:center;
+  justify-content:center;font-size:.72rem;transition:all .15s}
+.photo-toggle.active .photo-check{background:#fff;border-color:#fff;color:#1a1714}
 
+/* HOME SCREEN */
+.home-screen{display:flex;flex-direction:column;justify-content:center;min-height:60vh;gap:1rem;padding:1rem 0}
+.home-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:2.2rem 1.5rem;border-radius:var(--r);border:none;font-family:'DM Sans',sans-serif;
+  cursor:pointer;transition:all .2s;text-align:center;width:100%;box-shadow:var(--shm)}
+.home-btn-icon{font-size:2rem;margin-bottom:.6rem;display:block}
+.home-btn-title{font-family:'DM Serif Display',serif;font-size:1.5rem;font-weight:400;display:block;margin-bottom:.3rem}
+.home-btn-sub{font-size:.75rem;font-weight:400;display:block;opacity:.7;line-height:1.4}
+.home-btn-tease{background:var(--ink);color:#fff}
+.home-btn-tease:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(26,23,20,.25)}
+.home-btn-scene{background:var(--blush);color:#fff}
+.home-btn-scene:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(196,121,106,.35)}
+.home-settings-link{text-align:center;margin-top:.5rem}
+.home-settings-link button{background:none;border:none;color:var(--muted);font-size:.78rem;
+  font-family:'DM Sans',sans-serif;cursor:pointer;padding:.5rem}
+.home-settings-link button:hover{color:var(--ink2)}
+
+/* SCENE PRE-SCREEN */
+.prescreen-hero{text-align:center;margin-bottom:2rem}
+.prescreen-hero h2{font-family:'DM Serif Display',serif;font-size:2rem;font-weight:400;color:var(--ink)}
+.prescreen-hero p{font-size:.85rem;color:var(--muted);margin-top:.4rem}
+.intensity-btn{display:flex;align-items:center;gap:1rem;width:100%;padding:1.2rem 1.4rem;
+  border-radius:var(--r);border:2px solid var(--border);background:var(--card);
+  font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .2s;text-align:left;
+  margin-bottom:.65rem;box-shadow:var(--sh)}
+.intensity-btn:hover{transform:translateY(-1px);box-shadow:var(--shm)}
+.intensity-btn.sel-light{border-color:var(--sage);background:var(--sage-bg)}
+.intensity-btn.sel-medium{border-color:var(--amber);background:var(--amber-bg)}
+.intensity-btn.sel-hard{border-color:var(--blush);background:var(--blush-bg)}
+.intensity-btn-icon{font-size:1.6rem;flex-shrink:0}
+.intensity-btn-body{flex:1}
+.intensity-btn-title{font-family:'DM Serif Display',serif;font-size:1.1rem;font-weight:400;
+  color:var(--ink);display:block;margin-bottom:.15rem}
+.intensity-btn-sub{font-size:.72rem;color:var(--muted);display:block;line-height:1.4}
+.intensity-btn.sel-light .intensity-btn-title{color:var(--sage)}
+.intensity-btn.sel-medium .intensity-btn-title{color:var(--amber)}
+.intensity-btn.sel-hard .intensity-btn-title{color:var(--blush)}
+.focus-input{width:100%;background:var(--bg);border:1.5px solid var(--border);
+  border-radius:var(--rs);color:var(--ink);font-family:'DM Sans',sans-serif;
+  font-size:.95rem;padding:.85rem 1rem;outline:none;resize:none;transition:border-color .18s;
+  line-height:1.5;margin-top:1rem}
+.focus-input:focus{border-color:var(--blush);box-shadow:0 0 0 3px var(--blush-bg)}
+.focus-input::placeholder{color:var(--faint)}
+.prescreen-go{margin-top:1.2rem}
+
+/* SURVEY REDESIGN — CarnalCalibration style */
+.survey-level-bar{display:flex;gap:.4rem;margin-bottom:1.2rem}
+.survey-level-btn{flex:1;padding:.55rem .4rem;border:1.5px solid var(--border);border-radius:var(--rs);
+  background:var(--bg);text-align:center;cursor:pointer;transition:all .18s;
+  font-family:'DM Sans',sans-serif;user-select:none;font-size:.75rem;font-weight:600;color:var(--muted)}
+.survey-level-btn:hover{border-color:var(--border2);color:var(--ink2)}
+.survey-level-btn.slb-active{background:var(--ink);border-color:var(--ink);color:#fff}
+.survey-cats{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:1.2rem}
+.survey-cat-chip{padding:.7rem .6rem;border:1.5px solid var(--border);border-radius:var(--rs);
+  background:var(--bg);text-align:center;cursor:pointer;transition:all .18s;
+  font-family:'DM Sans',sans-serif;user-select:none}
+.survey-cat-chip:hover{border-color:var(--border2);background:#fff}
+.survey-cat-chip.scc-active{background:var(--blush-bg);border-color:var(--blush-mid)}
+.survey-cat-chip-icon{font-size:1.2rem;display:block;margin-bottom:.25rem}
+.survey-cat-chip-name{font-size:.72rem;font-weight:600;color:var(--ink2);display:block}
+.survey-cat-chip.scc-active .survey-cat-chip-name{color:var(--blush)}
+.survey-section-label{font-size:.65rem;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted);margin:1rem 0 .5rem;
+  padding-bottom:.4rem;border-bottom:1px solid var(--border)}
+
+/* PREP PANEL */
+.prep-panel{background:var(--sage-bg);border-top:2px solid var(--sage-mid);
+  padding:1.4rem 1.6rem}
+.prep-label{font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--sage);margin-bottom:.4rem}
+.prep-text{font-family:'DM Serif Display',serif;font-size:clamp(1rem,3vw,1.15rem);
+  font-weight:400;line-height:1.7;color:var(--ink)}
+.prep-text .n-name{color:var(--blush);font-style:italic}
+.reveal-btn{width:100%;margin-top:1rem;padding:.85rem;border:none;border-radius:var(--rs);
+  background:var(--ink);color:#fff;font-family:'DM Sans',sans-serif;font-size:.95rem;
+  font-weight:600;cursor:pointer;transition:all .18s;display:flex;align-items:center;
+  justify-content:center;gap:.5rem}
+.reveal-btn:hover{opacity:.88}
+.reveal-btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* Notif */
 /* Notif */
 .notif-section{background:var(--sky-bg);border:1px solid var(--sky);border-radius:var(--rs);
   padding:1rem 1.2rem;margin-bottom:.75rem}
@@ -298,8 +491,61 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
   <div class="tagline">Connection by design</div>
 </header>
 
+<!-- ════════ ONBOARDING ════════ -->
+<div class="screen active" id="screenOnboard">
+  <div class="onboard-screen">
+    <div class="onboard-slides">
+
+      <div class="onboard-slide active" id="slide0">
+        <span class="onboard-icon">✦</span>
+        <div class="onboard-title">Welcome to Spark.</div>
+        <div class="onboard-body">
+          An intimacy app that writes personalised scenes for you and your partner.<br><br>
+          <strong>Tap a mood. Spark writes the rest.</strong><br><br>
+          Three phases: get ready together, the scene, then how it finishes.
+          Each generated fresh for you, every time.
+        </div>
+      </div>
+
+      <div class="onboard-slide" id="slide1">
+        <span class="onboard-icon">🔥</span>
+        <div class="onboard-title">Two buttons. That's it.</div>
+        <div class="onboard-body">
+          <strong>Tease Them</strong> — a quick 30-second interruption for right now.<br><br>
+          <strong>We're in the Mood</strong> — pick how you're feeling tonight, and Spark writes a complete scene with preparation, the act, and how it finishes.<br><br>
+          Optional: tell Spark anything you're specifically in the mood for.
+        </div>
+      </div>
+
+      <div class="onboard-slide" id="slide2">
+        <span class="onboard-icon">⚙</span>
+        <div class="onboard-title">Powered by AI</div>
+        <div class="onboard-body">
+          Spark uses Anthropic's AI to generate scenes. You'll need a free API key from
+          <strong>console.anthropic.com</strong> and a proxy server to make calls from your phone.<br><br>
+          The quickest setup is Railway — full instructions are in Settings once you're in.<br><br>
+          <strong>You can explore the app without this — just tap through.</strong>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="onboard-dots">
+      <div class="onboard-dot active" onclick="goSlide(0)"></div>
+      <div class="onboard-dot" onclick="goSlide(1)"></div>
+      <div class="onboard-dot" onclick="goSlide(2)"></div>
+    </div>
+
+    <div class="onboard-nav">
+      <button class="btn btn-outline" id="onboardBack" onclick="onboardPrev()" style="display:none;">← Back</button>
+      <button class="btn btn-ink" id="onboardNext" onclick="onboardNext()">Next →</button>
+    </div>
+    <button class="onboard-skip" onclick="completeOnboard()">Skip — go straight in</button>
+  </div>
+</div>
+
 <!-- ════════ SETUP ════════ -->
-<div class="screen active" id="screenSetup">
+<div class="screen" id="screenSetup">
   <div class="return-banner" id="returnBanner">
     <span>⏱ A scene is in progress</span>
     <button onclick="showScreen('screenPlay');window.scrollTo(0,0)">Return to scene</button>
@@ -321,49 +567,54 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
     </div>
   </div>
 
-  <!-- AI Setup -->
-  <div class="card" style="margin-bottom:.75rem;">
-    <div class="label" style="margin-bottom:.5rem;">AI Connection</div>
-
-    <div id="proxyStatus" style="display:flex;align-items:center;gap:.5rem;padding:.55rem .75rem;
-      border-radius:var(--rs);margin-bottom:.75rem;font-size:.78rem;font-weight:500;
-      background:var(--bg);border:1.5px solid var(--border);">
-      <span id="proxyDot" style="width:8px;height:8px;border-radius:50%;background:var(--faint);flex-shrink:0;transition:background .3s;"></span>
-      <span id="proxyText" style="flex:1;">Not connected</span>
-      <button onclick="detectProxy()" style="background:none;border:none;font-size:.68rem;color:var(--sky);cursor:pointer;font-family:inherit;padding:.1rem .3rem;">Retry</button>
-    </div>
-
-    <div class="field" style="margin-bottom:.85rem;">
-      <label for="proxyUrl" style="font-size:.7rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);">Proxy URL</label>
-      <input id="proxyUrl" type="url"
-        placeholder="Leave blank — auto-configured when hosted on Railway"
-        style="font-size:.82rem;font-family:monospace;"
-        autocomplete="off" spellcheck="false"
-        oninput="onProxyUrlChange()" onblur="detectProxy()">
-      <div style="font-size:.68rem;color:var(--muted);margin-top:.35rem;line-height:1.5;">
-        Your Railway deployment URL ending in <code style="background:var(--border);padding:.1rem .25rem;border-radius:3px;">/v1/messages</code>
+  <!-- AI Setup — collapsible -->
+  <div class="ai-setup-collapsed" onclick="toggleAiPanel()">
+    <div class="ai-setup-collapsed-left">
+      <span class="ai-setup-status-dot" id="proxyDot"></span>
+      <div>
+        <span class="ai-setup-collapsed-text">AI Connection</span>
+        <span class="ai-setup-collapsed-sub" id="proxyText">Not connected — tap to configure</span>
       </div>
     </div>
-
-    <div class="field" style="margin-bottom:.5rem;">
-      <label for="apiKey" style="font-size:.7rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);">Anthropic API Key</label>
-      <input id="apiKey" type="password" placeholder="sk-ant-…"
-        style="font-family:monospace;font-size:.82rem;letter-spacing:.04em;"
-        autocomplete="off" spellcheck="false"
-        oninput="onApiKeyChange()">
-      <div style="font-size:.68rem;color:var(--muted);margin-top:.35rem;line-height:1.5;">
-        From <a href="https://console.anthropic.com/settings/keys" target="_blank" style="color:var(--sky);">console.anthropic.com</a> — or set in Railway Variables to leave this blank.
+    <span class="ai-setup-chevron" id="aiChevron">▾</span>
+  </div>
+  <div class="ai-setup-panel" id="aiSetupPanel">
+    <div class="card" style="margin-bottom:.5rem;">
+      <div class="field" style="margin-bottom:.85rem;">
+        <label for="proxyUrl" style="font-size:.7rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);">Proxy URL</label>
+        <input id="proxyUrl" type="url"
+          placeholder="https://your-proxy.up.railway.app/v1/messages"
+          style="font-size:.82rem;font-family:monospace;"
+          autocomplete="off" spellcheck="false"
+          oninput="onProxyUrlChange()" onblur="detectProxy()">
+        <div style="font-size:.68rem;color:var(--muted);margin-top:.35rem;line-height:1.5;">
+          Deploy <code style="background:var(--border);padding:.1rem .25rem;border-radius:3px;">proxy.js</code> on Railway, paste URL here.
+          <a href="https://railway.app" target="_blank" style="color:var(--sky);">Open Railway →</a>
+        </div>
+      </div>
+      <div class="field" style="margin-bottom:.5rem;">
+        <label for="apiKey" style="font-size:.7rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);">Anthropic API Key</label>
+        <input id="apiKey" type="password" placeholder="sk-ant-…"
+          style="font-family:monospace;font-size:.82rem;letter-spacing:.04em;"
+          autocomplete="off" spellcheck="false"
+          oninput="onApiKeyChange()">
+        <div style="font-size:.68rem;color:var(--muted);margin-top:.35rem;line-height:1.5;">
+          <a href="https://console.anthropic.com/settings/keys" target="_blank" style="color:var(--sky);">console.anthropic.com</a> → API Keys.
+          Or set <code style="background:var(--border);padding:.1rem .25rem;border-radius:3px;">ANTHROPIC_API_KEY</code> in Railway Variables.
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-top:.75rem;">
+        <div style="display:flex;align-items:center;gap:.5rem;">
+          <input type="checkbox" id="rememberKey" style="width:15px;height:15px;cursor:pointer;accent-color:var(--sage);">
+          <label for="rememberKey" style="font-size:.72rem;color:var(--muted);cursor:pointer;">Remember on this device</label>
+        </div>
+        <button onclick="clearStoredKey()" style="background:none;border:none;font-size:.7rem;color:var(--blush);cursor:pointer;padding:.2rem .4rem;font-family:inherit;">Clear</button>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:.75rem;">
+        <div id="apiKeyStatus" style="font-size:.7rem;color:var(--muted);"></div>
+        <button onclick="detectProxy()" id="retryProxyBtn" style="display:none;background:none;border:none;font-size:.68rem;color:var(--sky);cursor:pointer;font-family:inherit;padding:.1rem .3rem;">Retry</button>
       </div>
     </div>
-
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-top:.75rem;">
-      <div style="display:flex;align-items:center;gap:.5rem;">
-        <input type="checkbox" id="rememberKey" style="width:15px;height:15px;cursor:pointer;accent-color:var(--sage);">
-        <label for="rememberKey" style="font-size:.72rem;color:var(--muted);cursor:pointer;">Remember on this device</label>
-      </div>
-      <button onclick="clearStoredKey()" style="background:none;border:none;font-size:.7rem;color:var(--blush);cursor:pointer;padding:.2rem .4rem;font-family:inherit;">Clear</button>
-    </div>
-    <div id="apiKeyStatus" style="font-size:.7rem;margin-top:.4rem;color:var(--muted);"></div>
   </div>
 
   <div class="card">
@@ -419,7 +670,82 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 
   <div class="btn-stack" style="margin-top:1rem;">
     <button class="btn btn-ink" id="setupContinueBtn" onclick="setupContinue()">Continue</button>
-    <button class="tease-btn" onclick="openAmbushModal()"><span>⚡</span>Quick tease — right now</button>
+  </div>
+</div>
+
+<!-- ════════ HOME ════════ -->
+<div class="screen" id="screenHome">
+  <div class="return-banner" id="returnBannerHome">
+    <span>⏱ A scene is in progress</span>
+    <button onclick="showScreen('screenPlay');window.scrollTo(0,0)">Return to scene</button>
+  </div>
+  <div class="home-warn" id="homeWarn">
+    <span class="home-warn-icon">⚠</span>
+    <span id="homeWarnText">AI not connected — scenes won't generate</span>
+    <button onclick="goSetup();toggleAiPanel(true)">Fix</button>
+  </div>
+  <div class="home-screen">
+    <button class="home-btn home-btn-tease" onclick="openAmbushModal()">
+      <span class="home-btn-icon">⚡</span>
+      <span class="home-btn-title">Tease Them</span>
+      <span class="home-btn-sub">A quick interruption — right now</span>
+    </button>
+    <button class="home-btn home-btn-scene" onclick="showScreen('screenPreScene');window.scrollTo(0,0)">
+      <span class="home-btn-icon">🔥</span>
+      <span class="home-btn-title">We're in the Mood</span>
+      <span class="home-btn-sub">Generate a scene for tonight</span>
+    </button>
+  </div>
+  <div class="home-settings-link">
+    <button onclick="goSetup()">⚙ Settings &amp; preferences</button>
+  </div>
+</div>
+
+<!-- ════════ SCENE PRE-SCREEN ════════ -->
+<div class="screen" id="screenPreScene">
+  <div class="prescreen-hero">
+    <h2>How are you feeling?</h2>
+    <p>Set the mood — Spark writes your scene around it</p>
+  </div>
+
+  <!-- Phase hint -->
+  <div class="phase-hint">Spark writes three phases: get ready, the scene, then the finish. Tap We're ready when you're set.</div>
+
+  <button class="intensity-btn" id="intensityLight" onclick="selectIntensity('light')">
+    <span class="intensity-btn-icon">🌸</span>
+    <div class="intensity-btn-body">
+      <span class="intensity-btn-title">We're Taking It Slow</span>
+      <span class="intensity-btn-sub">Sensual and intimate — touching, kissing, slow exploration.</span>
+    </div>
+  </button>
+
+  <button class="intensity-btn" id="intensityMedium" onclick="selectIntensity('medium')">
+    <span class="intensity-btn-icon">🔥</span>
+    <div class="intensity-btn-body">
+      <span class="intensity-btn-title">We're Feeling It</span>
+      <span class="intensity-btn-sub">Direct and sexual — oral, manual, penetration. Specific and physical.</span>
+    </div>
+  </button>
+
+  <button class="intensity-btn" id="intensityHard" onclick="selectIntensity('hard')">
+    <span class="intensity-btn-icon">⚡</span>
+    <div class="intensity-btn-body">
+      <span class="intensity-btn-title">We're Really Going For It</span>
+      <span class="intensity-btn-sub">Fully explicit, graphic, no holding back.</span>
+    </div>
+  </button>
+
+  <textarea class="focus-input" id="sceneNoteInput" rows="3"
+    placeholder="Is there anything you're really in the mood for? e.g. anal, cumplay, use the blindfold, she's in charge…"></textarea>
+
+  <div class="prescreen-go">
+    <button class="btn btn-ink" id="goSceneBtn" onclick="goPlay()" disabled
+      style="opacity:.4;transition:opacity .2s;">
+      Generate our scene →
+    </button>
+    <div style="text-align:center;margin-top:.5rem;">
+      <button class="btn-ghost" onclick="showScreen('screenHome')">← Back</button>
+    </div>
   </div>
 </div>
 
@@ -427,12 +753,34 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 <div class="screen" id="screenSurvey">
   <div class="survey-hero">
     <h2 id="surveyTitle">Your preferences</h2>
-    <p id="surveySubtitle">Private. Your partner won't see individual answers.</p>
+    <p id="surveySubtitle">Private. Your partner won't see your answers.</p>
   </div>
+  <div class="survey-progress-label" id="surveyProgressLabel">Partner 1 of 2</div>
   <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:10%"></div></div>
 
-  <!-- Legend — sticky so it's always visible while scrolling -->
-  <div class="kink-legend-sticky">
+  <!-- Level filter -->
+  <div class="label">Experience level — filters what you see</div>
+  <div class="survey-level-bar">
+    <div class="survey-level-btn slb-active" id="slb-beginner" onclick="setSurveyLevel('beginner')">Beginner</div>
+    <div class="survey-level-btn" id="slb-intermediate" onclick="setSurveyLevel('intermediate')">Intermediate</div>
+    <div class="survey-level-btn" id="slb-advanced" onclick="setSurveyLevel('advanced')">Advanced</div>
+  </div>
+
+  <!-- Category filter chips -->
+  <div class="label">Categories — tap to show / hide</div>
+  <div class="survey-cats" id="surveyCatChips"></div>
+
+  <!-- Advanced toggle -->
+  <div class="advanced-banner" id="advancedBanner" style="margin-top:.5rem;">
+    <p>Show extreme categories (blood, scat, etc.)</p>
+    <label class="toggle-switch" style="flex-shrink:0;">
+      <input type="checkbox" id="showAdvanced" onchange="rebuildSurvey()">
+      <span class="toggle-slider"></span>
+    </label>
+  </div>
+
+  <!-- Legend sticky -->
+  <div class="kink-legend-sticky" style="margin-top:.75rem;">
     <div class="kink-legend">
       <div class="legend-item"><div class="legend-dot" style="background:var(--fav)"></div>★ Fav</div>
       <div class="legend-item"><div class="legend-dot" style="background:var(--sage)"></div>✓ Like</div>
@@ -442,18 +790,9 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
     </div>
   </div>
 
-  <!-- Advanced toggle -->
-  <div class="advanced-banner" id="advancedBanner">
-    <p>Advanced categories (blood, scat, etc.) are hidden by default.</p>
-    <label class="toggle-switch" style="flex-shrink:0;">
-      <input type="checkbox" id="showAdvanced" onchange="rebuildSurvey()">
-      <span class="toggle-slider"></span>
-    </label>
-  </div>
-
   <div id="surveyItems"></div>
 
-  <div class="btn-stack">
+  <div class="btn-stack" style="margin-top:1rem;">
     <button class="btn btn-ink" id="surveyNextBtn" onclick="surveyNext()">Continue →</button>
     <div style="text-align:center;margin-top:.4rem;"><button class="btn-ghost" onclick="goSetup()">← Back</button></div>
   </div>
@@ -471,50 +810,47 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 
 <!-- ════════ PLAY ════════ -->
 <div class="screen" id="screenPlay">
-  <div class="no-opts" id="noOpts">No matching scenes found. Go back to settings and adjust preferences.</div>
+  <div class="no-opts" id="noOpts">No matching scenes found. Adjust your preferences in Settings.</div>
   <div class="scene-card" id="sceneCard">
-    <div id="sceneContent"></div>
+    <!-- Phase 1: Preparation (revealed first) -->
+    <div class="prep-panel" id="prepPanel" style="display:none;">
+      <div class="prep-label">Get ready</div>
+      <div class="prep-text" id="prepText"></div>
+      <button class="reveal-btn" id="revealSceneBtn" onclick="revealScene()">
+        <span>We're ready →</span>
+      </button>
+    </div>
+    <!-- Phase 2: Scene (revealed on tap) -->
+    <div id="sceneContent" style="display:none;"></div>
+    <!-- Phase 3: Escalation (revealed on timer end or skip) -->
     <div class="escalation-panel" id="escalationPanel">
+      <button class="escalation-back" onclick="document.getElementById('sceneContent').scrollIntoView({behavior:'smooth'})">↑ Back to scene</button>
       <div class="escalation-label">Keep going →</div>
       <div class="escalation-title" id="escalationTitle">How it finishes</div>
       <div class="escalation-text" id="escalationText"></div>
     </div>
-    <div class="timer-area">
-      <div class="timer-tag" id="timerPhaseLabel">Duration</div>
-      <div class="timer-num" id="timerDisplay">05:00</div>
-      <div class="timer-hint" id="timerSub">Minimum 5 minutes</div>
-      <div class="timer-btns" id="timerBtns"></div>
+    <!-- Photo toggle inside card -->
+    <div class="scene-photo-toggle" id="scenePhotoToggle" onclick="togglePhoto()" style="display:none;">
+      <span>📸</span>
+      <span class="scene-photo-toggle-label">Suggest a photo moment</span>
+      <div class="scene-photo-check" id="photoCheck"></div>
     </div>
-  </div>
-  <!-- Mood + note modifier -->
-  <div style="margin-bottom:.65rem;">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.4rem;">
-      <div class="label" style="margin:0;">Tonight's mood</div>
-      <button onclick="clearMood()" style="background:none;border:none;font-size:.68rem;color:var(--muted);cursor:pointer;font-family:inherit;padding:.1rem .3rem;">Clear</button>
-    </div>
-    <div class="mood-bar">
-      <div class="mood-chip" id="moodLight" onclick="setMood('light')">
-        <span class="mood-chip-icon">🌸</span>
-        <span class="mood-chip-name">Light</span>
-      </div>
-      <div class="mood-chip" id="moodMedium" onclick="setMood('medium')">
-        <span class="mood-chip-icon">🔥</span>
-        <span class="mood-chip-name">Medium</span>
-      </div>
-      <div class="mood-chip" id="moodHard" onclick="setMood('hard')">
-        <span class="mood-chip-icon">⚡</span>
-        <span class="mood-chip-name">Hardcore</span>
+    <div class="timer-sticky-wrap" id="timerArea" style="display:none;">
+      <div class="timer-inner" style="padding:1rem 1.6rem;">
+        <div class="timer-tag" id="timerPhaseLabel">Duration</div>
+        <div class="timer-num" id="timerDisplay">05:00</div>
+        <div class="timer-hint" id="timerSub">Minimum 5 minutes</div>
+        <div class="timer-btns" id="timerBtns"></div>
       </div>
     </div>
-    <textarea class="mood-note" id="moodNote" rows="2"
-      placeholder="Anything specific today? e.g. I want cum play, focus on oral, use the blindfold…"
-      oninput="onMoodNoteChange()"></textarea>
   </div>
 
-  <div class="play-row">
-    <button class="btn btn-ink" id="newSceneBtn" onclick="generateScene()" style="flex:2;">New scene</button>
+  <div class="play-row" style="margin-top:.75rem;">
+    <button class="btn btn-ink" id="newSceneBtn" onclick="goPreScene()" style="flex:2;">New scene</button>
     <button class="btn btn-outline" onclick="goSetup()" style="flex:1;">Settings</button>
   </div>
+
+
 
 </div>
 
@@ -538,6 +874,50 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 </div>
 
 <script>
+// ═══════════════════════════════════════════
+//  ONBOARDING
+// ═══════════════════════════════════════════
+let currentSlide = 0;
+const TOTAL_SLIDES = 3;
+
+function goSlide(n) {
+  document.querySelectorAll('.onboard-slide').forEach((s,i) => s.classList.toggle('active', i===n));
+  document.querySelectorAll('.onboard-dot').forEach((d,i) => d.classList.toggle('active', i===n));
+  currentSlide = n;
+  document.getElementById('onboardBack').style.display = n===0 ? 'none' : '';
+  document.getElementById('onboardNext').textContent = n===TOTAL_SLIDES-1 ? "Let's go →" : 'Next →';
+}
+function onboardNext() {
+  if (currentSlide < TOTAL_SLIDES-1) goSlide(currentSlide+1);
+  else completeOnboard();
+}
+function onboardPrev() { if (currentSlide > 0) goSlide(currentSlide-1); }
+function completeOnboard() {
+  localStorage.setItem('spark_onboarded','1');
+  document.body.classList.remove('header-compact');
+  showScreen('screenSetup');
+  // If names already saved, skip to home
+  const n1 = localStorage.getItem('spark_name1');
+  const n2 = localStorage.getItem('spark_name2');
+  if (n1||n2) {
+    if (n1) { const f=document.getElementById('name1'); if(f) f.value=n1; }
+    if (n2) { const f=document.getElementById('name2'); if(f) f.value=n2; }
+    goHome();
+  }
+}
+
+// ═══════════════════════════════════════════
+//  AI PANEL TOGGLE
+// ═══════════════════════════════════════════
+function toggleAiPanel(forceOpen) {
+  const panel   = document.getElementById('aiSetupPanel');
+  const chevron = document.getElementById('aiChevron');
+  const isOpen  = panel.classList.contains('open');
+  const open    = forceOpen !== undefined ? forceOpen : !isOpen;
+  panel.classList.toggle('open', open);
+  if (chevron) chevron.classList.toggle('open', open);
+}
+
 // ═══════════════════════════════════════════
 //  UTILITIES
 // ═══════════════════════════════════════════
@@ -596,7 +976,8 @@ function buildAssetGrid(partnerIdx) {
     const nm = body[partnerIdx][a.id].name;
     const row = document.createElement('div');
     row.className = 'asset-row';
-    // Use data attributes and textContent to avoid XSS in names
+    row.style.cssText = 'display:flex;align-items:center;gap:.5rem;padding:.25rem 0;';
+
     const toggle = document.createElement('div');
     toggle.className = 'asset-toggle' + (checked ? ' checked' : '');
     toggle.id = `at${partnerIdx}_${a.id}`;
@@ -608,20 +989,32 @@ function buildAssetGrid(partnerIdx) {
     toggle.onkeydown = e => { if (e.key==='Enter'||e.key===' ') { e.preventDefault(); toggleAsset(partnerIdx, a.id); } };
 
     const lbl = document.createElement('div');
-    lbl.className = 'asset-row-label';
+    lbl.className = 'asset-row-label'; lbl.style.flex = '1';
     lbl.textContent = a.label;
+
+    // Rename link — always visible, toggles input
+    const renameLink = document.createElement('button');
+    renameLink.className = 'asset-rename-link';
+    renameLink.textContent = nm !== a.defaultName ? `"${nm}"` : 'rename';
+    renameLink.onclick = () => {
+      inp.style.display = inp.style.display === 'none' ? '' : 'none';
+      if (inp.style.display !== 'none') inp.focus();
+    };
 
     const inp = document.createElement('input');
     inp.className = 'asset-name-input';
     inp.type = 'text';
-    inp.placeholder = 'Call it…';
+    inp.placeholder = a.defaultName;
     inp.id = `an${partnerIdx}_${a.id}`;
-    inp.value = checked ? nm : '';
-    inp.disabled = !checked;
-    inp.style.opacity = checked ? '' : '.4';
-    inp.oninput = () => updateAssetName(partnerIdx, a.id, inp.value);
+    inp.value = nm;
+    inp.style.display = 'none'; // collapsed by default
+    inp.style.width = '90px';
+    inp.oninput = () => {
+      updateAssetName(partnerIdx, a.id, inp.value);
+      renameLink.textContent = inp.value && inp.value !== a.defaultName ? `"${inp.value}"` : 'rename';
+    };
 
-    row.appendChild(toggle); row.appendChild(lbl); row.appendChild(inp);
+    row.appendChild(toggle); row.appendChild(lbl); row.appendChild(renameLink); row.appendChild(inp);
     grid.appendChild(row);
   });
 }
@@ -676,6 +1069,24 @@ function genital(pi) {
 // ═══════════════════════════════════════════
 //  KINK SURVEY DATA (exact KinkSheet)
 // ═══════════════════════════════════════════
+
+// Category display metadata for the chip selector
+const CAT_META = {
+  intimacy:    { icon:'💝', label:'Intimacy',     level:'beginner' },
+  clothing:    { icon:'👗', label:'Clothing',     level:'beginner' },
+  groupings:   { icon:'👥', label:'Groups',       level:'intermediate' },
+  general:     { icon:'🔥', label:'Oral & Manual',level:'beginner' },
+  penetration: { icon:'💫', label:'Penetration',  level:'beginner' },
+  positions:   { icon:'🛏', label:'Positions',    level:'beginner' },
+  butt:        { icon:'🍑', label:'Anal',         level:'intermediate' },
+  restrictive: { icon:'⛓', label:'Bondage',      level:'intermediate' },
+  toys:        { icon:'🎮', label:'Toys',         level:'beginner' },
+  domination:  { icon:'👑', label:'Dom / Sub',    level:'intermediate' },
+  scenarios:   { icon:'🎭', label:'Roleplay',     level:'intermediate' },
+  touch:       { icon:'✋', label:'Sensation',    level:'beginner' },
+  pain:        { icon:'⚡', label:'Impact & Pain',level:'intermediate' },
+};
+const LEVEL_ORDER = { beginner:1, intermediate:2, advanced:3 };
 
 const KINK_CATS = [
   { id:'intimacy', label:'Intimacy', sub:'General', advanced:false, items:[
@@ -986,9 +1397,14 @@ let ambushIntensity= 'light', notifIntensity = 'light';
 let notifsEnabled  = false,   notifInterval  = null;
 let timerInterval  = null,    timerRunning   = false, totalSecs = 300, remainSecs = 300;
 let escalationRevealed = false;
-let isGenerating   = false;          // guards concurrent AI calls
-let currentMood    = null;            // 'light' | 'medium' | 'hard' | null
-let currentNote    = '';              // free-text user request for today
+let isGenerating   = false;
+let currentMood    = null;            // 'light' | 'medium' | 'hard' | null — set on pre-screen
+let currentNote    = '';              // free-text focus from pre-screen
+let photoSuggest   = false;
+// Survey filters
+let surveyLevel    = 'beginner';      // 'beginner' | 'intermediate' | 'advanced'
+let activeSurveyCats = new Set();     // which category IDs are shown
+// Phased scene reveal — tracked by DOM element visibility
 let streamController = null;         // AbortController for active stream
 
 function gN(i) {
@@ -1026,14 +1442,13 @@ function showScreen(id) {
   window.scrollTo(0, 0);
 }
 function goSetup() {
-  // Reset generating state so returning to play always works
   isGenerating = false;
   if (streamController) { try { streamController.abort(); } catch {} streamController = null; }
   const btn = document.getElementById('newSceneBtn');
   if (btn) { btn.disabled = false; btn.textContent = 'New scene'; }
-  // Show "return to scene" banner if a scene is active
   const banner = document.getElementById('returnBanner');
   if (banner) banner.style.display = currentScene ? 'flex' : 'none';
+  document.body.classList.remove('header-compact');
   showScreen('screenSetup');
 }
 
@@ -1085,13 +1500,76 @@ function onWillingToggle() {
 }
 
 function setupContinue() {
+  const n1 = document.getElementById('name1')?.value.trim();
+  const n2 = document.getElementById('name2')?.value.trim();
+  if (!n1 || !n2) {
+    // Soft prompt — highlight empty fields
+    ['name1','name2'].forEach(id => {
+      const f = document.getElementById(id);
+      if (f && !f.value.trim()) {
+        f.style.borderColor = 'var(--blush)';
+        f.placeholder = 'A name is needed…';
+        f.addEventListener('input', () => { f.style.borderColor = ''; }, { once:true });
+      }
+    });
+    return;
+  }
   if (willingAll()) {
     kinkPrefs = [mkDefaultKinkPrefs(), mkDefaultKinkPrefs()];
-    goPlay();
-  } else {
-    surveyIdx = 0;
-    showSurveyScreen(0);
   }
+  goHome();
+}
+
+function goHome() {
+  const banner = document.getElementById('returnBannerHome');
+  if (banner) banner.style.display = currentScene ? 'flex' : 'none';
+  // Update warning banner visibility
+  const connected = window._sparkProxyUrl && !isGenerating;
+  const hwarn = document.getElementById('homeWarn');
+  if (hwarn) hwarn.classList.toggle('visible', !connected);
+  document.body.classList.remove('header-compact');
+  showScreen('screenHome');
+}
+
+function goPreScene(resetMood) {
+  // If resetMood not requested, keep current intensity
+  if (resetMood) {
+    currentMood = null;
+    ['Light','Medium','Hard'].forEach(l => {
+      const el = document.getElementById('intensity'+l);
+      if (el) el.className = 'intensity-btn';
+    });
+    const ni = document.getElementById('sceneNoteInput');
+    if (ni) ni.value = '';
+    currentNote = '';
+    const gb = document.getElementById('goSceneBtn');
+    if (gb) { gb.disabled = true; gb.style.opacity = '.4'; }
+  } else {
+    // Keep mood selected — restore visual state of intensity buttons
+    const gb = document.getElementById('goSceneBtn');
+    if (gb && currentMood) { gb.disabled = false; gb.style.opacity = '1'; }
+    if (currentMood) selectIntensity(currentMood);  // re-highlight the active button
+  }
+  document.body.classList.remove('header-compact');
+  showScreen('screenPreScene');
+}
+
+function selectIntensity(level) {
+  currentMood = level;
+  const map = { light:'Light', medium:'Medium', hard:'Hard' };
+  Object.keys(map).forEach(k => {
+    const el = document.getElementById('intensity' + map[k]);
+    if (!el) return;
+    el.className = 'intensity-btn' + (k === level ? ' sel-' + k : '');
+  });
+  // Enable generate button
+  const gb = document.getElementById('goSceneBtn');
+  if (gb) { gb.disabled = false; gb.style.opacity = '1'; }
+  // Read the note
+  const ni = document.getElementById('sceneNoteInput');
+  currentNote = ni ? ni.value.trim() : '';
+  // Haptic feedback
+  if (navigator.vibrate) navigator.vibrate(40);
 }
 
 // ═══════════════════════════════════════════
@@ -1284,6 +1762,11 @@ function renderAmbushList() {
       });
     });
   } else {
+    // Show notice that these are static (AI not connected)
+    const notice = document.createElement('div');
+    notice.style.cssText = 'font-size:.7rem;color:var(--muted);margin-bottom:.6rem;padding:.4rem .75rem;background:var(--bg);border-radius:var(--rs);border:1px solid var(--border);';
+    notice.textContent = 'AI not connected — showing preset teases';
+    list.appendChild(notice);
     shown.forEach(a => {
       const card = document.createElement('div'); card.className = 'ambush-card';
       const titleEl = document.createElement('div'); titleEl.className = 'ambush-card-title'; titleEl.textContent = a.title;
@@ -1304,11 +1787,59 @@ function showSurveyScreen(pi) {
   document.getElementById('surveySubtitle').textContent =
     pi === 0 ? "Private — your partner won't see your answers" : `${gN(0)} is done. Now ${gN(1)}'s turn.`;
   document.getElementById('progressFill').style.width = pi === 0 ? '10%' : '55%';
+  const progressLabel = document.getElementById('surveyProgressLabel');
+  if (progressLabel) progressLabel.textContent = pi === 0 ? 'Partner 1 of 2 — your answers are private' : `${gN(0)} done. Now ${gN(1)}'s turn.`;
   document.getElementById('surveyNextBtn').textContent = pi === 0 ? `Done — ${gN(1)}'s turn →` : 'See shared interests →';
+  // Init all non-advanced cats as active on first load
+  if (activeSurveyCats.size === 0) {
+    KINK_CATS.filter(c => !c.advanced).forEach(c => {
+      const meta = CAT_META[c.id];
+      if (!meta || LEVEL_ORDER[meta.level] <= LEVEL_ORDER[surveyLevel]) {
+        activeSurveyCats.add(c.id);
+      }
+    });
+  }
   rebuildSurvey();
   showScreen('screenSurvey');
   // Scroll after paint to avoid browser reset
   requestAnimationFrame(() => window.scrollTo(0, 0));
+}
+
+// ── Survey level + category filters ──────────────────────────────────
+function setSurveyLevel(level) {
+  surveyLevel = level;
+  ['beginner','intermediate','advanced'].forEach(l => {
+    const el = document.getElementById('slb-' + l);
+    if (el) el.classList.toggle('slb-active', l === level);
+  });
+  rebuildSurvey();
+}
+
+function buildSurveyCatChips() {
+  const container = document.getElementById('surveyCatChips');
+  if (!container) return;
+  container.innerHTML = '';
+  // Show only non-advanced cats that are at or below current level
+  const showAdv = document.getElementById('showAdvanced')?.checked;
+  const cats = KINK_CATS.filter(c => !c.advanced || showAdv);
+  cats.filter(c => !c.advanced).forEach(cat => {
+    const meta = CAT_META[cat.id];
+    if (!meta) return;
+    // Hide cats above current level
+    if (LEVEL_ORDER[meta.level] > LEVEL_ORDER[surveyLevel]) return;
+    if (!activeSurveyCats.has(cat.id)) activeSurveyCats.add(cat.id); // default on
+    const chip = document.createElement('div');
+    chip.className = 'survey-cat-chip' + (activeSurveyCats.has(cat.id) ? ' scc-active' : '');
+    chip.dataset.id = cat.id;
+    chip.innerHTML = '<span class="survey-cat-chip-icon">' + (meta.icon||'●') + '</span><span class="survey-cat-chip-name">' + meta.label + '</span>';
+    chip.onclick = () => {
+      if (activeSurveyCats.has(cat.id)) activeSurveyCats.delete(cat.id);
+      else activeSurveyCats.add(cat.id);
+      chip.classList.toggle('scc-active', activeSurveyCats.has(cat.id));
+      rebuildSurvey();
+    };
+    container.appendChild(chip);
+  });
 }
 
 function kinkBtnsHTML(id, cur) {
@@ -1330,14 +1861,41 @@ function kinkBtnsHTML(id, cur) {
 function rebuildSurvey() {
   const showAdv = document.getElementById('showAdvanced').checked;
   const container = document.getElementById('surveyItems'); container.innerHTML = '';
-  const cats = showAdv ? KINK_CATS : KINK_CATS.filter(c => !c.advanced);
+  buildSurveyCatChips();
+  // Filter by: advanced toggle + active cats + experience level
+  const cats = KINK_CATS.filter(c => {
+    if (c.advanced && !showAdv) return false;
+    if (!c.advanced && !activeSurveyCats.has(c.id)) return false;
+    const meta = CAT_META[c.id];
+    if (meta && LEVEL_ORDER[meta.level] > LEVEL_ORDER[surveyLevel]) return false;
+    return true;
+  });
 
   cats.forEach(cat => {
     const group = document.createElement('div'); group.className = 'kink-group';
     const header = document.createElement('div'); header.className = 'kink-group-header';
     const titleEl = document.createElement('div'); titleEl.className = 'kink-group-title'; titleEl.textContent = cat.label;
     const subEl   = document.createElement('div'); subEl.className   = 'kink-group-sub';   subEl.textContent   = cat.sub;
-    header.appendChild(titleEl); header.appendChild(subEl);
+    // Select-all button
+    const selAll = document.createElement('button'); selAll.className = 'cat-select-all';
+    selAll.textContent = 'Like all';
+    selAll.onclick = (e) => {
+      e.stopPropagation();
+      cat.items.forEach(item => {
+        const ids = item.split ? [item.id+'_give', item.id+'_receive'] : [item.id];
+        ids.forEach(id => {
+          kinkPrefs[surveyIdx][id] = 'like';
+          const row = document.getElementById('ki_' + id);
+          if (row) row.querySelectorAll('.kink-btn').forEach(btn => {
+            const bVal = btn.dataset.value === 'null' ? null : btn.dataset.value;
+            const active = bVal === 'like';
+            btn.className = 'kink-btn' + (active ? ' k-like' : '');
+            btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+          });
+        });
+      });
+    };
+    header.appendChild(titleEl); header.appendChild(subEl); header.appendChild(selAll);
     const itemsEl = document.createElement('div'); itemsEl.className = 'kink-items'; itemsEl.id = `kg_${cat.id}`;
     group.appendChild(header); group.appendChild(itemsEl);
     container.appendChild(group);
@@ -1467,29 +2025,32 @@ function showMatches() {
 // ═══════════════════════════════════════════
 //  MOOD & NOTE
 // ═══════════════════════════════════════════
-function setMood(level) {
-  currentMood = (currentMood === level) ? null : level; // toggle off if tapping same
-  updateMoodUI();
-}
+// setMood removed — handled by selectIntensity/pre-screen
 
 function clearMood() {
-  currentMood = null;
-  currentNote = '';
-  const noteEl = document.getElementById('moodNote');
-  if (noteEl) noteEl.value = '';
+  currentMood  = null;
+  currentNote  = '';
+  photoSuggest = false;
+  const tog   = document.getElementById('scenePhotoToggle');
+  const check = document.getElementById('photoCheck');
+  // Also clear the pre-scene note input if present
+  const noteInput = document.getElementById('sceneNoteInput');
+  if (noteInput) noteInput.value = '';
+  if (tog)   tog.classList.remove('active');
+  if (check) check.textContent = '';
   updateMoodUI();
 }
 
-function onMoodNoteChange() {
-  currentNote = document.getElementById('moodNote')?.value.trim() || '';
-}
+// onMoodNoteChange removed — handled by selectIntensity/pre-screen
 
-function updateMoodUI() {
-  ['light','medium','hard'].forEach(level => {
-    const el = document.getElementById('mood' + level.charAt(0).toUpperCase() + level.slice(1));
-    if (!el) return;
-    el.className = 'mood-chip' + (currentMood === level ? ' active-' + level : '');
-  });
+// updateMoodUI removed — handled by selectIntensity/pre-screen
+
+function togglePhoto() {
+  photoSuggest = !photoSuggest;
+  const tog   = document.getElementById('scenePhotoToggle');
+  const check = document.getElementById('photoCheck');
+  if (tog)   tog.classList.toggle('active', photoSuggest);
+  if (check) check.textContent = photoSuggest ? '✓' : '';
 }
 
 // ═══════════════════════════════════════════
@@ -1555,7 +2116,8 @@ WRITING RULES
 SESSION MODIFIERS (override defaults)
 =====================================\${currentMood ? `
 - Intensity today: \${({light:'Light — keep it sensual and non-graphic. No explicit penetration or graphic acts.',medium:'Medium — direct and sexual but not extreme.',hard:'Hardcore — fully explicit, graphic, nothing held back.'  })[currentMood]}` : ''}\${currentNote ? `
-- Specific request from the couple: "\${currentNote}" — incorporate this directly.` : ''}` : ''}\`.trim();
+- Specific request from the couple: "\${currentNote}" — incorporate this directly.` : ''}${photoSuggest ? `
+- Photo moment: at one natural point in the scene or escalation, add a single line starting with exactly "📸 Photo:" followed by a specific, practical instruction — what to capture, who is in frame, what angle. One sentence only.` : ''}` : ''}\`.trim();
 }
 
 /** Stream Claude response into targetEl. Resolves when done. */
@@ -1695,57 +2257,69 @@ function formatNarrative(text) {
 // ═══════════════════════════════════════════
 //  PLAY
 // ═══════════════════════════════════════════
+function revealScene() {
+  const sceneContent   = document.getElementById('sceneContent');
+  const timerArea      = document.getElementById('timerArea');
+  const revealBtn      = document.getElementById('revealSceneBtn');
+  const photoToggleEl  = document.getElementById('scenePhotoToggle');
+  if (sceneContent)  sceneContent.style.display = 'block';
+  if (timerArea)     timerArea.style.display = 'block';
+  if (revealBtn)     revealBtn.style.display = 'none';
+  if (photoToggleEl) photoToggleEl.style.display = 'flex';
+  // Scroll scene into view
+  setTimeout(() => sceneContent?.scrollIntoView({ behavior:'smooth', block:'start' }), 100);
+}
+
 function goPlay() {
   showScreen('screenPlay');
+  document.body.classList.add('header-compact');
   generateScene();
 }
 
-function generateScene() {
-  if (isGenerating) return;  // guard concurrent calls
+function generateScene() { generateFullScene(); }
 
-  // Try both role assignments, pick one that has available scenes
+function generateFullScene() {
+  if (isGenerating) return;
+
   let piA = Math.random() < .5 ? 0 : 1;
   let piB = 1 - piA;
   let avScenes = SCENES.filter(s => sceneAvailForRoles(s, piA, piB));
-  if (!avScenes.length) { // try swapping
-    [piA, piB] = [piB, piA];
-    avScenes = SCENES.filter(s => sceneAvailForRoles(s, piA, piB));
-  }
+  if (!avScenes.length) { [piA, piB] = [piB, piA]; avScenes = SCENES.filter(s => sceneAvailForRoles(s, piA, piB)); }
 
   const noOpts = document.getElementById('noOpts');
   const card   = document.getElementById('sceneCard');
-
-  if (!avScenes.length) {
-    noOpts.style.display = 'block'; card.style.display = 'none'; return;
-  }
+  if (!avScenes.length) { noOpts.style.display='block'; card.style.display='none'; return; }
   noOpts.style.display = 'none'; card.style.display = 'block';
 
   currentPiA = piA; currentPiB = piB;
-  currentA   = gN(piA); currentB = gN(piB);
+  currentA = gN(piA); currentB = gN(piB);
   currentScene = pick(avScenes);
   if (currentScene) delete currentScene._lastNarrative;
   escalationRevealed = false;
 
-  const content = document.getElementById('sceneContent');
-  const narrativeEl = document.createElement('div');
-  narrativeEl.className = 'scene-narrative';
-  content.innerHTML = '';
-  const sceneBody = document.createElement('div'); sceneBody.className = 'scene-body';
-  const pill = document.createElement('span'); pill.className = 'scene-pill pill-spark'; pill.textContent = 'Tonight';
-  const titleEl = document.createElement('div'); titleEl.className = 'scene-title'; titleEl.textContent = currentScene.title;
-  sceneBody.appendChild(pill); sceneBody.appendChild(titleEl); sceneBody.appendChild(narrativeEl);
-  content.appendChild(sceneBody);
+  // Show prep panel, hide rest
+  const prepPanel    = document.getElementById('prepPanel');
+  const prepText     = document.getElementById('prepText');
+  const sceneContent = document.getElementById('sceneContent');
+  const timerArea    = document.getElementById('timerArea');
+  const escalPanel   = document.getElementById('escalationPanel');
+  const revealBtn    = document.getElementById('revealSceneBtn');
 
-  document.getElementById('escalationPanel').style.display = 'none';
+  if (prepPanel)    { prepPanel.style.display = 'block'; }
+  if (sceneContent) { sceneContent.style.display = 'none'; sceneContent.innerHTML = ''; }
+  if (timerArea)    { timerArea.style.display = 'none'; }
+  if (escalPanel)   { escalPanel.style.display = 'none'; }
+  if (revealBtn)    { revealBtn.style.display = 'flex'; revealBtn.disabled = true; revealBtn.textContent = 'Getting your scene ready…'; }
+
   resetTimer(300);
   document.getElementById('timerPhaseLabel').textContent = 'Duration';
   document.getElementById('timerSub').textContent = 'Minimum 5 minutes';
 
-  // Disable "New scene" while generating
   isGenerating = true;
   const newSceneBtn = document.getElementById('newSceneBtn');
   if (newSceneBtn) { newSceneBtn.disabled = true; newSceneBtn.textContent = 'Writing…'; }
 
+  const isLight = currentMood === 'light';
   const likedKinks = currentScene.kinks
     .map(k => ALL_KINK_ITEMS.find(i => i.id === k))
     .filter(Boolean)
@@ -1753,21 +2327,62 @@ function generateScene() {
     .join(', ');
 
   const ctx    = buildSceneContext(piA, piB);
-  const system = `You write short, direct, explicit intimacy scenes for a couples app called Spark. Instructions are practical and specific — what to do, in what order, to which body part. No purple prose, no metaphors, no elaborate adjectives. Just clear directions.\n\n${ctx}`;
-  const prompt = `Write the main scene narrative.
+  const system = `You write intimate scene plans for a couples app called Spark. Output three clearly separated sections using exactly these markers on their own lines:\n[PREP]\n[SCENE]\n[FINISH]\n\nRules per section:\n[PREP]: 1–3 sentences. What the couple needs to physically prepare — positions, props to get, clothing to remove. Practical, specific. No sexual acts yet.\n[SCENE]: ${isLight ? '2–4 sentences. Sensual and intimate — touching, kissing, slow exploration. No explicit genital acts required.' : '2–4 sentences. Direct and explicit. Name body parts. Describe specific sexual acts.'} Start with ${currentA}'s name.\n[FINISH]: 2–3 sentences. How it ends — who finishes, how, what happens immediately after.\n\n${ctx}`;
 
-Scene concept: "${currentScene.title}"
-Focus activities: ${likedKinks || 'sensual touch and oral pleasure'}
-Giver / initiator: ${currentA}
-Receiver: ${currentB}
+  const prompt = `Generate a complete three-phase scene.
+Scene type: "${currentScene.title}"
+Activities: ${likedKinks || 'sensual intimacy'}
+${currentNote ? `Specific request: "${currentNote}"` : ''}
+Giver: ${currentA} | Receiver: ${currentB}
 
-2–4 sentences. Start with ${currentA}'s name and a physical action. Name at least one body part explicitly. Direct and practical — what to do, not how it feels. No heading, no preamble.`;
+Output all three sections. Use exactly the markers [PREP], [SCENE], [FINISH] on their own lines.`;
 
-  callClaudeStream(system, prompt, narrativeEl, (text) => {
-    if (text) currentScene._lastNarrative = text;
+  // Stream into prepText so the user sees live generation progress
+  // We parse sections from the full text in onDone
+  callClaudeStream(system, prompt, prepText, (text) => {
+    // Parse the three sections — robust parser handles missing/extra whitespace
+    const getSection = (marker, nextMarker) => {
+      const re = new RegExp('\\[' + marker + '\\]\\s*', 'i');
+      const m = re.exec(text);
+      if (!m) return '';
+      const contentStart = m.index + m[0].length;
+      if (nextMarker) {
+        const re2 = new RegExp('\\[' + nextMarker + '\\]', 'i');
+        const m2 = re2.exec(text.slice(contentStart));
+        if (m2) return text.slice(contentStart, contentStart + m2.index).trim();
+      }
+      return text.slice(contentStart).trim();
+    };
+
+    const prepContent   = getSection('PREP', 'SCENE');
+    const sceneContent_ = getSection('SCENE', 'FINISH');
+    const finishContent = getSection('FINISH', null);
+
+    // Replace prep panel with just the prep text (strip the [SCENE]/[FINISH] noise)
+    if (prepText) prepText.innerHTML = formatNarrative(prepContent || text.trim() || 'Get comfortable together.');
+
+    // Enable reveal button with clean text
+    if (revealBtn) {
+      revealBtn.disabled = false;
+      revealBtn.innerHTML = "<span>We\'re ready →</span>";
+    }
+
+    // Populate scene content (hidden until user taps ready)
+    if (sceneContent) {
+      sceneContent.innerHTML =
+        '<div class="scene-body">' +
+        '<span class="scene-pill pill-spark">Tonight</span>' +
+        '<div class="scene-title">' + esc(currentScene.title) + '</div>' +
+        '<div class="scene-narrative">' + formatNarrative(sceneContent_ || 'Scene generating…') + '</div>' +
+        '</div>';
+    }
+
+    // Store finish for escalation
+    if (finishContent) currentScene._lastNarrative = sceneContent_ + '\n\n' + finishContent;
+    if (finishContent) currentScene._finishText = finishContent;
+
     isGenerating = false;
-    const btn = document.getElementById('newSceneBtn');
-    if (btn) { btn.disabled = false; btn.textContent = 'New scene'; }
+    if (newSceneBtn) { newSceneBtn.disabled = false; newSceneBtn.textContent = 'New scene'; }
   });
 }
 
@@ -1775,21 +2390,22 @@ function revealEscalation() {
   if (escalationRevealed) return;
   escalationRevealed = true;
 
-  const panel       = document.getElementById('escalationPanel');
-  const escalEl     = document.getElementById('escalationText');
+  const panel   = document.getElementById('escalationPanel');
+  const escalEl = document.getElementById('escalationText');
   panel.style.display = 'block';
   panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
-  // Use whatever narrative is available (may be partial if stream was skipped early)
-  const prev = currentScene?._lastNarrative || currentScene?.title || '';
+  // If we already have the finish text from the single-prompt generation, use it directly
+  if (currentScene?._finishText) {
+    escalEl.innerHTML = formatNarrative(currentScene._finishText);
+    return;
+  }
+
+  // Fallback: generate via API
+  const prev   = currentScene?._lastNarrative || currentScene?.title || '';
   const ctx    = buildSceneContext(currentPiA, currentPiB);
   const system = `You write short, direct intimacy scene continuations for Spark. Plain language, specific actions, no flowery description.\n\n${ctx}`;
-  const prompt = `The couple has been doing the following:
-
-"${prev}"
-
-Write the finish: 2–3 sentences. Describe exactly how they finish — specific acts, body parts, who does what. End with one brief aftercare beat. Use both names. No restatement, just continuation.`;
-
+  const prompt = `Continue to the finish: 2–3 sentences. Specific acts, body parts, who does what. Brief aftercare. No restatement.\n\n"${prev}"`;
   callClaudeStream(system, prompt, escalEl, null);
 }
 
@@ -1815,7 +2431,8 @@ function setTimerBtns(state) {
   } else if (state === 'done') {
     el.innerHTML = `
       <button class="t-btn t-keep" onclick="keepGoing()">Keep going</button>
-      <button class="t-btn" onclick="generateScene()">New scene</button>`;
+      <button class="t-btn" onclick="goPreScene(false)">New scene</button>
+      <button class="t-btn" onclick="goPreScene(true)" style="font-size:.65rem;">Change mood</button>`;
   }
 }
 
@@ -1902,11 +2519,27 @@ function onProxyUrlChange() {
 }
 
 function setProxyStatus(state, message) {
-  const dot  = document.getElementById('proxyDot');
-  const text = document.getElementById('proxyText');
+  const dot    = document.getElementById('proxyDot');
+  const text   = document.getElementById('proxyText');
+  const retry  = document.getElementById('retryProxyBtn');
+  const hwarn  = document.getElementById('homeWarn');
   const colors = { ok:'var(--sage)', warn:'var(--amber)', err:'var(--blush)', none:'var(--faint)', checking:'var(--sky)' };
-  if (dot)  dot.style.background = colors[state] || colors.none;
+  if (dot)  { dot.style.background = colors[state] || colors.none; }
   if (text) text.textContent = message;
+  // Show retry only on error states
+  if (retry) retry.style.display = (state==='err'||state==='none') ? 'block' : 'none';
+  // Show home warning when not connected
+  if (hwarn) {
+    const bad = state==='err'||state==='none';
+    hwarn.classList.toggle('visible', bad);
+    const hwt = document.getElementById('homeWarnText');
+    if (hwt) hwt.textContent = state==='checking' ? 'Checking AI connection…' : 'AI not connected — scenes won't generate';
+  }
+  // Auto-close AI panel when connected
+  if (state==='ok') {
+    const panel = document.getElementById('aiSetupPanel');
+    if (panel && panel.classList.contains('open')) toggleAiPanel(false);
+  }
 }
 
 async function detectProxy() {
@@ -1996,6 +2629,38 @@ detectProxy();
 onWillingToggle();
 updateTimerDisplay();
 setTimerBtns('idle');
+
+// Route to home if names already set, else stay on setup
+(function initialRoute() {
+  const onboarded = localStorage.getItem('spark_onboarded');
+  const n1 = localStorage.getItem('spark_name1');
+  const n2 = localStorage.getItem('spark_name2');
+  if (n1) { const f=document.getElementById('name1'); if(f) f.value=n1; }
+  if (n2) { const f=document.getElementById('name2'); if(f) f.value=n2; }
+  if (!onboarded) {
+    // First time — show onboarding (already active in HTML)
+    return;
+  }
+  if (n1||n2) {
+    goHome();
+  } else {
+    // Onboarded but no names — show setup
+    showScreen('screenSetup');
+  }
+})();
+
+// Persist names on input
+document.getElementById('name1')?.addEventListener('input', function() {
+  localStorage.setItem('spark_name1', this.value);
+});
+document.getElementById('name2')?.addEventListener('input', function() {
+  localStorage.setItem('spark_name2', this.value);
+});
+
+// Pre-scene note also updates currentNote live
+document.getElementById('sceneNoteInput')?.addEventListener('input', function() {
+  currentNote = this.value.trim();
+});
 </script>
 </body>
 </html>
