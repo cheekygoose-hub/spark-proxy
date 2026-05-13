@@ -1511,7 +1511,7 @@ async function callClaudeStream(systemPrompt, userPrompt, targetEl, onDone) {
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-5',
+        model: 'claude-sonnet-4-5-20250929',
         max_tokens: 600,
         stream: true,
         system: systemPrompt,
@@ -1855,7 +1855,7 @@ async function detectProxy() {
       const authProbe = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'anthropic-version': '2023-06-01' },
-        body: JSON.stringify({ model: 'claude-haiku-4-5', max_tokens: 1,
+        body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 1,
           messages: [{ role: 'user', content: 'ping' }] }),
         signal: AbortSignal.timeout(10000),
       });
