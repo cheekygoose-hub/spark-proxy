@@ -30,21 +30,34 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 .wordmark .dot{color:var(--blush)}
 .tagline{font-size:.8rem;color:var(--muted);margin-top:.35rem;font-weight:300}
 
+/* EXIT CONFIRMATION SHEET */
+.exit-sheet-overlay{position:fixed;inset:0;background:rgba(26,23,20,.35);z-index:200;
+  display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
+.exit-sheet-overlay.open{opacity:1;pointer-events:all}
+.exit-sheet{background:var(--card);border-radius:var(--r) var(--r) 0 0;width:100%;max-width:600px;
+  padding:1.4rem 1.4rem 2.5rem;transform:translateY(100%);transition:transform .28s cubic-bezier(.16,1,.3,1)}
+.exit-sheet-overlay.open .exit-sheet{transform:translateY(0)}
+.exit-sheet-handle{width:36px;height:4px;background:var(--faint);border-radius:99px;margin:0 auto 1.2rem}
+.exit-sheet-title{font-family:'DM Serif Display',serif;font-size:1.2rem;font-weight:400;
+  color:var(--ink);margin-bottom:.3rem}
+.exit-sheet-sub{font-size:.78rem;color:var(--muted);margin-bottom:1.2rem}
+.exit-sheet-btns{display:flex;flex-direction:column;gap:.5rem}
+
 /* ONBOARDING */
-.onboard-screen{display:flex;flex-direction:column;min-height:80vh;padding:1rem 0}
-.onboard-slides{flex:1;position:relative;overflow:hidden}
-.onboard-slide{display:none;text-align:center;padding:1rem 0 2rem;animation:rise .35s ease forwards}
+.onboard-screen{display:flex;flex-direction:column;padding:1rem 0 2rem}
+.onboard-slides{position:relative;overflow:hidden;margin-bottom:1.5rem}
+.onboard-slide{display:none;text-align:center;padding:.75rem 0 1.5rem;animation:rise .35s ease forwards}
 .onboard-slide.active{display:block}
-.onboard-icon{font-size:3.5rem;margin-bottom:1.2rem;display:block}
-.onboard-title{font-family:'DM Serif Display',serif;font-size:1.8rem;font-weight:400;
-  color:var(--ink);margin-bottom:.75rem;line-height:1.2}
+.onboard-icon{font-size:2.8rem;margin-bottom:.8rem;display:block}
+.onboard-title{font-family:'DM Serif Display',serif;font-size:1.5rem;font-weight:400;
+  color:var(--ink);margin-bottom:.6rem;line-height:1.2}
 .onboard-body{font-size:.9rem;color:var(--ink2);line-height:1.65;max-width:400px;margin:0 auto}
 .onboard-body strong{color:var(--ink);font-weight:600}
 .onboard-dots{display:flex;justify-content:center;gap:.5rem;margin:1.5rem 0}
 .onboard-dot{width:8px;height:8px;border-radius:50%;background:var(--faint);
   transition:all .2s;cursor:pointer}
 .onboard-dot.active{background:var(--ink);width:20px;border-radius:4px}
-.onboard-nav{display:flex;gap:.75rem;margin-top:auto}
+.onboard-nav{display:flex;gap:.75rem;margin-top:1rem}
 .onboard-nav .btn{flex:1}
 .onboard-skip{background:none;border:none;color:var(--muted);font-family:'DM Sans',sans-serif;
   font-size:.8rem;cursor:pointer;padding:.5rem;text-align:center;display:block;width:100%;
@@ -369,6 +382,40 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
   justify-content:center;font-size:.72rem;transition:all .15s}
 .photo-toggle.active .photo-check{background:#fff;border-color:#fff;color:#1a1714}
 
+/* SCENE ERROR BANNER */
+.scene-error-banner{background:var(--bg);border-top:1px solid var(--border);
+  padding:.65rem 1rem;display:none;align-items:center;gap:.6rem;font-size:.78rem;color:var(--ink2)}
+.scene-error-banner.visible{display:flex}
+.scene-error-banner-icon{font-size:.9rem;flex-shrink:0;color:var(--muted)}
+.scene-error-banner-text{flex:1;color:var(--ink2)}
+.scene-error-banner button{background:none;border:1px solid var(--border);border-radius:6px;
+  font-family:'DM Sans',sans-serif;font-size:.7rem;font-weight:600;color:var(--ink2);
+  padding:.25rem .6rem;cursor:pointer;white-space:nowrap}
+.scene-error-banner button:hover{border-color:var(--border2)}
+
+/* VANILLA NOTICE */
+.vanilla-notice{background:var(--sage-bg);border:1px solid var(--sage-mid);border-radius:var(--rs);
+  padding:.75rem 1rem;margin-bottom:1rem;display:none;font-size:.78rem;color:var(--sage);line-height:1.5}
+.vanilla-notice.visible{display:block}
+.vanilla-notice strong{color:var(--sage);font-weight:600}
+.vanilla-notice-link{color:var(--sage);font-weight:600;text-decoration:underline;cursor:pointer;
+  background:none;border:none;font-family:inherit;font-size:inherit;padding:0}
+
+/* POST-SCENE RATING */
+.rate-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);
+  padding:1.1rem 1.2rem;margin-top:.75rem;box-shadow:var(--sh);display:none}
+.rate-card.visible{display:block}
+.rate-card-title{font-size:.78rem;font-weight:600;color:var(--ink2);margin-bottom:.1rem}
+.rate-card-sub{font-size:.7rem;color:var(--muted);margin-bottom:.85rem}
+.rate-btns{display:flex;gap:.4rem}
+.rate-btn{flex:1;padding:.55rem .4rem;border:1.5px solid var(--border);border-radius:var(--rs);
+  background:var(--bg);text-align:center;cursor:pointer;transition:all .18s;
+  font-family:'DM Sans',sans-serif;font-size:.75rem;font-weight:500;color:var(--ink2)}
+.rate-btn:hover{border-color:var(--border2);background:#fff}
+.rate-btn.rate-love{border-color:var(--fav-mid);background:var(--fav-bg);color:var(--fav)}
+.rate-btn.rate-good{border-color:var(--sage-mid);background:var(--sage-bg);color:var(--sage)}
+.rate-btn.rate-not{border-color:var(--blush-mid);background:var(--blush-bg);color:var(--blush)}
+
 /* HOME SCREEN */
 .home-screen{display:flex;flex-direction:column;justify-content:center;min-height:60vh;gap:1rem;padding:1rem 0}
 .home-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -448,6 +495,10 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
   justify-content:center;gap:.5rem}
 .reveal-btn:hover{opacity:.88}
 .reveal-btn:disabled{opacity:.4;cursor:not-allowed}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.reveal-btn.appeared{animation:fadeUp .35s cubic-bezier(.16,1,.3,1) forwards}
+.prep-generating-hint{font-size:.78rem;color:var(--muted);font-style:italic;
+  text-align:center;margin-top:.75rem;animation:pulse 1.4s ease-in-out infinite}
 
 /* Notif */
 /* Notif */
@@ -679,6 +730,10 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
     <span>⏱ A scene is in progress</span>
     <button onclick="showScreen('screenPlay');window.scrollTo(0,0)">Return to scene</button>
   </div>
+  <div class="vanilla-notice" id="vanillaNotice">
+    <strong>No preferences set</strong> — scenes are using vanilla acts only (kissing, touching, slow sex).
+    <button class="vanilla-notice-link" onclick="goSetup()">Set your preferences</button> to unlock everything.
+  </div>
   <div class="home-warn" id="homeWarn">
     <span class="home-warn-icon">⚠</span>
     <span id="homeWarnText">AI not connected — scenes won't generate</span>
@@ -812,11 +867,18 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 <div class="screen" id="screenPlay">
   <div class="no-opts" id="noOpts">No matching scenes found. Adjust your preferences in Settings.</div>
   <div class="scene-card" id="sceneCard">
+    <!-- Error banner — separate from narrative space -->
+    <div class="scene-error-banner" id="sceneErrorBanner">
+      <span class="scene-error-banner-icon">⚠</span>
+      <span class="scene-error-banner-text" id="sceneErrorText">Something went wrong</span>
+      <button onclick="retryScene()">Try again</button>
+    </div>
     <!-- Phase 1: Preparation (revealed first) -->
     <div class="prep-panel" id="prepPanel" style="display:none;">
       <div class="prep-label">Get ready</div>
+      <div id="prepGeneratingHint" class="prep-generating-hint">Getting your scene ready…</div>
       <div class="prep-text" id="prepText"></div>
-      <button class="reveal-btn" id="revealSceneBtn" onclick="revealScene()">
+      <button class="reveal-btn" id="revealSceneBtn" onclick="revealScene()" style="display:none;">
         <span>We're ready →</span>
       </button>
     </div>
@@ -845,9 +907,23 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
     </div>
   </div>
 
-  <div class="play-row" style="margin-top:.75rem;">
-    <button class="btn btn-ink" id="newSceneBtn" onclick="goPreScene()" style="flex:2;">New scene</button>
-    <button class="btn btn-outline" onclick="goSetup()" style="flex:1;">Settings</button>
+  <div style="margin-top:.75rem;">
+    <button class="btn btn-ink" id="newSceneBtn" onclick="generateInPlace()" style="width:100%;margin-bottom:.5rem;">New scene</button>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:0 .25rem;">
+      <button onclick="goPreScene(true)" style="background:none;border:none;font-size:.75rem;color:var(--muted);cursor:pointer;font-family:inherit;padding:.3rem 0;">↺ Change mood first</button>
+      <button onclick="confirmLeavePlay()" style="background:none;border:none;font-size:.75rem;color:var(--muted);cursor:pointer;font-family:inherit;padding:.3rem 0;">⚙ Settings</button>
+    </div>
+  </div>
+
+  <!-- Post-scene quick rate (shown after 3rd+ scene) -->
+  <div class="rate-card" id="rateCard">
+    <div class="rate-card-title">How was that?</div>
+    <div class="rate-card-sub">Takes one tap — helps Spark know you better</div>
+    <div class="rate-btns">
+      <button class="rate-btn rate-love" onclick="rateScene('love')">❤ Loved it</button>
+      <button class="rate-btn rate-good" onclick="rateScene('good')">✓ Good</button>
+      <button class="rate-btn rate-not" onclick="rateScene('not')">✕ Not for us</button>
+    </div>
   </div>
 
 
@@ -855,6 +931,19 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 </div>
 
 </div><!-- /container -->
+
+<!-- EXIT CONFIRMATION SHEET -->
+<div class="exit-sheet-overlay" id="exitSheet" onclick="closeExitSheet(event)">
+  <div class="exit-sheet">
+    <div class="exit-sheet-handle"></div>
+    <div class="exit-sheet-title">Leave this scene?</div>
+    <div class="exit-sheet-sub">Your current scene will be lost.</div>
+    <div class="exit-sheet-btns">
+      <button class="btn btn-outline" onclick="closeExitSheet();goSetup()">Go to Settings</button>
+      <button class="btn btn-ink" onclick="closeExitSheet()">Stay here</button>
+    </div>
+  </div>
+</div>
 
 <!-- AMBUSH MODAL -->
 <div class="modal-overlay" id="ambushModal" onclick="closeAmbushModal(event)">
@@ -895,14 +984,16 @@ function onboardPrev() { if (currentSlide > 0) goSlide(currentSlide-1); }
 function completeOnboard() {
   localStorage.setItem('spark_onboarded','1');
   document.body.classList.remove('header-compact');
-  showScreen('screenSetup');
-  // If names already saved, skip to home
   const n1 = localStorage.getItem('spark_name1');
   const n2 = localStorage.getItem('spark_name2');
-  if (n1||n2) {
-    if (n1) { const f=document.getElementById('name1'); if(f) f.value=n1; }
-    if (n2) { const f=document.getElementById('name2'); if(f) f.value=n2; }
+  if (n1) { const f=document.getElementById('name1'); if(f) f.value=n1; }
+  if (n2) { const f=document.getElementById('name2'); if(f) f.value=n2; }
+  if (n1 && n2) {
+    // Names already saved — go straight home
     goHome();
+  } else {
+    // First time — show setup to enter names
+    showScreen('screenSetup');
   }
 }
 
@@ -1329,6 +1420,62 @@ const SCENES = [
   { id:'stranger_roleplay',title:"We don't know each other",   cat:'scenarios',  kinks:['sc_humil','sc_gangbang','p_penetration_give','p_penetration_receive'],          req:[] },
 ];
 
+// Vanilla-mode scene pool — used when no preferences have been set
+const VANILLA_SCENE_IDS = new Set([
+  'oral_restrained','manual_whisper','penetrative_slow',
+  'fingering_eye','striptease_edge','nipple_oral','oral_69',
+]);
+
+function prefsAreSet() {
+  // True if either partner has explicitly rated any item (not just defaults)
+  return localStorage.getItem('spark_prefs_set') === '1';
+}
+
+function markPrefsSet() {
+  localStorage.setItem('spark_prefs_set', '1');
+}
+
+// Scene generation counter for rating prompt
+let sceneCount = parseInt(localStorage.getItem('spark_scene_count') || '0');
+
+function incrementSceneCount() {
+  sceneCount++;
+  localStorage.setItem('spark_scene_count', String(sceneCount));
+}
+
+function rateScene(rating) {
+  // Store rating against current scene
+  if (currentScene) {
+    const ratings = JSON.parse(localStorage.getItem('spark_ratings') || '{}');
+    ratings[currentScene.id] = rating;
+    localStorage.setItem('spark_ratings', JSON.stringify(ratings));
+    // If they rated 'not', flag the scene's kinks as lower preference
+    if (rating === 'not' && currentScene.kinks) {
+      currentScene.kinks.forEach(k => {
+        // Reduce preference for both partners on this kink
+        [0, 1].forEach(pi => {
+          if (kinkPrefs[pi][k] === 'like') kinkPrefs[pi][k] = 'int';
+        });
+      });
+    }
+    if (rating === 'love' && currentScene.kinks) {
+      currentScene.kinks.forEach(k => {
+        [0, 1].forEach(pi => {
+          if (kinkPrefs[pi][k] === null || kinkPrefs[pi][k] === undefined) kinkPrefs[pi][k] = 'like';
+          if (kinkPrefs[pi][k] === 'int') kinkPrefs[pi][k] = 'like';
+        });
+      });
+    }
+  }
+  // Hide the card
+  const card = document.getElementById('rateCard');
+  if (card) {
+    card.style.opacity = '0';
+    card.style.transition = 'opacity .3s';
+    setTimeout(() => { card.classList.remove('visible'); card.style.opacity = ''; }, 300);
+  }
+}
+
 // ═══════════════════════════════════════════
 //  AMBUSH PROMPTS (static fallback)
 // ═══════════════════════════════════════════
@@ -1419,6 +1566,10 @@ function sceneAvailForRoles(scene, piA, piB) {
     if (props.has('none')) return false;
     if (!scene.req.every(r => props.has(r))) return false;
   }
+  // If no preferences set, restrict to vanilla scenes only
+  if (!prefsAreSet() && !willingAll()) {
+    if (!VANILLA_SCENE_IDS.has(scene.id)) return false;
+  }
   if (willingAll()) return true;
   return scene.kinks.every(k => {
     // _give → check the giver (piA); _receive → check the receiver (piB)
@@ -1497,23 +1648,33 @@ function onWillingToggle() {
   document.getElementById('willingStatus').textContent = on ? 'On' : 'Off';
   document.getElementById('willingStatus').className = 'toggle-status' + (on ? ' on' : '');
   document.getElementById('setupContinueBtn').textContent = on ? 'Continue' : 'Set preferences →';
+  // "Open to anything" counts as preferences being set
+  if (on) markPrefsSet();
 }
 
 function setupContinue() {
-  const n1 = document.getElementById('name1')?.value.trim();
-  const n2 = document.getElementById('name2')?.value.trim();
+  const f1 = document.getElementById('name1');
+  const f2 = document.getElementById('name2');
+  const n1 = f1?.value.trim();
+  const n2 = f2?.value.trim();
+
   if (!n1 || !n2) {
-    // Soft prompt — highlight empty fields
-    ['name1','name2'].forEach(id => {
-      const f = document.getElementById(id);
+    // Highlight empty fields with a friendly prompt
+    [f1, f2].forEach(f => {
       if (f && !f.value.trim()) {
         f.style.borderColor = 'var(--blush)';
-        f.placeholder = 'A name is needed…';
-        f.addEventListener('input', () => { f.style.borderColor = ''; }, { once:true });
+        f.placeholder = 'Enter a name to continue…';
+        f.focus();
+        f.addEventListener('input', () => { f.style.borderColor = ''; f.placeholder = 'Name…'; }, { once:true });
       }
     });
     return;
   }
+
+  // Save names
+  localStorage.setItem('spark_name1', n1);
+  localStorage.setItem('spark_name2', n2);
+
   if (willingAll()) {
     kinkPrefs = [mkDefaultKinkPrefs(), mkDefaultKinkPrefs()];
   }
@@ -1966,6 +2127,7 @@ function setKink(id, val) {
 }
 
 function surveyNext() {
+  markPrefsSet();
   if (surveyIdx === 0) showSurveyScreen(1);
   else showMatches();
 }
@@ -2124,7 +2286,7 @@ SESSION MODIFIERS (override defaults)
 async function callClaudeStream(systemPrompt, userPrompt, targetEl, onDone) {
   const key = getApiKey();
   if (!key) {
-    targetEl.innerHTML = '<span style="color:var(--blush);font-size:.85rem;">No API key — add one in Settings.</span>';
+    showSceneError && showSceneError('No API key'); targetEl.innerHTML = '';
     if (onDone) onDone('');
     return;
   }
@@ -2143,7 +2305,7 @@ async function callClaudeStream(systemPrompt, userPrompt, targetEl, onDone) {
   try {
     const endpoint = window._sparkProxyUrl;
     if (!endpoint) {
-      targetEl.innerHTML = '<span style="color:var(--blush);font-size:.85rem;">No proxy URL set — add your Railway URL in Settings.</span>';
+      showSceneError && showSceneError('No proxy URL'); targetEl.innerHTML = '';
       if (onDone) onDone('');
       return;
     }
@@ -2171,7 +2333,7 @@ async function callClaudeStream(systemPrompt, userPrompt, targetEl, onDone) {
         const errBody = await resp.json();
         errMsg = errBody?.error?.message || errMsg;
       } catch {}
-      targetEl.innerHTML = `<span style="color:var(--blush);font-size:.85rem;">API error ${resp.status}: ${esc(errMsg)}</span>`;
+      showSceneError && showSceneError('API error ' + resp.status + ': ' + errMsg); targetEl.innerHTML = '';
       if (onDone) onDone('');
       return;
     }
@@ -2203,7 +2365,7 @@ async function callClaudeStream(systemPrompt, userPrompt, targetEl, onDone) {
     if (fullText) {
       targetEl.innerHTML = formatNarrative(fullText);
     } else {
-      targetEl.innerHTML = '<span style="color:var(--blush);font-size:.85rem;">No content returned — check your API key and try again.</span>';
+      showSceneError && showSceneError('No content returned'); targetEl.innerHTML = '';
     }
     if (onDone) onDone(fullText);
 
@@ -2214,7 +2376,7 @@ async function callClaudeStream(systemPrompt, userPrompt, targetEl, onDone) {
     }
     const isCors = e.message?.includes('Failed to fetch') || e.message?.includes('NetworkError');
     const hint   = isCors ? ' (Likely a CORS block — the Anthropic API requires a server-side proxy for browser use.)' : '';
-    targetEl.innerHTML = `<span style="color:var(--blush);font-size:.85rem;">Network error: ${esc(e.message)}.${hint}</span>`;
+    showSceneError && showSceneError('Network error: ' + e.message); targetEl.innerHTML = '';
     if (onDone) onDone('');
   } finally {
     // Clear our controller reference if it's still the active one
@@ -2257,6 +2419,34 @@ function formatNarrative(text) {
 // ═══════════════════════════════════════════
 //  PLAY
 // ═══════════════════════════════════════════
+function generateInPlace() {
+  // Regenerate without navigating away — scroll to top of scene card first
+  const card = document.getElementById('sceneCard');
+  if (card) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  // Short delay to let scroll settle, then generate
+  setTimeout(() => {
+    escalationRevealed = false;
+    const escalPanel = document.getElementById('escalationPanel');
+    if (escalPanel) escalPanel.style.display = 'none';
+    generateFullScene();
+  }, 300);
+}
+
+function confirmLeavePlay() {
+  // Only show confirmation if timer is running or scene is active
+  if (timerRunning || currentScene) {
+    document.getElementById('exitSheet')?.classList.add('open');
+  } else {
+    goSetup();
+  }
+}
+
+function closeExitSheet(e) {
+  if (!e || e.target === document.getElementById('exitSheet')) {
+    document.getElementById('exitSheet')?.classList.remove('open');
+  }
+}
+
 function revealScene() {
   const sceneContent   = document.getElementById('sceneContent');
   const timerArea      = document.getElementById('timerArea');
@@ -2274,6 +2464,62 @@ function goPlay() {
   showScreen('screenPlay');
   document.body.classList.add('header-compact');
   generateScene();
+}
+
+function retryScene() {
+  hideSceneError();
+  generateFullScene();
+}
+
+function showSceneError(rawMsg) {
+  // Map technical errors to human language
+  let msg = 'Something went wrong — tap to try again.';
+  if (rawMsg.includes('404')) msg = 'Scene not found — tap to try again.';
+  else if (rawMsg.includes('401') || rawMsg.includes('403')) msg = 'API key issue — check your connection in Settings.';
+  else if (rawMsg.includes('Failed to fetch') || rawMsg.includes('NetworkError') || rawMsg.includes('Network error')) msg = "Couldn't reach the AI — check your connection and try again.";
+  else if (rawMsg.includes('timeout') || rawMsg.includes('Timeout') || rawMsg.includes('AbortError')) msg = 'Took too long — try again.';
+  else if (rawMsg.includes('No proxy')) msg = 'Not connected — add your Railway URL in Settings.';
+  else if (rawMsg.includes('No API key')) msg = 'No API key — add one in Settings.';
+
+  const banner = document.getElementById('sceneErrorBanner');
+  const text   = document.getElementById('sceneErrorText');
+  if (text)   text.textContent = msg;
+  if (banner) banner.classList.add('visible');
+
+  // On second failure add settings link
+  const failCount = parseInt(sessionStorage.getItem('spark_fail_count') || '0') + 1;
+  sessionStorage.setItem('spark_fail_count', String(failCount));
+  if (failCount >= 2) {
+    if (text) text.textContent = msg + ' Still having trouble?';
+    const btn = banner?.querySelector('button');
+    if (btn && !banner.querySelector('.err-settings-link')) {
+      const link = document.createElement('button');
+      link.className = 'err-settings-link';
+      link.style.cssText = 'background:none;border:none;font-size:.7rem;color:var(--sky);cursor:pointer;font-family:inherit;margin-left:.25rem;padding:0;text-decoration:underline;';
+      link.textContent = 'Check Settings';
+      link.onclick = () => { closeExitSheet(); goSetup(); toggleAiPanel(true); };
+      banner.appendChild(link);
+    }
+  }
+
+  // Keep prep panel visible so couple still has a starting point
+  const prepPanel = document.getElementById('prepPanel');
+  if (prepPanel && prepPanel.style.display !== 'block') {
+    const prepText = document.getElementById('prepText');
+    if (prepText && !prepText.textContent) {
+      prepText.textContent = 'Use the scene title above as a starting point while we fix the connection.';
+      prepPanel.style.display = 'block';
+    }
+  }
+
+  isGenerating = false;
+  const btn = document.getElementById('newSceneBtn');
+  if (btn) { btn.disabled = false; btn.textContent = 'New scene'; }
+}
+
+function hideSceneError() {
+  document.getElementById('sceneErrorBanner')?.classList.remove('visible');
+  sessionStorage.setItem('spark_fail_count', '0');
 }
 
 function generateScene() { generateFullScene(); }
@@ -2309,7 +2555,10 @@ function generateFullScene() {
   if (sceneContent) { sceneContent.style.display = 'none'; sceneContent.innerHTML = ''; }
   if (timerArea)    { timerArea.style.display = 'none'; }
   if (escalPanel)   { escalPanel.style.display = 'none'; }
-  if (revealBtn)    { revealBtn.style.display = 'flex'; revealBtn.disabled = true; revealBtn.textContent = 'Getting your scene ready…'; }
+  // Hide button until generation completes — shows generating hint instead
+  if (revealBtn)    { revealBtn.style.display = 'none'; revealBtn.classList.remove('appeared'); }
+  const genHint = document.getElementById('prepGeneratingHint');
+  if (genHint) genHint.style.display = 'block';
 
   resetTimer(300);
   document.getElementById('timerPhaseLabel').textContent = 'Duration';
@@ -2339,7 +2588,13 @@ Output all three sections. Use exactly the markers [PREP], [SCENE], [FINISH] on 
 
   // Stream into prepText so the user sees live generation progress
   // We parse sections from the full text in onDone
+  hideSceneError(); // clear any previous error
   callClaudeStream(system, prompt, prepText, (text) => {
+    // If stream returned empty or error text, show human error banner
+    if (!text || text.trim() === '') {
+      showSceneError('empty response');
+      return;
+    }
     // Parse the three sections — robust parser handles missing/extra whitespace
     const getSection = (marker, nextMarker) => {
       const re = new RegExp('\\[' + marker + '\\]\\s*', 'i');
@@ -2383,6 +2638,17 @@ Output all three sections. Use exactly the markers [PREP], [SCENE], [FINISH] on 
 
     isGenerating = false;
     if (newSceneBtn) { newSceneBtn.disabled = false; newSceneBtn.textContent = 'New scene'; }
+
+    // Reset fail count on success
+    sessionStorage.setItem('spark_fail_count', '0');
+    // Increment scene counter and show rating prompt after 3rd scene
+    incrementSceneCount();
+    if (sceneCount >= 3 && sceneCount % 3 === 0) {
+      setTimeout(() => {
+        const rateCard = document.getElementById('rateCard');
+        if (rateCard) rateCard.classList.add('visible');
+      }, 2000); // delay so it doesn't appear while couple is reading
+    }
   });
 }
 
@@ -2638,13 +2904,14 @@ setTimerBtns('idle');
   if (n1) { const f=document.getElementById('name1'); if(f) f.value=n1; }
   if (n2) { const f=document.getElementById('name2'); if(f) f.value=n2; }
   if (!onboarded) {
-    // First time — show onboarding (already active in HTML)
+    // First time — screenOnboard is already active in HTML
     return;
   }
-  if (n1||n2) {
+  if (n1 && n2) {
+    // Both names saved — go home
     goHome();
   } else {
-    // Onboarded but no names — show setup
+    // Onboarded but names incomplete — show setup
     showScreen('screenSetup');
   }
 })();
