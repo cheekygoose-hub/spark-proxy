@@ -44,24 +44,6 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 .exit-sheet-btns{display:flex;flex-direction:column;gap:.5rem}
 
 /* ONBOARDING */
-.onboard-screen{display:flex;flex-direction:column;padding:1rem 0 2rem}
-.onboard-slides{position:relative;overflow:hidden;margin-bottom:1.5rem}
-.onboard-slide{display:none;text-align:center;padding:.75rem 0 1.5rem;animation:rise .35s ease forwards}
-.onboard-slide.active{display:block}
-.onboard-icon{font-size:2.8rem;margin-bottom:.8rem;display:block}
-.onboard-title{font-family:'DM Serif Display',serif;font-size:1.5rem;font-weight:400;
-  color:var(--ink);margin-bottom:.6rem;line-height:1.2}
-.onboard-body{font-size:.9rem;color:var(--ink2);line-height:1.65;max-width:400px;margin:0 auto}
-.onboard-body strong{color:var(--ink);font-weight:600}
-.onboard-dots{display:flex;justify-content:center;gap:.5rem;margin:1.5rem 0}
-.onboard-dot{width:8px;height:8px;border-radius:50%;background:var(--faint);
-  transition:all .2s;cursor:pointer}
-.onboard-dot.active{background:var(--ink);width:20px;border-radius:4px}
-.onboard-nav{display:flex;gap:.75rem;margin-top:1rem}
-.onboard-nav .btn{flex:1}
-.onboard-skip{background:none;border:none;color:var(--muted);font-family:'DM Sans',sans-serif;
-  font-size:.8rem;cursor:pointer;padding:.5rem;text-align:center;display:block;width:100%;
-  margin-top:.5rem}
 
 /* AI SETUP — hidden by default, expandable */
 .ai-setup-collapsed{display:flex;align-items:center;justify-content:space-between;
@@ -542,61 +524,8 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
   <div class="tagline">Connection by design</div>
 </header>
 
-<!-- ════════ ONBOARDING ════════ -->
-<div class="screen active" id="screenOnboard">
-  <div class="onboard-screen">
-    <div class="onboard-slides">
-
-      <div class="onboard-slide active" id="slide0">
-        <span class="onboard-icon">✦</span>
-        <div class="onboard-title">Welcome to Spark.</div>
-        <div class="onboard-body">
-          An intimacy app that writes personalised scenes for you and your partner.<br><br>
-          <strong>Tap a mood. Spark writes the rest.</strong><br><br>
-          Three phases: get ready together, the scene, then how it finishes.
-          Each generated fresh for you, every time.
-        </div>
-      </div>
-
-      <div class="onboard-slide" id="slide1">
-        <span class="onboard-icon">🔥</span>
-        <div class="onboard-title">Two buttons. That's it.</div>
-        <div class="onboard-body">
-          <strong>Tease Them</strong> — a quick 30-second interruption for right now.<br><br>
-          <strong>We're in the Mood</strong> — pick how you're feeling tonight, and Spark writes a complete scene with preparation, the act, and how it finishes.<br><br>
-          Optional: tell Spark anything you're specifically in the mood for.
-        </div>
-      </div>
-
-      <div class="onboard-slide" id="slide2">
-        <span class="onboard-icon">⚙</span>
-        <div class="onboard-title">Powered by AI</div>
-        <div class="onboard-body">
-          Spark uses Anthropic's AI to generate scenes. You'll need a free API key from
-          <strong>console.anthropic.com</strong> and a proxy server to make calls from your phone.<br><br>
-          The quickest setup is Railway — full instructions are in Settings once you're in.<br><br>
-          <strong>You can explore the app without this — just tap through.</strong>
-        </div>
-      </div>
-
-    </div>
-
-    <div class="onboard-dots">
-      <div class="onboard-dot active" onclick="goSlide(0)"></div>
-      <div class="onboard-dot" onclick="goSlide(1)"></div>
-      <div class="onboard-dot" onclick="goSlide(2)"></div>
-    </div>
-
-    <div class="onboard-nav">
-      <button class="btn btn-outline" id="onboardBack" onclick="onboardPrev()" style="display:none;">← Back</button>
-      <button class="btn btn-ink" id="onboardNext" onclick="onboardNext()">Next →</button>
-    </div>
-    <button class="onboard-skip" onclick="completeOnboard()">Skip — go straight in</button>
-  </div>
-</div>
-
 <!-- ════════ SETUP ════════ -->
-<div class="screen" id="screenSetup">
+<div class="screen active" id="screenSetup">
   <div class="return-banner" id="returnBanner">
     <span>⏱ A scene is in progress</span>
     <button onclick="showScreen('screenPlay');window.scrollTo(0,0)">Return to scene</button>
@@ -963,40 +892,6 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 </div>
 
 <script>
-// ═══════════════════════════════════════════
-//  ONBOARDING
-// ═══════════════════════════════════════════
-let currentSlide = 0;
-const TOTAL_SLIDES = 3;
-
-function goSlide(n) {
-  document.querySelectorAll('.onboard-slide').forEach((s,i) => s.classList.toggle('active', i===n));
-  document.querySelectorAll('.onboard-dot').forEach((d,i) => d.classList.toggle('active', i===n));
-  currentSlide = n;
-  document.getElementById('onboardBack').style.display = n===0 ? 'none' : '';
-  document.getElementById('onboardNext').textContent = n===TOTAL_SLIDES-1 ? "Let's go →" : 'Next →';
-}
-function onboardNext() {
-  if (currentSlide < TOTAL_SLIDES-1) goSlide(currentSlide+1);
-  else completeOnboard();
-}
-function onboardPrev() { if (currentSlide > 0) goSlide(currentSlide-1); }
-function completeOnboard() {
-  localStorage.setItem('spark_onboarded','1');
-  document.body.classList.remove('header-compact');
-  const n1 = localStorage.getItem('spark_name1');
-  const n2 = localStorage.getItem('spark_name2');
-  if (n1) { const f=document.getElementById('name1'); if(f) f.value=n1; }
-  if (n2) { const f=document.getElementById('name2'); if(f) f.value=n2; }
-  if (n1 && n2) {
-    // Names already saved — go straight home
-    goHome();
-  } else {
-    // First time — show setup to enter names
-    showScreen('screenSetup');
-  }
-}
-
 // ═══════════════════════════════════════════
 //  AI PANEL TOGGLE
 // ═══════════════════════════════════════════
@@ -2898,22 +2793,14 @@ setTimerBtns('idle');
 
 // Route to home if names already set, else stay on setup
 (function initialRoute() {
-  const onboarded = localStorage.getItem('spark_onboarded');
   const n1 = localStorage.getItem('spark_name1');
   const n2 = localStorage.getItem('spark_name2');
   if (n1) { const f=document.getElementById('name1'); if(f) f.value=n1; }
   if (n2) { const f=document.getElementById('name2'); if(f) f.value=n2; }
-  if (!onboarded) {
-    // First time — screenOnboard is already active in HTML
-    return;
-  }
   if (n1 && n2) {
-    // Both names saved — go home
     goHome();
-  } else {
-    // Onboarded but names incomplete — show setup
-    showScreen('screenSetup');
   }
+  // else: stay on setup screen (already active)
 })();
 
 // Persist names on input
