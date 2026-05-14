@@ -477,6 +477,24 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 .props-disabled{opacity:.4;pointer-events:none}
 
 
+
+/* PIPELINE STATUS BAR — always visible on play screen */
+.pipeline-bar{background:#1a1714;border-radius:var(--rs) var(--rs) 0 0;
+  padding:.6rem 1rem;font-family:monospace;font-size:.68rem;display:flex;
+  flex-wrap:wrap;gap:.3rem .6rem;line-height:1.6;}
+.pipeline-bar.hidden{display:none;}
+.ps-item{display:flex;align-items:center;gap:.25rem;}
+.ps-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.ps-dot-ok{background:#a8e6cf;}
+.ps-dot-fail{background:#ff8b8b;animation:blink .7s infinite;}
+.ps-dot-pending{background:#444;}
+.ps-dot-warn{background:#ffd97d;}
+.ps-text-ok{color:#a8e6cf;}
+.ps-text-fail{color:#ff8b8b;}
+.ps-text-pending{color:#555;}
+.ps-text-warn{color:#ffd97d;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+
 /* DEBUG CHECKLIST */
 .debug-checklist{margin-top:.75rem;background:#1a1714;border-radius:var(--rs);
   padding:1rem 1.1rem;display:none;}
@@ -1003,6 +1021,13 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 
 <!-- ════════ PLAY ════════ -->
 <div class="screen" id="screenPlay">
+  <!-- Pipeline status bar — always visible, shows what's happening -->
+  <div class="pipeline-bar" id="pipelineBar">
+    <span class="ps-item"><span class="ps-dot ps-dot-pending" id="ps-proxy-dot"></span><span class="ps-text-pending" id="ps-proxy-text">proxy…</span></span>
+    <span class="ps-item"><span class="ps-dot ps-dot-pending" id="ps-key-dot"></span><span class="ps-text-pending" id="ps-key-text">key…</span></span>
+    <span class="ps-item"><span class="ps-dot ps-dot-pending" id="ps-fetch-dot"></span><span class="ps-text-pending" id="ps-fetch-text">fetch…</span></span>
+    <span class="ps-item"><span class="ps-dot ps-dot-pending" id="ps-stream-dot"></span><span class="ps-text-pending" id="ps-stream-text">stream…</span></span>
+  </div>
   <div class="no-opts" id="noOpts">No matching scenes found. Adjust your preferences in Settings.</div>
   <div class="scene-card" id="sceneCard">
     <!-- Error banner -->
@@ -1924,9 +1949,11 @@ document.getElementById('rememberKey')?.addEventListener('change', () => {
     if (proxyField) proxyField.value = savedProxy;
     window._sparkProxyUrl = normaliseProxyUrl(savedProxy);
   } else if (window.location.protocol === 'https:' && window.location.hostname !== 'localhost') {
-    // Served from Railway — proxy is on same origin
-    window._sparkProxyUrl = '/v1/messages';
-    if (proxyField) proxyField.placeholder = 'Auto: ' + window.location.hostname + '/v1/messages';
+    // Served from Railway — proxy is this same server
+    window._sparkProxyUrl = window.location.origin + '/v1/messages';
+    window._sparkProxyAuthHandled = true;
+    if (proxyField) proxyField.placeholder = 'Auto-detected: ' + window.location.hostname;
+    setProxyStatus('ok', 'Connected — Railway proxy auto-detected ✓');
   }
 })();
 
@@ -2653,20 +2680,22 @@ function buildSceneContext(piA, piB) {
 async function callClaudeStream(systemPrompt, userPrompt, targetEl, onDone) {
   const key = getApiKey();
   if (!key) {
-    dbStep('apiKey', 'fail', 'No API key');
+    dbStep('apiKey','fail','No API key'); psSet('key','fail','no key');
     if (showSceneError) showSceneError('No API key — add one in Settings.');
     if (onDone) onDone('');
     return;
   }
-  dbStep('apiKey', 'ok', key === '__proxy__' ? 'via proxy' : 'sk-ant-…'+key.slice(-4));
+  dbStep('apiKey','ok',key==='__proxy__'?'via proxy':'sk-ant-…'+key.slice(-4));
+  psSet('key','ok', key==='__proxy__'?'proxy auth':'key ✓');
   const endpoint = window._sparkProxyUrl;
   if (!endpoint) {
-    dbStep('proxy', 'fail', 'No proxy URL set');
+    dbStep('proxy','fail','No proxy URL'); psSet('proxy','fail','no proxy');
     if (showSceneError) showSceneError('No proxy URL — add your Railway URL in Settings.');
     if (onDone) onDone('');
     return;
   }
-  dbStep('proxy', 'ok', endpoint.replace('https://','').slice(0,40));
+  dbStep('proxy','ok',endpoint.replace('https://','').slice(0,40));
+  psSet('proxy','ok',endpoint.replace('https://','').replace('/v1/messages','').slice(0,20));
 
   if (streamController) { try { streamController.abort(); } catch {} streamController = null; }
   const myController = new AbortController();
@@ -2686,7 +2715,7 @@ async function callClaudeStream(systemPrompt, userPrompt, targetEl, onDone) {
   }, 45000);
 
   try {
-    dbStep('fetchStarted', 'ok', 'POST ' + endpoint.slice(-30));
+    dbStep('fetchStarted','ok','POST …'+endpoint.slice(-20)); psSet('fetch','warn','sending…');
     const resp = await fetch(endpoint, {
       method: 'POST',
       signal: myController.signal,
@@ -2705,6 +2734,7 @@ async function callClaudeStream(systemPrompt, userPrompt, targetEl, onDone) {
     });
 
     dbStep('fetchResponse', resp.ok ? 'ok' : 'fail', 'HTTP ' + resp.status);
+    psSet('fetch', resp.ok ? 'ok' : 'fail', 'HTTP '+resp.status);
     if (!resp.ok) {
       let errMsg = 'Unknown error';
       try { const b = await resp.json(); errMsg = b?.error?.message || errMsg; } catch {}
@@ -2732,7 +2762,7 @@ async function callClaudeStream(systemPrompt, userPrompt, targetEl, onDone) {
           if (evt.type === 'content_block_delta' && evt.delta?.type === 'text_delta') {
             fullText += evt.delta.text;
             if (targetEl) targetEl.textContent = fullText;
-            dbStep('streaming', 'ok', fullText.length + ' chars received');
+            dbStep('streaming','ok',fullText.length+' chars'); psSet('stream','ok', fullText.length+' ch');
           }
         } catch {}
       }
@@ -2740,10 +2770,11 @@ async function callClaudeStream(systemPrompt, userPrompt, targetEl, onDone) {
 
     clearTimeout(timeout);
     if (fullText.trim()) {
-      dbStep('textReceived', 'ok', fullText.length + ' chars, ~' + Math.round(fullText.split(' ').length) + ' words');
+      dbStep('textReceived','ok',fullText.length+' chars');
+      psSet('stream','ok','done ✓');
       done(fullText);
     } else {
-      dbStep('textReceived', 'fail', 'Empty response');
+      dbStep('textReceived','fail','empty'); psSet('stream','fail','empty');
       if (showSceneError) showSceneError('No content returned — check your API key and try again.');
       done('');
     }
@@ -2751,7 +2782,8 @@ async function callClaudeStream(systemPrompt, userPrompt, targetEl, onDone) {
   } catch (e) {
     clearTimeout(timeout);
     if (e.name === 'AbortError') { finished = true; streamController = null; return; }
-    dbStep('fetchResponse', 'fail', e.message || 'Network error');
+    dbStep('fetchResponse','fail',e.message||'Network error');
+    psSet('fetch','fail',(e.message||'error').slice(0,18));
     if (showSceneError) showSceneError('Network error: ' + (e.message || 'connection failed'));
     done('');
   }
@@ -2936,6 +2968,7 @@ function generateFullScene() {
 
   isGenerating = true;
   resetDebugChecklist();
+  psReset();
 
   const isLight = currentMood === 'light';
   const likedKinks = currentScene.kinks
@@ -3276,6 +3309,25 @@ function removeCustomProp(label) {
 
 
 
+
+// ═══════════════════════════════════════════
+//  PIPELINE STATUS BAR (always-on)
+// ═══════════════════════════════════════════
+function psSet(id, state, text) {
+  // state: 'ok' | 'fail' | 'warn' | 'pending'
+  const dot  = document.getElementById('ps-' + id + '-dot');
+  const txt  = document.getElementById('ps-' + id + '-text');
+  if (dot) dot.className = 'ps-dot ps-dot-' + state;
+  if (txt) { txt.className = 'ps-text-' + state; if (text) txt.textContent = text; }
+}
+
+function psReset() {
+  psSet('proxy',  'pending', 'proxy…');
+  psSet('key',    'pending', 'key…');
+  psSet('fetch',  'pending', 'fetch…');
+  psSet('stream', 'pending', 'stream…');
+}
+
 // ═══════════════════════════════════════════
 //  DEBUG CHECKLIST
 // ═══════════════════════════════════════════
@@ -3379,6 +3431,11 @@ function onProxyUrlChange() {
 }
 
 function setProxyStatus(state, message) {
+  // Update pipeline bar proxy indicator
+  if (state === 'ok') psSet('proxy','ok','connected');
+  else if (state === 'checking') psSet('proxy','warn','checking…');
+  else if (state === 'err') psSet('proxy','fail','no proxy');
+  else psSet('proxy','pending','proxy…');
   const dot    = document.getElementById('proxyDot');
   const text   = document.getElementById('proxyText');
   const retry  = document.getElementById('retryProxyBtn');
@@ -3411,6 +3468,10 @@ async function detectProxy() {
 
   const raw = (field?.value.trim() || stored).trim();
   if (!raw) {
+    // If _sparkProxyUrl already set (auto-detected Railway) don't overwrite
+    if (window._sparkProxyUrl && window._sparkProxyAuthHandled) {
+      return; // already configured by restoreSettings
+    }
     setProxyStatus('none', 'Enter your Railway proxy URL above');
     return;
   }
@@ -3469,7 +3530,8 @@ async function detectProxy() {
     }
 
   } catch (e) {
-    window._sparkProxyUrl = null;
+    // Only null out if we set it ourselves (not auto-detected)
+    if (!window._sparkProxyAuthHandled) window._sparkProxyUrl = null;
     window._sparkProxyAuthHandled = false;
     if (e.name === 'TimeoutError' || e.name === 'AbortError') {
       setProxyStatus('err', 'Timed out — is Railway deployed and the URL correct?');
@@ -3492,6 +3554,17 @@ setTimerBtns('idle');
 
 // Route to home if names already set, else stay on setup
 loadPropsState();
+
+// Show proxy state in pipeline bar on load
+(function initPipelineBar() {
+  setTimeout(() => {
+    if (window._sparkProxyUrl) {
+      psSet('proxy', 'ok', window._sparkProxyUrl.replace('https://','').replace('/v1/messages','').slice(0,20));
+    } else {
+      psSet('proxy', 'fail', 'not set');
+    }
+  }, 500);
+})();
 
 (function initialRoute() {
   const n1 = localStorage.getItem('spark_name1');
