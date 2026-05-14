@@ -2900,14 +2900,10 @@ function showSceneError(rawMsg) {
     }
   }
 
-  // Keep prep panel visible so couple still has a starting point
-  const prepPanel = document.getElementById('prepPanel');
-  if (prepPanel && prepPanel.style.display !== 'block') {
-    const prepText = document.getElementById('prepText');
-    if (prepText && !prepText.textContent) {
-      prepText.textContent = 'Use the scene title above as a starting point while we fix the connection.';
-      prepPanel.style.display = 'block';
-    }
+  // Show fallback text in stream area
+  const st = document.getElementById('sceneStreamText');
+  if (st && !st.textContent) {
+    st.textContent = 'Connection issue — tap New scene to try again.';
   }
 
   isGenerating = false;
@@ -2925,6 +2921,25 @@ function generateScene() { generateFullScene(); }
 function generateFullScene() {
   if (isGenerating) return;
 
+  // Reset debug state immediately so user sees pipeline start
+  resetDebugChecklist();
+  psReset();
+
+  try {
+    _generateFullSceneInner();
+  } catch(e) {
+    // Surface any JS error visibly
+    isGenerating = false;
+    psSet('fetch', 'fail', 'JS error');
+    const st = document.getElementById('sceneStreamText');
+    if (st) st.textContent = 'Internal error: ' + e.message + '\n\nStack: ' + (e.stack||'').slice(0,200);
+    const nb = document.getElementById('newSceneBtn');
+    if (nb) { nb.disabled = false; nb.textContent = 'New scene'; }
+    console.error('generateFullScene crash:', e);
+  }
+}
+
+function _generateFullSceneInner() {
   let piA = Math.random() < .5 ? 0 : 1;
   let piB = 1 - piA;
   let avScenes = SCENES.filter(s => sceneAvailForRoles(s, piA, piB));
@@ -2935,6 +2950,7 @@ function generateFullScene() {
   if (!avScenes.length) {
     if (noOpts) noOpts.style.display = 'block';
     if (card) card.style.display = 'none';
+    psSet('fetch','fail','no scenes');
     return;
   }
   if (noOpts) noOpts.style.display = 'none';
@@ -2947,28 +2963,28 @@ function generateFullScene() {
   escalationRevealed = false;
   dbStep('sceneSelected', 'ok', currentScene ? '"' + currentScene.title + '"' : 'none');
 
-  // Reset UI — show stream area immediately, hide timer/escalation
+  // Reset UI — null-guard every getElementById
   const streamText  = document.getElementById('sceneStreamText');
   const timerArea   = document.getElementById('timerArea');
   const escalPanel  = document.getElementById('escalationPanel');
   const photoToggle = document.getElementById('scenePhotoToggle');
   const newSceneBtn = document.getElementById('newSceneBtn');
   const errorBanner = document.getElementById('sceneErrorBanner');
+  const timerLabel  = document.getElementById('timerPhaseLabel');
+  const timerSub2   = document.getElementById('timerSub');
 
-  if (streamText)  { streamText.textContent = ''; }
-  if (timerArea)   { timerArea.style.display = 'none'; }
-  if (escalPanel)  { escalPanel.style.display = 'none'; }
-  if (photoToggle) { photoToggle.style.display = 'none'; }
-  if (errorBanner) { errorBanner.classList.remove('visible'); }
+  if (streamText)  streamText.textContent = '';
+  if (timerArea)   timerArea.style.display = 'none';
+  if (escalPanel)  escalPanel.style.display = 'none';
+  if (photoToggle) photoToggle.style.display = 'none';
+  if (errorBanner) errorBanner.classList.remove('visible');
   if (newSceneBtn) { newSceneBtn.disabled = true; newSceneBtn.textContent = 'Writing…'; }
 
   resetTimer(300);
-  document.getElementById('timerPhaseLabel').textContent = 'Duration';
-  document.getElementById('timerSub').textContent = 'Minimum 5 minutes';
+  if (timerLabel) timerLabel.textContent = 'Duration';
+  if (timerSub2)  timerSub2.textContent  = 'Minimum 5 minutes';
 
   isGenerating = true;
-  resetDebugChecklist();
-  psReset();
 
   const isLight = currentMood === 'light';
   const likedKinks = currentScene.kinks
