@@ -288,6 +288,7 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 .pill-ambush{background:var(--sky-bg);color:var(--sky)}
 .scene-body{padding:1.6rem}
 .scene-title{font-size:.75rem;font-weight:600;color:var(--muted);margin-bottom:.55rem;letter-spacing:.04em}
+.scene-stream-writing{opacity:.7;}
 .scene-narrative{font-family:'DM Serif Display',serif;font-size:clamp(1.05rem,3.2vw,1.22rem);
   font-weight:400;line-height:1.75;color:var(--ink)}
 .scene-narrative .n-name{color:var(--blush);font-style:italic}
@@ -474,6 +475,25 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
   color:#fff;font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:600;
   padding:.45rem .85rem;cursor:pointer;white-space:nowrap}
 .props-disabled{opacity:.4;pointer-events:none}
+
+
+/* DEBUG CHECKLIST */
+.debug-checklist{margin-top:.75rem;background:#1a1714;border-radius:var(--rs);
+  padding:1rem 1.1rem;display:none;}
+.debug-checklist.visible{display:block;}
+.debug-checklist-title{font-size:.6rem;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;color:#666;margin-bottom:.75rem;}
+.debug-check-item{display:flex;align-items:flex-start;gap:.6rem;padding:.3rem 0;
+  border-bottom:1px solid #2a2724;font-size:.72rem;font-family:monospace;line-height:1.4;}
+.debug-check-item:last-child{border-bottom:none;}
+.debug-check-icon{flex-shrink:0;font-size:.8rem;margin-top:.05rem;}
+.debug-check-label{flex:1;color:#999;}
+.debug-check-label.ok{color:#a8e6cf;}
+.debug-check-label.fail{color:#ff8b8b;}
+.debug-check-label.warn{color:#ffd97d;}
+.debug-check-label.pending{color:#666;}
+.debug-check-value{color:#666;font-size:.65rem;margin-top:.15rem;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px;}
 
 /* DEBUG PANEL */
 .debug-panel{margin-top:1.2rem;background:#1a1714;border-radius:var(--rs);
@@ -985,28 +1005,15 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 <div class="screen" id="screenPlay">
   <div class="no-opts" id="noOpts">No matching scenes found. Adjust your preferences in Settings.</div>
   <div class="scene-card" id="sceneCard">
-    <!-- Error banner — separate from narrative space -->
+    <!-- Error banner -->
     <div class="scene-error-banner" id="sceneErrorBanner">
       <span class="scene-error-banner-icon">⚠</span>
       <span class="scene-error-banner-text" id="sceneErrorText">Something went wrong</span>
       <button onclick="retryScene()">Try again</button>
     </div>
-    <!-- Loading state -->
-    <div id="sceneLoadingPanel" style="display:none;padding:1.8rem 1.6rem 1.4rem;text-align:center;">
-      <div class="prep-generating-hint" style="display:block;margin-bottom:1rem;">Getting your scene ready…</div>
-      <div style="background:var(--border);border-radius:99px;height:4px;overflow:hidden;width:100%;max-width:240px;margin:0 auto;">
-        <div id="sceneProgressBar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--sage),var(--blush));border-radius:99px;transition:width .4s ease;"></div>
-      </div>
-    </div>
-    <!-- Combined prep + scene (shown together when ready) -->
-    <div id="sceneReadyPanel" style="display:none;">
-      <!-- Prep section -->
-      <div class="prep-panel" id="prepPanel">
-        <div class="prep-label">Before you start the timer…</div>
-        <div class="prep-text" id="prepText"></div>
-      </div>
-      <!-- Scene content -->
-      <div id="sceneContent"></div>
+    <!-- Live stream output — always visible, text appears as it arrives -->
+    <div id="sceneStream" style="padding:1.4rem 1.6rem;min-height:60px;">
+      <div id="sceneStreamText" style="font-family:'DM Serif Display',serif;font-size:clamp(1rem,3vw,1.15rem);font-weight:400;line-height:1.7;color:var(--ink);"></div>
     </div>
     <!-- Escalation (revealed on timer end or skip) -->
     <div class="escalation-panel" id="escalationPanel">
@@ -1043,6 +1050,13 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
   <div class="debug-panel" id="debugPanel">
     <div class="debug-panel-label">Debug — Full AI prompt</div>
     <div class="debug-text" id="debugText"></div>
+  </div>
+
+
+  <!-- Debug checklist — pipeline status -->
+  <div class="debug-checklist" id="debugChecklist">
+    <div class="debug-checklist-title">Pipeline Status</div>
+    <div id="debugCheckItems"></div>
   </div>
 
   <!-- Post-scene quick rate (shown after 3rd+ scene) -->
@@ -2639,44 +2653,40 @@ function buildSceneContext(piA, piB) {
 async function callClaudeStream(systemPrompt, userPrompt, targetEl, onDone) {
   const key = getApiKey();
   if (!key) {
-    if (showSceneError) showSceneError('No API key');
+    dbStep('apiKey', 'fail', 'No API key');
+    if (showSceneError) showSceneError('No API key — add one in Settings.');
     if (onDone) onDone('');
     return;
   }
-
+  dbStep('apiKey', 'ok', key === '__proxy__' ? 'via proxy' : 'sk-ant-…'+key.slice(-4));
   const endpoint = window._sparkProxyUrl;
   if (!endpoint) {
+    dbStep('proxy', 'fail', 'No proxy URL set');
     if (showSceneError) showSceneError('No proxy URL — add your Railway URL in Settings.');
     if (onDone) onDone('');
     return;
   }
+  dbStep('proxy', 'ok', endpoint.replace('https://','').slice(0,40));
 
-  // Cancel any previous in-flight request
   if (streamController) { try { streamController.abort(); } catch {} streamController = null; }
-
-  let fullText = '';
-  let callDone = false;
-
-  // Safety: always call onDone exactly once
-  function finish(text) {
-    if (callDone) return;
-    callDone = true;
-    streamController = null;
-    if (onDone) onDone(text);
-  }
-
-  // Timeout safety net — if no response in 45s, surface error and finish
-  const safetyTimer = setTimeout(() => {
-    if (!callDone) {
-      if (showSceneError) showSceneError('Took too long — try again.');
-      finish('');
-    }
-  }, 45000);
-
   const myController = new AbortController();
   streamController = myController;
 
+  let fullText = '';
+  let finished = false;
+  function done(text) {
+    if (finished) return;
+    finished = true;
+    if (streamController === myController) streamController = null;
+    if (onDone) onDone(text);
+  }
+
+  const timeout = setTimeout(() => {
+    if (!finished) { if (showSceneError) showSceneError('Took too long — try again.'); done(''); }
+  }, 45000);
+
   try {
+    dbStep('fetchStarted', 'ok', 'POST ' + endpoint.slice(-30));
     const resp = await fetch(endpoint, {
       method: 'POST',
       signal: myController.signal,
@@ -2694,13 +2704,13 @@ async function callClaudeStream(systemPrompt, userPrompt, targetEl, onDone) {
       }),
     });
 
+    dbStep('fetchResponse', resp.ok ? 'ok' : 'fail', 'HTTP ' + resp.status);
     if (!resp.ok) {
       let errMsg = 'Unknown error';
       try { const b = await resp.json(); errMsg = b?.error?.message || errMsg; } catch {}
-      clearTimeout(safetyTimer);
+      clearTimeout(timeout);
       if (showSceneError) showSceneError('API error ' + resp.status + ': ' + errMsg);
-      finish('');
-      return;
+      done(''); return;
     }
 
     const reader = resp.body.getReader();
@@ -2708,8 +2718,8 @@ async function callClaudeStream(systemPrompt, userPrompt, targetEl, onDone) {
     let buf = '';
 
     while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
+      const { done: streamDone, value } = await reader.read();
+      if (streamDone) break;
       buf += decoder.decode(value, { stream: true });
       const lines = buf.split('\n');
       buf = lines.pop() ?? '';
@@ -2721,31 +2731,32 @@ async function callClaudeStream(systemPrompt, userPrompt, targetEl, onDone) {
           const evt = JSON.parse(raw);
           if (evt.type === 'content_block_delta' && evt.delta?.type === 'text_delta') {
             fullText += evt.delta.text;
+            if (targetEl) targetEl.textContent = fullText;
+            dbStep('streaming', 'ok', fullText.length + ' chars received');
           }
         } catch {}
       }
     }
 
-    clearTimeout(safetyTimer);
+    clearTimeout(timeout);
     if (fullText.trim()) {
-      finish(fullText);
+      dbStep('textReceived', 'ok', fullText.length + ' chars, ~' + Math.round(fullText.split(' ').length) + ' words');
+      done(fullText);
     } else {
+      dbStep('textReceived', 'fail', 'Empty response');
       if (showSceneError) showSceneError('No content returned — check your API key and try again.');
-      finish('');
+      done('');
     }
 
   } catch (e) {
-    clearTimeout(safetyTimer);
-    if (e.name === 'AbortError') {
-      // Deliberate abort (new scene requested) — do not surface error, do not call finish
-      callDone = true;
-      streamController = null;
-      return;
-    }
+    clearTimeout(timeout);
+    if (e.name === 'AbortError') { finished = true; streamController = null; return; }
+    dbStep('fetchResponse', 'fail', e.message || 'Network error');
     if (showSceneError) showSceneError('Network error: ' + (e.message || 'connection failed'));
-    finish('');
+    done('');
   }
 }
+
 
 /** Format AI output: escape, highlight names and body terms.
  *  Processes longest terms first to avoid nested replacement. */
@@ -2784,17 +2795,9 @@ function formatNarrative(text) {
 // ═══════════════════════════════════════════
 function generateInPlace() {
   escalationRevealed = false;
-  // Hide everything, show loading panel
-  ['sceneReadyPanel','timerArea','escalationPanel','sceneErrorBanner','rateCard'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.style.display = 'none';
-  });
-  const sc = document.getElementById('sceneContent');
-  if (sc) sc.innerHTML = '';
-  // Scroll to card top then generate
   const card = document.getElementById('sceneCard');
   if (card) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  setTimeout(generateFullScene, 200);
+  setTimeout(generateFullScene, 150);
 }
 
 function confirmLeavePlay() {
@@ -2818,18 +2821,15 @@ function revealScene() {
 }
 
 function goPlay() {
-  // Reset all content panels before showing play screen
-  const resetIds = ['sceneLoadingPanel','sceneReadyPanel','timerArea',
-                    'escalationPanel','sceneErrorBanner','rateCard'];
-  resetIds.forEach(id => {
+  const st = document.getElementById('sceneStreamText');
+  if (st) st.textContent = '';
+  ['timerArea','escalationPanel','sceneErrorBanner','rateCard'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.display = 'none';
   });
-  const sc = document.getElementById('sceneContent');
-  if (sc) sc.innerHTML = '';
   showScreen('screenPlay');
   document.body.classList.add('header-compact');
-  generateScene();
+  generateFullScene();
 }
 
 function retryScene() {
@@ -2900,51 +2900,42 @@ function generateFullScene() {
 
   const noOpts = document.getElementById('noOpts');
   const card   = document.getElementById('sceneCard');
-  if (!avScenes.length) { noOpts.style.display='block'; card.style.display='none'; return; }
-  noOpts.style.display = 'none'; card.style.display = 'block';
+  if (!avScenes.length) {
+    if (noOpts) noOpts.style.display = 'block';
+    if (card) card.style.display = 'none';
+    return;
+  }
+  if (noOpts) noOpts.style.display = 'none';
+  if (card) card.style.display = 'block';
 
   currentPiA = piA; currentPiB = piB;
   currentA = gN(piA); currentB = gN(piB);
   currentScene = pick(avScenes);
   if (currentScene) delete currentScene._lastNarrative;
   escalationRevealed = false;
+  dbStep('sceneSelected', 'ok', currentScene ? '"' + currentScene.title + '"' : 'none');
 
-  // Show loading state, hide everything else
-  const loadingPanel  = document.getElementById('sceneLoadingPanel');
-  const readyPanel    = document.getElementById('sceneReadyPanel');
-  const prepPanel     = document.getElementById('prepPanel');
-  const prepText      = document.getElementById('prepText');
-  const sceneContent  = document.getElementById('sceneContent');
-  const timerArea     = document.getElementById('timerArea');
-  const escalPanel    = document.getElementById('escalationPanel');
+  // Reset UI — show stream area immediately, hide timer/escalation
+  const streamText  = document.getElementById('sceneStreamText');
+  const timerArea   = document.getElementById('timerArea');
+  const escalPanel  = document.getElementById('escalationPanel');
+  const photoToggle = document.getElementById('scenePhotoToggle');
+  const newSceneBtn = document.getElementById('newSceneBtn');
+  const errorBanner = document.getElementById('sceneErrorBanner');
 
-  if (loadingPanel) {
-    loadingPanel.style.display = 'block';
-    // Animate progress bar — stops at 95% until response arrives
-    const pb = document.getElementById('sceneProgressBar');
-    if (pb) {
-      pb.style.width = '0%';
-      pb.style.transition = 'none';
-      requestAnimationFrame(() => {
-        pb.style.transition = 'width 12s cubic-bezier(0.1, 0, 0.3, 1)';
-        pb.style.width = '92%';
-      });
-    }
-  }
-  if (readyPanel)   { readyPanel.style.display = 'none'; }
-  if (sceneContent) { sceneContent.innerHTML = ''; }
-  if (timerArea)    { timerArea.style.display = 'none'; }
-  if (escalPanel)   { escalPanel.style.display = 'none'; }
-  const photoToggleEl = document.getElementById('scenePhotoToggle');
-  if (photoToggleEl) photoToggleEl.style.display = 'none';
+  if (streamText)  { streamText.textContent = ''; }
+  if (timerArea)   { timerArea.style.display = 'none'; }
+  if (escalPanel)  { escalPanel.style.display = 'none'; }
+  if (photoToggle) { photoToggle.style.display = 'none'; }
+  if (errorBanner) { errorBanner.classList.remove('visible'); }
+  if (newSceneBtn) { newSceneBtn.disabled = true; newSceneBtn.textContent = 'Writing…'; }
 
   resetTimer(300);
   document.getElementById('timerPhaseLabel').textContent = 'Duration';
   document.getElementById('timerSub').textContent = 'Minimum 5 minutes';
 
   isGenerating = true;
-  const newSceneBtn = document.getElementById('newSceneBtn');
-  if (newSceneBtn) { newSceneBtn.disabled = true; newSceneBtn.textContent = 'Writing…'; }
+  resetDebugChecklist();
 
   const isLight = currentMood === 'light';
   const likedKinks = currentScene.kinks
@@ -2954,91 +2945,74 @@ function generateFullScene() {
     .join(', ');
 
   const ctx    = buildSceneContext(piA, piB);
-  const system = `You write intimate scene plans for a couples app called Spark. Output three clearly separated sections using exactly these markers on their own lines:\n[PREP]\n[SCENE]\n[FINISH]\n\nRules per section:\n[PREP]: 1–3 sentences. What the couple needs to physically prepare — positions, props to get, clothing to remove. Practical, specific. No sexual acts yet.\n[SCENE]: ${isLight ? '2–4 sentences. Sensual and intimate — touching, kissing, slow exploration. No explicit genital acts required.' : '2–4 sentences. Direct and explicit. Name body parts. Describe specific sexual acts.'} Start with ${currentA}'s name.\n[FINISH]: 2–3 sentences. How it ends — who finishes, how, what happens immediately after.\n\n${ctx}`;
+  dbStep('contextBuilt', 'ok', ctx.length + ' chars');
+  const sceneRule = isLight ? '2-4 sentences. Sensual and intimate. No explicit genital acts required.' : '2-4 sentences. Direct and explicit. Name body parts. Describe specific sexual acts.';
+  const system = 'You write intimate scene plans for a couples app called Spark. Output three clearly separated sections using exactly these markers on their own lines:\n[PREP]\n[SCENE]\n[FINISH]\n\nRules per section:\n[PREP]: 1-3 sentences. What the couple needs to physically prepare. Practical, specific. No sexual acts yet.\n[SCENE]: ' + sceneRule + ' Start with ' + currentA + '\u2019s name.\n[FINISH]: 2-3 sentences. How it ends and brief aftercare.\n\n' + ctx;
 
-  const prompt = `Generate a complete three-phase scene.
-Scene type: "${currentScene.title}"
-Activities: ${likedKinks || 'sensual intimacy'}
-${currentNote ? `Specific request: "${currentNote}"` : ''}
-Giver: ${currentA} | Receiver: ${currentB}
+  const prompt = 'Generate a complete three-phase scene.\nScene type: "' + currentScene.title + '"\nActivities: ' + (likedKinks || 'sensual intimacy') + (currentNote ? '\nSpecific request: "' + currentNote + '"' : '') + (currentAvoid ? '\nDo NOT include: "' + currentAvoid + '"' : '') + '\nGiver: ' + currentA + ' | Receiver: ' + currentB + '\n\nOutput all three sections. Use exactly the markers [PREP], [SCENE], [FINISH] on their own lines.';
 
-Output all three sections. Use exactly the markers [PREP], [SCENE], [FINISH] on their own lines.`;
-
-  // Stream into prepText so the user sees live generation progress
-  // We parse sections from the full text in onDone
-  showDebugPrompt(system, prompt); // show in debug panel if enabled
+  showDebugPrompt(system, prompt);
   hideSceneError();
 
-  const streamSink = document.createElement('div');
-  callClaudeStream(system, prompt, streamSink, (text) => {
-    const loadingPanel2 = document.getElementById('sceneLoadingPanel');
-    const readyPanel2   = document.getElementById('sceneReadyPanel');
-    const prepText2     = document.getElementById('prepText');
-    const sceneContent2 = document.getElementById('sceneContent');
-    const timerArea2    = document.getElementById('timerArea');
-    const photoToggle2  = document.getElementById('scenePhotoToggle');
-    const newSceneBtn2  = document.getElementById('newSceneBtn');
+  // Stream text directly into the visible streamText element
+  callClaudeStream(system, prompt, streamText, (text) => {
+    isGenerating = false;
+    if (newSceneBtn) { newSceneBtn.disabled = false; newSceneBtn.textContent = 'New scene'; }
 
-    if (!text || text.trim() === '') {
-      showSceneError('empty response');
-      if (loadingPanel2) loadingPanel2.style.display = 'none';
-      isGenerating = false;
-      if (newSceneBtn2) { newSceneBtn2.disabled = false; newSceneBtn2.textContent = 'New scene'; }
-      return;
-    }
+    if (!text || !text.trim()) return; // error already shown by callClaudeStream
 
+    // Parse sections for escalation storage
     const getSection = (marker, nextMarker) => {
       const re = new RegExp('[[]' + marker + '[]]\\s*', 'i');
       const m = re.exec(text);
       if (!m) return '';
-      const contentStart = m.index + m[0].length;
+      const cs = m.index + m[0].length;
       if (nextMarker) {
         const re2 = new RegExp('[[]' + nextMarker + '[]]', 'i');
-        const m2 = re2.exec(text.slice(contentStart));
-        if (m2) return text.slice(contentStart, contentStart + m2.index).trim();
+        const m2 = re2.exec(text.slice(cs));
+        if (m2) return text.slice(cs, cs + m2.index).trim();
       }
-      return text.slice(contentStart).trim();
+      return text.slice(cs).trim();
     };
 
     const prepContent   = getSection('PREP', 'SCENE');
     const sceneContent_ = getSection('SCENE', 'FINISH');
     const finishContent = getSection('FINISH', null);
-    const hasMarkers    = !!(prepContent || sceneContent_ || finishContent);
 
-    if (prepText2) {
-      prepText2.innerHTML = formatNarrative(
-        prepContent || (hasMarkers ? 'Get comfortable together.' : '')
-      );
-    }
-
-    if (sceneContent2) {
-      const sceneText = sceneContent_ || (hasMarkers ? '' : text.trim());
-      sceneContent2.innerHTML =
-        '<div class="scene-body">' +
-        '<span class="scene-pill pill-spark">Tonight</span>' +
-        '<div class="scene-title">' + esc(currentScene.title) + '</div>' +
-        (sceneText ? '<div class="scene-narrative">' + formatNarrative(sceneText) + '</div>' : '') +
-        '</div>';
-    }
-
+    const markersOk = !!(prepContent && sceneContent_ && finishContent);
+    dbStep('markersFound', markersOk ? 'ok' : (prepContent || sceneContent_ ? 'warn' : 'fail'),
+      (prepContent?'PREP ':'') + (sceneContent_?'SCENE ':'') + (finishContent?'FINISH':''));
     if (finishContent) {
       currentScene._lastNarrative = sceneContent_ + '\n\n' + finishContent;
       currentScene._finishText = finishContent;
     }
 
-    const pb2 = document.getElementById('sceneProgressBar');
-    if (pb2) { pb2.style.transition = 'width .25s ease'; pb2.style.width = '100%'; }
+    // Format the completed text nicely with name highlighting
+    if (streamText) {
+      // Build a clean formatted version
+      let display = '';
+      if (prepContent) {
+        display += '<div style="font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--sage);margin-bottom:.5rem;padding-bottom:.4rem;border-bottom:1px solid var(--sage-mid);">Before you start the timer…</div>';
+        display += '<div style="margin-bottom:1.2rem;">' + formatNarrative(prepContent) + '</div>';
+      }
+      if (sceneContent_) {
+        display += '<span class="scene-pill pill-spark">Tonight</span>';
+        display += '<div class="scene-title">' + esc(currentScene.title) + '</div>';
+        display += '<div class="scene-narrative">' + formatNarrative(sceneContent_) + '</div>';
+      } else if (!prepContent) {
+        // No markers — show full text as scene
+        display += '<span class="scene-pill pill-spark">Tonight</span>';
+        display += '<div class="scene-title">' + esc(currentScene.title) + '</div>';
+        display += '<div class="scene-narrative">' + formatNarrative(text.trim()) + '</div>';
+      }
+      streamText.innerHTML = display;
+    }
 
-    setTimeout(() => {
-      if (loadingPanel2) loadingPanel2.style.display = 'none';
-      if (readyPanel2)   readyPanel2.style.display = 'block';
-      if (timerArea2)    timerArea2.style.display = 'block';
-      if (photoToggle2)  photoToggle2.style.display = 'flex';
-      document.getElementById('sceneCard')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 280);
+    dbStep('rendered', 'ok', 'innerHTML set');
+    // Show timer and photo toggle
+    if (timerArea)   { timerArea.style.display = 'block'; dbStep('timerReady', 'ok', 'visible'); }
+    if (photoToggle) photoToggle.style.display = 'flex';
 
-    isGenerating = false;
-    if (newSceneBtn2) { newSceneBtn2.disabled = false; newSceneBtn2.textContent = 'New scene'; }
     sessionStorage.setItem('spark_fail_count', '0');
     incrementSceneCount();
     if (sceneCount >= 3 && sceneCount % 3 === 0) {
@@ -3049,6 +3023,7 @@ Output all three sections. Use exactly the markers [PREP], [SCENE], [FINISH] on 
     }
   });
 }
+
 
 function revealEscalation() {
   if (escalationRevealed) return;
@@ -3165,6 +3140,7 @@ let debugMode = localStorage.getItem('spark_debug') === '1';
 function onDebugToggle() {
   debugMode = document.getElementById('debugMode')?.checked || false;
   localStorage.setItem('spark_debug', debugMode ? '1' : '0');
+  renderDebugChecklist();
   const status = document.getElementById('debugStatus');
   if (status) { status.textContent = debugMode ? 'On' : 'Off'; status.className = 'toggle-status' + (debugMode ? ' on' : ''); }
 }
@@ -3296,6 +3272,83 @@ function removeCustomProp(label) {
   props.delete('custom:' + label);
   savePropsState();
   buildPropsChips();
+}
+
+
+
+// ═══════════════════════════════════════════
+//  DEBUG CHECKLIST
+// ═══════════════════════════════════════════
+
+// Tracks pipeline steps — updated as each step completes/fails
+const debugSteps = {
+  proxy:        { label: 'Proxy URL configured',       status: 'pending', value: '' },
+  apiKey:       { label: 'API key present',            status: 'pending', value: '' },
+  sceneSelected:{ label: 'Scene selected',             status: 'pending', value: '' },
+  contextBuilt: { label: 'Scene context built',        status: 'pending', value: '' },
+  fetchStarted: { label: 'Fetch request sent',         status: 'pending', value: '' },
+  fetchResponse:{ label: 'Response received',          status: 'pending', value: '' },
+  streaming:    { label: 'Streaming chunks arriving',  status: 'pending', value: '' },
+  textReceived: { label: 'Full text received',         status: 'pending', value: '' },
+  markersFound: { label: '[PREP]/[SCENE]/[FINISH] parsed', status: 'pending', value: '' },
+  rendered:     { label: 'Scene rendered to screen',   status: 'pending', value: '' },
+  timerReady:   { label: 'Timer shown',                status: 'pending', value: '' },
+};
+
+function dbStep(id, status, value) {
+  if (!debugSteps[id]) return;
+  debugSteps[id].status = status; // 'ok' | 'fail' | 'warn' | 'pending'
+  if (value !== undefined) debugSteps[id].value = String(value);
+  renderDebugChecklist();
+}
+
+function renderDebugChecklist() {
+  const container = document.getElementById('debugChecklist');
+  const items     = document.getElementById('debugCheckItems');
+  if (!container || !items) return;
+
+  // Only show when debug mode on
+  if (!debugMode) { container.classList.remove('visible'); return; }
+  container.classList.add('visible');
+
+  const icons = { ok:'✓', fail:'✗', warn:'⚠', pending:'○' };
+  items.innerHTML = '';
+  Object.entries(debugSteps).forEach(([id, step]) => {
+    const row = document.createElement('div');
+    row.className = 'debug-check-item';
+
+    const icon = document.createElement('span');
+    icon.className = 'debug-check-icon';
+    icon.textContent = icons[step.status] || '○';
+    icon.style.color = step.status === 'ok' ? '#a8e6cf'
+                     : step.status === 'fail' ? '#ff8b8b'
+                     : step.status === 'warn' ? '#ffd97d' : '#444';
+
+    const labelWrap = document.createElement('div');
+    labelWrap.style.flex = '1';
+    const label = document.createElement('div');
+    label.className = 'debug-check-label ' + step.status;
+    label.textContent = step.label;
+    labelWrap.appendChild(label);
+    if (step.value) {
+      const val = document.createElement('div');
+      val.className = 'debug-check-value';
+      val.textContent = step.value;
+      labelWrap.appendChild(val);
+    }
+
+    row.appendChild(icon);
+    row.appendChild(labelWrap);
+    items.appendChild(row);
+  });
+}
+
+function resetDebugChecklist() {
+  Object.keys(debugSteps).forEach(k => {
+    debugSteps[k].status = 'pending';
+    debugSteps[k].value  = '';
+  });
+  renderDebugChecklist();
 }
 
 
