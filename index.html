@@ -2639,29 +2639,44 @@ function buildSceneContext(piA, piB) {
 async function callClaudeStream(systemPrompt, userPrompt, targetEl, onDone) {
   const key = getApiKey();
   if (!key) {
-    showSceneError && showSceneError('No API key'); targetEl.innerHTML = '';
+    if (showSceneError) showSceneError('No API key');
     if (onDone) onDone('');
     return;
   }
-  // Allow proxy sentinel through without showing as error
-  const usingProxy = key === '__proxy__';
 
-  targetEl.innerHTML = '<span class="generating">Writing your scene…</span>';
+  const endpoint = window._sparkProxyUrl;
+  if (!endpoint) {
+    if (showSceneError) showSceneError('No proxy URL — add your Railway URL in Settings.');
+    if (onDone) onDone('');
+    return;
+  }
+
+  // Cancel any previous in-flight request
+  if (streamController) { try { streamController.abort(); } catch {} streamController = null; }
+
   let fullText = '';
+  let callDone = false;
 
-  // Only abort a previous stream if one is actually in flight, not this call itself
-  const prevController = streamController;
-  if (prevController) { try { prevController.abort(); } catch {} }
+  // Safety: always call onDone exactly once
+  function finish(text) {
+    if (callDone) return;
+    callDone = true;
+    streamController = null;
+    if (onDone) onDone(text);
+  }
+
+  // Timeout safety net — if no response in 45s, surface error and finish
+  const safetyTimer = setTimeout(() => {
+    if (!callDone) {
+      if (showSceneError) showSceneError('Took too long — try again.');
+      finish('');
+    }
+  }, 45000);
+
   const myController = new AbortController();
   streamController = myController;
 
   try {
-    const endpoint = window._sparkProxyUrl;
-    if (!endpoint) {
-      showSceneError && showSceneError('No proxy URL'); targetEl.innerHTML = '';
-      if (onDone) onDone('');
-      return;
-    }
     const resp = await fetch(endpoint, {
       method: 'POST',
       signal: myController.signal,
@@ -2671,8 +2686,8 @@ async function callClaudeStream(systemPrompt, userPrompt, targetEl, onDone) {
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-5-20250929',
-        max_tokens: 600,
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1000,
         stream: true,
         system: systemPrompt,
         messages: [{ role: 'user', content: userPrompt }],
@@ -2680,14 +2695,11 @@ async function callClaudeStream(systemPrompt, userPrompt, targetEl, onDone) {
     });
 
     if (!resp.ok) {
-      // Try to parse error body; fall back gracefully
       let errMsg = 'Unknown error';
-      try {
-        const errBody = await resp.json();
-        errMsg = errBody?.error?.message || errMsg;
-      } catch {}
-      showSceneError && showSceneError('API error ' + resp.status + ': ' + errMsg); targetEl.innerHTML = '';
-      if (onDone) onDone('');
+      try { const b = await resp.json(); errMsg = b?.error?.message || errMsg; } catch {}
+      clearTimeout(safetyTimer);
+      if (showSceneError) showSceneError('API error ' + resp.status + ': ' + errMsg);
+      finish('');
       return;
     }
 
@@ -2704,36 +2716,34 @@ async function callClaudeStream(systemPrompt, userPrompt, targetEl, onDone) {
       for (const line of lines) {
         if (!line.startsWith('data: ')) continue;
         const raw = line.slice(6).trim();
-        if (raw === '[DONE]') break;
+        if (raw === '[DONE]') continue;
         try {
           const evt = JSON.parse(raw);
           if (evt.type === 'content_block_delta' && evt.delta?.type === 'text_delta') {
             fullText += evt.delta.text;
           }
-        } catch { /* ignore malformed SSE chunks */ }
+        } catch {}
       }
     }
 
-    // Render once at end — not per-chunk
-    if (fullText) {
-      targetEl.innerHTML = formatNarrative(fullText);
+    clearTimeout(safetyTimer);
+    if (fullText.trim()) {
+      finish(fullText);
     } else {
-      showSceneError && showSceneError('No content returned'); targetEl.innerHTML = '';
+      if (showSceneError) showSceneError('No content returned — check your API key and try again.');
+      finish('');
     }
-    if (onDone) onDone(fullText);
 
   } catch (e) {
+    clearTimeout(safetyTimer);
     if (e.name === 'AbortError') {
-      // Intentional abort — silently clean up, don't show error
+      // Deliberate abort (new scene requested) — do not surface error, do not call finish
+      callDone = true;
+      streamController = null;
       return;
     }
-    const isCors = e.message?.includes('Failed to fetch') || e.message?.includes('NetworkError');
-    const hint   = isCors ? ' (Likely a CORS block — the Anthropic API requires a server-side proxy for browser use.)' : '';
-    showSceneError && showSceneError('Network error: ' + e.message); targetEl.innerHTML = '';
-    if (onDone) onDone('');
-  } finally {
-    // Clear our controller reference if it's still the active one
-    if (streamController === myController) streamController = null;
+    if (showSceneError) showSceneError('Network error: ' + (e.message || 'connection failed'));
+    finish('');
   }
 }
 
