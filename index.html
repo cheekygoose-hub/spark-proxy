@@ -450,6 +450,23 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 
 
 
+
+/* ROLE SELECTOR on pre-screen */
+.role-section{margin-top:1.1rem;}
+.role-section-label{font-size:.78rem;font-weight:600;color:var(--ink2);margin-bottom:.6rem;display:block;}
+.role-pair{display:flex;flex-direction:column;gap:.5rem;}
+.role-row{display:flex;align-items:center;gap:.6rem;background:var(--card);
+  border:1px solid var(--border);border-radius:var(--rs);padding:.6rem .85rem;box-shadow:var(--sh);}
+.role-row-name{font-size:.82rem;font-weight:600;color:var(--ink);min-width:60px;flex-shrink:0;}
+.role-btns{display:flex;gap:.3rem;flex:1;}
+.role-btn{flex:1;padding:.3rem .4rem;border-radius:20px;border:1.5px solid var(--border);
+  background:var(--bg);font-family:'DM Sans',sans-serif;font-size:.7rem;font-weight:600;
+  cursor:pointer;transition:all .15s;color:var(--muted);text-align:center;user-select:none;}
+.role-btn:hover{border-color:var(--border2);color:var(--ink2);}
+.role-btn.role-dom{background:var(--ink);border-color:var(--ink);color:#fff;}
+.role-btn.role-sub{background:var(--blush-bg);border-color:var(--blush-mid);color:var(--blush);}
+.role-btn.role-either{background:var(--sage-bg);border-color:var(--sage-mid);color:var(--sage);}
+
 /* PROPS on pre-scene */
 .props-section{margin-top:1.1rem}
 .props-section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem}
@@ -929,6 +946,29 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
       oninput="currentAvoid=this.value.trim()"></textarea>
   </div>
 
+  <!-- Role selection for tonight -->
+  <div class="role-section">
+    <span class="role-section-label">Who's in charge tonight?</span>
+    <div class="role-pair">
+      <div class="role-row">
+        <span class="role-row-name" id="roleLabel0">Partner 1</span>
+        <div class="role-btns">
+          <button class="role-btn" id="role0-dom"     onclick="setRole(0,'dom')">Dom</button>
+          <button class="role-btn role-either" id="role0-either" onclick="setRole(0,'either')">Either</button>
+          <button class="role-btn" id="role0-sub"     onclick="setRole(0,'sub')">Sub</button>
+        </div>
+      </div>
+      <div class="role-row">
+        <span class="role-row-name" id="roleLabel1">Partner 2</span>
+        <div class="role-btns">
+          <button class="role-btn" id="role1-dom"     onclick="setRole(1,'dom')">Dom</button>
+          <button class="role-btn role-either" id="role1-either" onclick="setRole(1,'either')">Either</button>
+          <button class="role-btn" id="role1-sub"     onclick="setRole(1,'sub')">Sub</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- What's available tonight -->
   <div class="props-section" id="propsSection">
     <div class="props-section-header">
@@ -1087,50 +1127,7 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
   <!-- Post-scene quick rate (shown after 3rd+ scene) -->
   <div class="rate-card" id="rateCard">
     <div class="rate-card-title">How was that?</div>
-    <div class="rate-card-sub">Takes one tap — helps Spark know you better</div>
-    <div class="rate-btns">
-      <button class="rate-btn rate-love" onclick="rateScene('love')">❤ Loved it</button>
-      <button class="rate-btn rate-good" onclick="rateScene('good')">✓ Good</button>
-      <button class="rate-btn rate-not" onclick="rateScene('not')">✕ Not for us</button>
-    </div>
-  </div>
-
-
-
-</div>
-
-</div><!-- /container -->
-
-<!-- EXIT CONFIRMATION SHEET -->
-<div class="exit-sheet-overlay" id="exitSheet" onclick="closeExitSheet(event)">
-  <div class="exit-sheet">
-    <div class="exit-sheet-handle"></div>
-    <div class="exit-sheet-title">Leave this scene?</div>
-    <div class="exit-sheet-sub">Your current scene will be lost.</div>
-    <div class="exit-sheet-btns">
-      <button class="btn btn-outline" onclick="closeExitSheet();goSetup()">Go to Settings</button>
-      <button class="btn btn-ink" onclick="closeExitSheet()">Stay here</button>
-    </div>
-  </div>
-</div>
-
-<!-- AMBUSH MODAL -->
-<div class="modal-overlay" id="ambushModal" onclick="closeAmbushModal(event)">
-  <div class="modal-sheet">
-    <div class="modal-handle"></div>
-    <div class="modal-title">Quick tease</div>
-    <div class="modal-sub">An interruption for right now. Choose intensity.</div>
-    <div class="label">Intensity</div>
-    <div class="int-pills" id="ambushIntensityPills" style="margin-bottom:1rem;">
-      <div class="int-pill active" data-level="light" onclick="setAmbushIntensity('light',this)"><div class="int-pill-icon">🌸</div><span class="int-pill-name">Light</span><span class="int-pill-hint">Subtle</span></div>
-      <div class="int-pill" data-level="moderate" onclick="setAmbushIntensity('moderate',this)"><div class="int-pill-icon">🔥</div><span class="int-pill-name">Moderate</span><span class="int-pill-hint">Loaded</span></div>
-      <div class="int-pill" data-level="explicit" onclick="setAmbushIntensity('explicit',this)"><div class="int-pill-icon">⚡</div><span class="int-pill-name">Explicit</span><span class="int-pill-hint">Direct</span></div>
-    </div>
-    <div id="ambushList"></div>
-    <button class="btn btn-outline" onclick="renderAmbushList()" style="margin-top:.5rem;font-size:.85rem;padding:.7rem;">↻ Shuffle</button>
-  </div>
-</div>
-
+    <div c
 <script>
 // ─── Debug mode (declared early — used in restoreSettings) ──────
 let debugMode = typeof localStorage !== 'undefined'
@@ -1688,6 +1685,7 @@ let isGenerating   = false;
 let currentMood    = null;            // 'light' | 'medium' | 'hard' | null — set on pre-screen
 let currentNote    = '';              // free-text focus from pre-screen
 let currentAvoid   = '';              // free-text avoid from pre-screen
+let currentRoles   = ['either','either']; // 'dom'|'sub'|'either' per partner
 let photoSuggest   = false;
 // Survey filters
 let surveyLevel    = 'beginner';      // 'beginner' | 'intermediate' | 'advanced'
@@ -1814,6 +1812,7 @@ function goHome() {
 
 function goPreScene(resetMood) {
   buildPropsChips(); // refresh chip grid with persisted state
+  updateRoleLabels(); // sync names to role rows
   // If resetMood not requested, keep current intensity
   if (resetMood) {
     currentMood = null;
@@ -1826,6 +1825,8 @@ function goPreScene(resetMood) {
     if (ni) ni.value = '';
     if (ai) ai.value = '';
     currentNote = ''; currentAvoid = '';
+    currentRoles = ['either','either'];
+    setRole(0,'either'); setRole(1,'either');
     const gb = document.getElementById('goSceneBtn');
     if (gb) { gb.disabled = true; gb.style.opacity = '.4'; }
   } else {
@@ -2837,6 +2838,7 @@ function formatNarrative(text) {
 // ═══════════════════════════════════════════
 function generateInPlace() {
   escalationRevealed = false;
+  refusalRetries = 0;
   const card = document.getElementById('sceneCard');
   if (card) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
   setTimeout(generateFullScene, 150);
@@ -2977,7 +2979,19 @@ function _generateFullSceneInner() {
 
   currentPiA = piA; currentPiB = piB;
   currentA = gN(piA); currentB = gN(piB);
-  currentScene = pick(avScenes);
+  // Prefer a scene from a different category than the previous one
+  let scenePool = avScenes;
+  if (previousScene) {
+    // Try to exclude same scene and same category
+    const diffCat = avScenes.filter(s => s.id !== previousScene.id && s.cat !== previousScene.cat);
+    if (diffCat.length > 0) scenePool = diffCat;
+    else {
+      // At minimum, exclude the exact same scene
+      const diffScene = avScenes.filter(s => s.id !== previousScene.id);
+      if (diffScene.length > 0) scenePool = diffScene;
+    }
+  }
+  currentScene = pick(scenePool);
   if (currentScene) delete currentScene._lastNarrative;
   escalationRevealed = false;
   dbStep('sceneSelected', 'ok', currentScene ? '"' + currentScene.title + '"' : 'none');
@@ -3005,19 +3019,77 @@ function _generateFullSceneInner() {
 
   isGenerating = true;
 
-  const isLight = currentMood === 'light';
-  const likedKinks = currentScene.kinks
+  // Build the one act the couple will do for the full five minutes
+  const isLight  = currentMood === 'light';
+  const isMedium = currentMood === 'medium';
+  const isHard   = currentMood === 'hard';
+
+  // Pick the primary act from the scene's kink list — one thing, not a list
+  const kinkItems = currentScene.kinks
     .map(k => ALL_KINK_ITEMS.find(i => i.id === k))
-    .filter(Boolean)
-    .map(i => i.label.replace(/ — (Giving|Receiving)$/, t => t === ' — Giving' ? ' (giving)' : ' (receiving)'))
-    .join(', ');
+    .filter(Boolean);
+  // Prefer a kink the couple marked as favourite or like, fall back to first
+  const favKink  = kinkItems.find(i => kinkPrefs[piA]?.[i.id] === 'fav' || kinkPrefs[piB]?.[i.id] === 'fav');
+  const likeKink = kinkItems.find(i => kinkPrefs[piA]?.[i.id] === 'like' || kinkPrefs[piB]?.[i.id] === 'like');
+  const primaryKink = favKink || likeKink || kinkItems[0];
+  const actLabel = primaryKink
+    ? primaryKink.label.replace(/ — Giving$/, '').replace(/ — Receiving$/, '')
+    : 'intimacy';
 
-  const ctx    = buildSceneContext(piA, piB);
+  // Props relevant to this scene
+  const availProps = props.has('none') ? '' :
+    [...props].map(p => p.startsWith('custom:') ? p.slice(7) : p)
+      .filter(p => p !== 'none').join(', ');
+
+  // What was done last time — enforce variety
+  const avoidRepeat = previousKinks.length > 0
+    ? 'Do NOT repeat or closely resemble the previous scene. Previous act was: ' + previousKinks.slice(0,3).join(', ') + '.'
+    : '';
+
+  const ctx = buildSceneContext(piA, piB);
   dbStep('contextBuilt', 'ok', ctx.length + ' chars');
-  const sceneRule = isLight ? '2-4 sentences. Sensual and intimate. No explicit genital acts required.' : '2-4 sentences. Direct and explicit. Name body parts. Describe specific sexual acts.';
-  const system = 'You write intimate scene plans for a couples app called Spark. Output three clearly separated sections using exactly these markers on their own lines:\n[PREP]\n[SCENE]\n[FINISH]\n\nRules per section:\n[PREP]: 1-3 sentences. What the couple needs to physically prepare. Practical, specific. No sexual acts yet.\n[SCENE]: ' + sceneRule + ' Start with ' + currentA + '\u2019s name.\n[FINISH]: 2-3 sentences. How it ends and brief aftercare.\n\n' + ctx;
 
-  const prompt = 'Generate a complete three-phase scene.\nScene type: "' + currentScene.title + '"\nActivities: ' + (likedKinks || 'sensual intimacy') + (currentNote ? '\nSpecific request: "' + currentNote + '"' : '') + (currentAvoid ? '\nDo NOT include: "' + currentAvoid + '"' : '') + '\nGiver: ' + currentA + ' | Receiver: ' + currentB + '\n\nOutput all three sections. Use exactly the markers [PREP], [SCENE], [FINISH] on their own lines.';
+  // Explicit level rules
+  const explicitRule = isLight
+    ? 'This is a light/sensual scene. No explicit penetration or graphic language. Focus on touch, sensation, build-up, kissing, and anticipation. Keep language tasteful.'
+    : isMedium
+    ? 'This is a direct sexual scene. Be specific and physical. Name body parts. Describe the act clearly without being gratuitously graphic.'
+    : 'This is fully explicit and hardcore. Be completely graphic. Name every body part and act directly. Nothing held back.';
+
+  const system =
+    'You write a single intimate act for a couples app called Spark. The couple will do ONE thing together for 5 minutes — not a sequence of acts.' +
+    '\n\nOutput exactly three sections with these markers on their own lines:' +
+    '\n[PREP]\n[SCENE]\n[FINISH]' +
+    '\n\n[PREP] rules: ONE sentence only. A single practical instruction — the position to get into, or the one prop to grab. No sexual acts. Example: "Lie face-down on the bed with a pillow under your hips." or "Alex, kneel on the floor in front of Jordan."' +
+    '\n\n[SCENE] rules: 3-5 sentences describing ONE sustained act. ' + explicitRule + ' This is what they do for the full five minutes — no scene changes, no "then do this next". Start with ' + currentA + '\u2019s name. Use both names throughout. Every sentence must describe the same act in more detail or from a different angle — not move on to something else.' +
+    '\n\n[FINISH] rules: 1-2 sentences. The natural ending of that same act — how it concludes and what happens immediately after. Not a new act.' +
+    '\n\n' + ctx;
+
+  const prompt =
+    'Write a scene for ' + currentA + ' and ' + currentB + '.' +
+    '\nThe single act: ' + actLabel +
+    '\nScene title (for flavour only, do not reproduce literally): "' + currentScene.title + '"' +
+    (currentNote  ? '\nCouple specifically wants: "' + currentNote + '" — make this the act if possible.' : '') +
+    (currentAvoid ? '\nDo NOT include: "' + currentAvoid + '"' : '') +
+    (availProps   ? '\nProps available if relevant: ' + availProps : '') +
+    (avoidRepeat  ? '\n' + avoidRepeat : '') +
+    '\n' + (function() {
+      const rA = currentRoles[piA] || 'either';
+      const rB = currentRoles[piB] || 'either';
+      // Build role instruction
+      if (rA === 'dom' && rB === 'sub') return currentA + ' is dominant throughout. ' + currentB + ' is submissive throughout.';
+      if (rA === 'sub' && rB === 'dom') return currentB + ' is dominant throughout. ' + currentA + ' is submissive throughout.';
+      if (rA === 'dom') return currentA + ' takes the dominant role. ' + currentB + ' can be responsive.';
+      if (rA === 'sub') return currentA + ' takes a submissive role. ' + currentB + ' leads.';
+      if (rB === 'dom') return currentB + ' takes the dominant role. ' + currentA + ' responds.';
+      if (rB === 'sub') return currentB + ' is submissive. ' + currentA + ' leads.';
+      return currentA + ' initiates. Either can lead naturally.';
+    })() +
+    '\n\nOutput [PREP], [SCENE], [FINISH] sections only. No preamble.';
+
+  // Store current kinks for next time's anti-repeat logic
+  previousScene = currentScene;
+  previousKinks = kinkItems.slice(0,4).map(i => i.label.replace(/ — (Giving|Receiving)$/,''));
 
   showDebugPrompt(system, prompt);
   hideSceneError();
@@ -3027,7 +3099,34 @@ function _generateFullSceneInner() {
     isGenerating = false;
     if (newSceneBtn) { newSceneBtn.disabled = false; newSceneBtn.textContent = 'New scene'; }
 
-    if (!text || !text.trim()) return; // error already shown by callClaudeStream
+    if (!text || !text.trim()) return;
+
+    // Refusal detection — silently retry with a different scene
+    if (isRefusal(text)) {
+      refusalRetries++;
+      if (refusalRetries <= 4) {
+        dbStep('rendered', 'warn', 'refusal #' + refusalRetries + ' — retrying');
+        psSet('stream', 'warn', 'retry ' + refusalRetries);
+        setTimeout(() => { isGenerating = false; generateFullScene(); }, 300);
+        return;
+      } else {
+        refusalRetries = 0;
+        if (streamText) {
+          const card2 = document.getElementById('sceneCard');
+          if (card2) card2.style.display = 'block';
+          streamText.innerHTML =
+            '<div style="font-family:sans-serif;font-size:.85rem;' +
+            'color:var(--muted);line-height:1.7;padding:.5rem 0;">' +
+            'No scene available for this combination right now. ' +
+            'Try adjusting the mood or note.' +
+            '</div>';
+        }
+        if (timerArea) timerArea.style.display = 'none';
+        if (newSceneBtn) { newSceneBtn.disabled = false; newSceneBtn.textContent = 'New scene'; }
+        return;
+      }
+    }
+    refusalRetries = 0;
 
     // Parse sections for escalation storage
     const getSection = (marker, nextMarker) => {
@@ -3439,6 +3538,61 @@ function resetDebugChecklist() {
 }
 
 
+
+
+// ═══════════════════════════════════════════
+//  REFUSAL DETECTION
+// ═══════════════════════════════════════════
+function isRefusal(text) {
+  if (!text) return false;
+  const t = text.toLowerCase();
+  // If response contains scene markers it's always real content
+  if (text.includes('[PREP]') || text.includes('[SCENE]') || text.includes('[FINISH]')) return false;
+  const refusalPhrases = [
+    "i can't", "i cannot", "i'm not able", "i am not able",
+    "i won't", "i will not", "i'm unable", "i am unable",
+    "i don't feel comfortable", "i'm not comfortable",
+    "as an ai", "as a language model",
+    "this content", "this type of content", "this kind of content",
+    "explicit content", "adult content", "sexual content",
+    "i'd be happy to help with something else",
+    "not appropriate", "not suitable",
+    "guidelines", "my guidelines", "my training",
+    "violates", "goes against",
+    "can't assist", "cannot assist", "unable to assist",
+    "can't help", "cannot help", "unable to help",
+    "can't write", "cannot write", "unable to write",
+    "can't create", "cannot create",
+    "i must decline", "i need to decline",
+  ];
+  return refusalPhrases.some(p => t.includes(p));
+}
+
+// ═══════════════════════════════════════════
+//  ROLE SELECTION
+// ═══════════════════════════════════════════
+function setRole(pi, role) {
+  currentRoles[pi] = role;
+  const roles = ['dom','either','sub'];
+  const clsMap = { dom:'role-dom', either:'role-either', sub:'role-sub' };
+  roles.forEach(r => {
+    const btn = document.getElementById('role' + pi + '-' + r);
+    if (!btn) return;
+    btn.className = 'role-btn' + (r === role ? ' ' + clsMap[r] : '');
+  });
+  if (navigator.vibrate) navigator.vibrate(30);
+}
+
+function updateRoleLabels() {
+  // Keep role row names in sync with partner names
+  const n0 = gN(0);
+  const n1 = gN(1);
+  const l0 = document.getElementById('roleLabel0');
+  const l1 = document.getElementById('roleLabel1');
+  if (l0) l0.textContent = n0;
+  if (l1) l1.textContent = n1;
+}
+
 // ═══════════════════════════════════════════
 //  PROXY DETECTION
 // ═══════════════════════════════════════════
@@ -3623,6 +3777,7 @@ document.getElementById('name2')?.addEventListener('input', function() {
 document.getElementById('sceneNoteInput')?.addEventListener('input', function() {
   currentNote = this.value.trim();
 });
+
 </script>
 </body>
 </html>
