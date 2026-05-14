@@ -1132,6 +1132,11 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 </div>
 
 <script>
+// ─── Debug mode (declared early — used in restoreSettings) ──────
+let debugMode = typeof localStorage !== 'undefined'
+  ? localStorage.getItem('spark_debug') === '1'
+  : false;
+
 // ═══════════════════════════════════════════
 //  AI PANEL TOGGLE
 // ═══════════════════════════════════════════
@@ -1691,7 +1696,8 @@ let activeSurveyCats = new Set();     // which category IDs are shown
 let streamController = null;         // AbortController for active stream
 
 function gN(i) {
-  const v = document.getElementById('name' + (i + 1)).value.trim();
+  const el = document.getElementById('name' + (i + 1));
+  const v  = el ? el.value.trim() : '';
   return v || 'Partner ' + (i + 1);
 }
 function willingAll() { return document.getElementById('willingAll').checked; }
@@ -1949,11 +1955,15 @@ document.getElementById('rememberKey')?.addEventListener('change', () => {
     if (proxyField) proxyField.value = savedProxy;
     window._sparkProxyUrl = normaliseProxyUrl(savedProxy);
   } else if (window.location.protocol === 'https:' && window.location.hostname !== 'localhost') {
-    // Served from Railway — proxy is this same server
+    // Served from Railway — proxy IS this server, key is in Railway env
     window._sparkProxyUrl = window.location.origin + '/v1/messages';
     window._sparkProxyAuthHandled = true;
-    if (proxyField) proxyField.placeholder = 'Auto-detected: ' + window.location.hostname;
+    if (proxyField) {
+      proxyField.value = window.location.origin + '/v1/messages';
+      proxyField.placeholder = 'Auto-detected';
+    }
     setProxyStatus('ok', 'Connected — Railway proxy auto-detected ✓');
+    psSet('proxy', 'ok', window.location.hostname.slice(0, 20));
   }
 })();
 
@@ -2725,7 +2735,7 @@ async function callClaudeStream(systemPrompt, userPrompt, targetEl, onDone) {
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
+        model: 'claude-sonnet-4-5-20250514',
         max_tokens: 1000,
         stream: true,
         system: systemPrompt,
@@ -2909,6 +2919,9 @@ function showSceneError(rawMsg) {
   isGenerating = false;
   const btn = document.getElementById('newSceneBtn');
   if (btn) { btn.disabled = false; btn.textContent = 'New scene'; }
+  // Ensure card is visible so the error banner shows
+  const card = document.getElementById('sceneCard');
+  if (card) card.style.display = 'block';
 }
 
 function hideSceneError() {
@@ -2928,14 +2941,20 @@ function generateFullScene() {
   try {
     _generateFullSceneInner();
   } catch(e) {
-    // Surface any JS error visibly
-    isGenerating = false;
-    psSet('fetch', 'fail', 'JS error');
+    // Surface any JS error visibly in the stream area
+    psSet('fetch', 'fail', 'JS error: ' + e.message.slice(0,30));
     const st = document.getElementById('sceneStreamText');
-    if (st) st.textContent = 'Internal error: ' + e.message + '\n\nStack: ' + (e.stack||'').slice(0,200);
+    if (st) {
+      const card = document.getElementById('sceneCard');
+      if (card) card.style.display = 'block';
+      st.textContent = 'Error: ' + e.message + '\n\nStack: ' + (e.stack||'').slice(0,300);
+    }
+    console.error('generateFullScene crash:', e);
+  } finally {
+    // Always re-enable the button and clear generating flag
+    isGenerating = false;
     const nb = document.getElementById('newSceneBtn');
     if (nb) { nb.disabled = false; nb.textContent = 'New scene'; }
-    console.error('generateFullScene crash:', e);
   }
 }
 
@@ -3182,9 +3201,9 @@ function addTime(m) { totalSecs += m * 60; remainSecs += m * 60; updateTimerDisp
 
 
 // ═══════════════════════════════════════════
-//  DEBUG MODE
+//  DEBUG MODE  (declaration moved inline below)
 // ═══════════════════════════════════════════
-let debugMode = localStorage.getItem('spark_debug') === '1';
+// debugMode declared early in the file — see top of STATE VARS
 
 function onDebugToggle() {
   debugMode = document.getElementById('debugMode')?.checked || false;
@@ -3338,7 +3357,7 @@ function psSet(id, state, text) {
 }
 
 function psReset() {
-  psSet('proxy',  'pending', 'proxy…');
+  // Keep proxy dot — it reflects persistent connection state, not per-request
   psSet('key',    'pending', 'key…');
   psSet('fetch',  'pending', 'fetch…');
   psSet('stream', 'pending', 'stream…');
@@ -3484,9 +3503,8 @@ async function detectProxy() {
 
   const raw = (field?.value.trim() || stored).trim();
   if (!raw) {
-    // If _sparkProxyUrl already set (auto-detected Railway) don't overwrite
     if (window._sparkProxyUrl && window._sparkProxyAuthHandled) {
-      return; // already configured by restoreSettings
+      return; // already configured — Railway auto-detected
     }
     setProxyStatus('none', 'Enter your Railway proxy URL above');
     return;
