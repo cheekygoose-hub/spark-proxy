@@ -98,6 +98,7 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 .prep-loading-dots span:nth-child(2){animation-delay:.15s}
 .prep-loading-dots span:nth-child(3){animation-delay:.3s}
 @keyframes bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-6px)}}
+@keyframes progressFill{0%{width:0%}60%{width:75%}90%{width:90%}100%{width:95%}}
 .prep-loading-text{font-size:.78rem;color:var(--muted)}
 
 /* ESCALATION back link */
@@ -431,6 +432,8 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 .intensity-btn-body{flex:1}
 .intensity-btn-title{font-family:'DM Serif Display',serif;font-size:1.1rem;font-weight:400;
   color:var(--ink);display:block;margin-bottom:.15rem}
+.intensity-btn-title em{font-style:italic;color:var(--blush);font-weight:400;}
+.intensity-btn.sel-hard .intensity-btn-title em{color:var(--blush);}
 .intensity-btn-sub{font-size:.72rem;color:var(--muted);display:block;line-height:1.4}
 .intensity-btn.sel-light .intensity-btn-title{color:var(--sage)}
 .intensity-btn.sel-medium .intensity-btn-title{color:var(--amber)}
@@ -441,8 +444,45 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
   line-height:1.5;margin-top:1rem}
 .focus-input:focus{border-color:var(--blush);box-shadow:0 0 0 3px var(--blush-bg)}
 .focus-input::placeholder{color:var(--faint)}
+.focus-input-label{font-size:.78rem;font-weight:600;color:var(--ink2);margin-bottom:.35rem;display:block}
 .prescreen-go{margin-top:1.2rem}
 
+
+
+/* PROPS on pre-scene */
+.props-section{margin-top:1.1rem}
+.props-section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem}
+.props-section-title{font-size:.78rem;font-weight:600;color:var(--ink2)}
+.props-none-toggle{display:flex;align-items:center;gap:.4rem;cursor:pointer;
+  font-size:.72rem;color:var(--muted)}
+.props-none-toggle input{accent-color:var(--blush);width:14px;height:14px;cursor:pointer}
+.props-chip-grid{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.5rem}
+.props-chip{padding:.35rem .75rem;border-radius:20px;border:1.5px solid var(--border);
+  background:var(--bg);font-family:'DM Sans',sans-serif;font-size:.75rem;font-weight:500;
+  cursor:pointer;transition:all .15s;color:var(--ink2);user-select:none}
+.props-chip:hover{border-color:var(--border2);background:#fff}
+.props-chip.active{background:var(--sage-bg);border-color:var(--sage-mid);color:var(--sage)}
+.props-chip.active-none{background:var(--blush-bg);border-color:var(--blush-mid);color:var(--blush)}
+.props-chip.custom-chip{border-style:dashed}
+.props-custom-row{display:flex;gap:.4rem;margin-top:.35rem}
+.props-custom-input{flex:1;background:var(--bg);border:1.5px solid var(--border);
+  border-radius:var(--rs);font-family:'DM Sans',sans-serif;font-size:.82rem;
+  padding:.45rem .75rem;outline:none;color:var(--ink)}
+.props-custom-input:focus{border-color:var(--sage)}
+.props-custom-input::placeholder{color:var(--faint)}
+.props-custom-btn{background:var(--ink);border:none;border-radius:var(--rs);
+  color:#fff;font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:600;
+  padding:.45rem .85rem;cursor:pointer;white-space:nowrap}
+.props-disabled{opacity:.4;pointer-events:none}
+
+/* DEBUG PANEL */
+.debug-panel{margin-top:1.2rem;background:#1a1714;border-radius:var(--rs);
+  padding:1rem 1.1rem;display:none}
+.debug-panel.visible{display:block}
+.debug-panel-label{font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:#666;margin-bottom:.5rem}
+.debug-text{font-family:monospace;font-size:.68rem;color:#a8e6cf;line-height:1.5;
+  white-space:pre-wrap;word-break:break-word;max-height:300px;overflow-y:auto}
 
 /* ══════════ SURVEY v2 — Macro-to-Micro ══════════ */
 
@@ -751,8 +791,23 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
     </div>
   </div>
 
-  <div class="label" style="margin-top:.25rem;">What you have available</div>
-  <div class="chip-grid" id="propsGrid" style="margin-bottom:.75rem;"></div>
+
+  <!-- Dev/Test toggle -->
+  <div class="card" style="margin-top:.75rem;">
+    <div class="toggle-row">
+      <div class="toggle-text">
+        <strong>Debug mode</strong>
+        <span>Show full AI prompt below each scene</span>
+      </div>
+      <div class="toggle-wrap">
+        <label class="toggle-switch">
+          <input type="checkbox" id="debugMode" onchange="onDebugToggle()">
+          <span class="toggle-slider"></span>
+        </label>
+        <div class="toggle-status" id="debugStatus">Off</div>
+      </div>
+    </div>
+  </div>
 
   <div class="btn-stack" style="margin-top:1rem;">
     <button class="btn btn-ink" id="setupContinueBtn" onclick="setupContinue()">Continue</button>
@@ -798,9 +853,6 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
     <p>Set the mood — Spark writes your scene around it</p>
   </div>
 
-  <!-- Phase hint -->
-  <div class="phase-hint">Spark writes three phases: get ready, the scene, then the finish. Tap We're ready when you're set.</div>
-
   <button class="intensity-btn" id="intensityLight" onclick="selectIntensity('light')">
     <span class="intensity-btn-icon">🌸</span>
     <div class="intensity-btn-body">
@@ -820,13 +872,44 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
   <button class="intensity-btn" id="intensityHard" onclick="selectIntensity('hard')">
     <span class="intensity-btn-icon">⚡</span>
     <div class="intensity-btn-body">
-      <span class="intensity-btn-title">We're Really Going For It</span>
+      <span class="intensity-btn-title">We're <em>Really</em> in the Mood</span>
       <span class="intensity-btn-sub">Fully explicit, graphic, no holding back.</span>
     </div>
   </button>
 
-  <textarea class="focus-input" id="sceneNoteInput" rows="3"
-    placeholder="Is there anything you're really in the mood for? e.g. anal, cumplay, use the blindfold, she's in charge…"></textarea>
+  <div style="margin-top:1rem;">
+    <div class="focus-input-label">Anything you're really in the mood for?</div>
+    <textarea class="focus-input" id="sceneNoteInput" rows="2"
+      placeholder="e.g. anal, cumplay, use the blindfold, she's in charge…"
+      oninput="currentNote=this.value.trim()"></textarea>
+  </div>
+
+  <div style="margin-top:.75rem;">
+    <div class="focus-input-label">Anything you'd rather skip tonight?</div>
+    <textarea class="focus-input" id="sceneAvoidInput" rows="2"
+      placeholder="e.g. no anal tonight, skip oral, keep it gentle…"
+      oninput="currentAvoid=this.value.trim()"></textarea>
+  </div>
+
+  <!-- What's available tonight -->
+  <div class="props-section" id="propsSection">
+    <div class="props-section-header">
+      <span class="props-section-title">What you have available</span>
+      <label class="props-none-toggle" title="Toggle to use no additional items">
+        <input type="checkbox" id="propsNoneToggle" onchange="onPropsNoneToggle()">
+        Nothing tonight
+      </label>
+    </div>
+    <div id="propsChipArea">
+      <div class="props-chip-grid" id="propsChipGrid"></div>
+      <div class="props-custom-row">
+        <input class="props-custom-input" id="propsCustomInput" type="text"
+          placeholder="Add custom item… e.g. feather, rope, candle"
+          onkeydown="if(event.key==='Enter'){event.preventDefault();addCustomProp();}">
+        <button class="props-custom-btn" onclick="addCustomProp()">Add</button>
+      </div>
+    </div>
+  </div>
 
   <div class="prescreen-go">
     <button class="btn btn-ink" id="goSceneBtn" onclick="goPlay()" disabled
@@ -909,12 +992,10 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
       <button onclick="retryScene()">Try again</button>
     </div>
     <!-- Loading state -->
-    <div id="sceneLoadingPanel" style="display:none;padding:1.4rem 1.6rem;text-align:center;">
-      <div class="prep-generating-hint" style="display:block;margin-bottom:.5rem;">Getting your scene ready…</div>
-      <div class="prep-loading-dots" style="display:flex;justify-content:center;gap:4px;">
-        <span style="width:6px;height:6px;border-radius:50%;background:var(--sage);display:inline-block;animation:bounce .8s infinite;"></span>
-        <span style="width:6px;height:6px;border-radius:50%;background:var(--sage);display:inline-block;animation:bounce .8s .15s infinite;"></span>
-        <span style="width:6px;height:6px;border-radius:50%;background:var(--sage);display:inline-block;animation:bounce .8s .3s infinite;"></span>
+    <div id="sceneLoadingPanel" style="display:none;padding:1.8rem 1.6rem 1.4rem;text-align:center;">
+      <div class="prep-generating-hint" style="display:block;margin-bottom:1rem;">Getting your scene ready…</div>
+      <div style="background:var(--border);border-radius:99px;height:4px;overflow:hidden;width:100%;max-width:240px;margin:0 auto;">
+        <div id="sceneProgressBar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--sage),var(--blush));border-radius:99px;transition:width .4s ease;"></div>
       </div>
     </div>
     <!-- Combined prep + scene (shown together when ready) -->
@@ -956,6 +1037,12 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
       <button onclick="goPreScene(true)" style="background:none;border:none;font-size:.75rem;color:var(--muted);cursor:pointer;font-family:inherit;padding:.3rem 0;">↺ Change mood first</button>
       <button onclick="confirmLeavePlay()" style="background:none;border:none;font-size:.75rem;color:var(--muted);cursor:pointer;font-family:inherit;padding:.3rem 0;">⚙ Settings</button>
     </div>
+  </div>
+
+  <!-- Debug panel — shows full prompt when debug mode on -->
+  <div class="debug-panel" id="debugPanel">
+    <div class="debug-panel-label">Debug — Full AI prompt</div>
+    <div class="debug-text" id="debugText"></div>
   </div>
 
   <!-- Post-scene quick rate (shown after 3rd+ scene) -->
@@ -1556,6 +1643,7 @@ let escalationRevealed = false;
 let isGenerating   = false;
 let currentMood    = null;            // 'light' | 'medium' | 'hard' | null — set on pre-screen
 let currentNote    = '';              // free-text focus from pre-screen
+let currentAvoid   = '';              // free-text avoid from pre-screen
 let photoSuggest   = false;
 // Survey filters
 let surveyLevel    = 'beginner';      // 'beginner' | 'intermediate' | 'advanced'
@@ -1619,38 +1707,10 @@ function goSetup() {
   buildAssetGrid(0);
   buildAssetGrid(1);
 
-  const grid = document.getElementById('propsGrid');
-  PROPS_DEF.forEach(p => {
-    const chip = document.createElement('div');
-    chip.className = 'chip' + (props.has(p.id) ? ' on-sage' : '');
-    chip.dataset.id = p.id;
-    chip.textContent = p.label;
-    chip.setAttribute('role', 'checkbox');
-    chip.setAttribute('aria-checked', props.has(p.id) ? 'true' : 'false');
-    chip.setAttribute('tabindex', '0');
-    chip.onclick = () => toggleProp(p.id, chip);
-    chip.onkeydown = e => { if (e.key==='Enter'||e.key===' ') { e.preventDefault(); toggleProp(p.id, chip); } };
-    grid.appendChild(chip);
-  });
+  // Props grid now in pre-scene screen
 })();
 
-function toggleProp(id, chip) {
-  if (id === 'none') {
-    props.clear(); props.add('none');
-    document.querySelectorAll('#propsGrid .chip').forEach(c => {
-      const on = c.dataset.id === 'none';
-      c.classList.toggle('on-sage', on);
-      c.setAttribute('aria-checked', on ? 'true' : 'false');
-    });
-    return;
-  }
-  props.delete('none');
-  const noneChip = document.querySelector('#propsGrid [data-id="none"]');
-  if (noneChip) { noneChip.classList.remove('on-sage'); noneChip.setAttribute('aria-checked','false'); }
-  const on = props.has(id) ? (props.delete(id), false) : (props.add(id), true);
-  chip.classList.toggle('on-sage', on);
-  chip.setAttribute('aria-checked', on ? 'true' : 'false');
-}
+// toggleProp replaced by togglePropsChip in props v2
 
 function onWillingToggle() {
   const on = willingAll();
@@ -1708,6 +1768,7 @@ function goHome() {
 }
 
 function goPreScene(resetMood) {
+  buildPropsChips(); // refresh chip grid with persisted state
   // If resetMood not requested, keep current intensity
   if (resetMood) {
     currentMood = null;
@@ -1716,8 +1777,10 @@ function goPreScene(resetMood) {
       if (el) el.className = 'intensity-btn';
     });
     const ni = document.getElementById('sceneNoteInput');
+    const ai = document.getElementById('sceneAvoidInput');
     if (ni) ni.value = '';
-    currentNote = '';
+    if (ai) ai.value = '';
+    currentNote = ''; currentAvoid = '';
     const gb = document.getElementById('goSceneBtn');
     if (gb) { gb.disabled = true; gb.style.opacity = '.4'; }
   } else {
@@ -1814,6 +1877,11 @@ document.getElementById('rememberKey')?.addEventListener('change', () => {
 
 // Restore saved API key and proxy URL on load
 (function restoreSettings() {
+  // Debug mode
+  const dbg = document.getElementById('debugMode');
+  if (dbg) { dbg.checked = debugMode; }
+  const dbgStatus = document.getElementById('debugStatus');
+  if (dbgStatus) { dbgStatus.textContent = debugMode ? 'On' : 'Off'; dbgStatus.className = 'toggle-status' + (debugMode ? ' on' : ''); }
   // API key
   const saved   = sessionStorage.getItem('spark_api_key') || localStorage.getItem('spark_api_key');
   const isLocal = !!localStorage.getItem('spark_api_key');
@@ -2464,8 +2532,11 @@ function clearMood() {
   const tog   = document.getElementById('scenePhotoToggle');
   const check = document.getElementById('photoCheck');
   // Also clear the pre-scene note input if present
-  const noteInput = document.getElementById('sceneNoteInput');
-  if (noteInput) noteInput.value = '';
+  const noteInput  = document.getElementById('sceneNoteInput');
+  const avoidInput = document.getElementById('sceneAvoidInput');
+  if (noteInput)  noteInput.value = '';
+  if (avoidInput) avoidInput.value = '';
+  currentAvoid = '';
   if (tog)   tog.classList.remove('active');
   if (check) check.textContent = '';
   updateMoodUI();
@@ -2522,7 +2593,8 @@ function buildSceneContext(piA, piB) {
   if (piB === undefined) piB = currentPiB;
   const pA = buildPrefsNarrative(piA);
   const pB = buildPrefsNarrative(piB);
-  const propList = props.has('none') ? 'none' : [...props].join(', ');
+  const propList = props.has('none') ? 'none' :
+    [...props].map(p => p.startsWith('custom:') ? p.slice(7) : p).join(', ');
 
   let ctx = 'COUPLE DETAILS\n==============\n';
   ctx += 'Partner A (initiator / giver):\n' + pA + '\n\n';
@@ -2551,6 +2623,9 @@ function buildSceneContext(piA, piB) {
     }
     if (currentNote) {
       ctx += '\n- Specific request from the couple: "' + currentNote + '" — incorporate this directly.';
+    }
+    if (currentAvoid) {
+      ctx += '\n- Do NOT include tonight: "' + currentAvoid + '" — the couple wants to skip this.';
     }
     if (photoSuggest) {
       ctx += '\n- Photo moment: at one natural point, add a line starting with exactly "\uD83D\uDCF8 Photo:" followed by a specific practical instruction — what to capture, who is in frame, what angle. One sentence only.';
@@ -2833,7 +2908,19 @@ function generateFullScene() {
   const timerArea     = document.getElementById('timerArea');
   const escalPanel    = document.getElementById('escalationPanel');
 
-  if (loadingPanel) loadingPanel.style.display = 'block';
+  if (loadingPanel) {
+    loadingPanel.style.display = 'block';
+    // Animate progress bar — stops at 95% until response arrives
+    const pb = document.getElementById('sceneProgressBar');
+    if (pb) {
+      pb.style.width = '0%';
+      pb.style.transition = 'none';
+      requestAnimationFrame(() => {
+        pb.style.transition = 'width 12s cubic-bezier(0.1, 0, 0.3, 1)';
+        pb.style.width = '92%';
+      });
+    }
+  }
   if (readyPanel)   { readyPanel.style.display = 'none'; }
   if (sceneContent) { sceneContent.innerHTML = ''; }
   if (timerArea)    { timerArea.style.display = 'none'; }
@@ -2869,21 +2956,34 @@ Output all three sections. Use exactly the markers [PREP], [SCENE], [FINISH] on 
 
   // Stream into prepText so the user sees live generation progress
   // We parse sections from the full text in onDone
-  hideSceneError(); // clear any previous error
-  callClaudeStream(system, prompt, prepText, (text) => {
-    // If stream returned empty or error text, show human error banner
+  showDebugPrompt(system, prompt); // show in debug panel if enabled
+  hideSceneError();
+
+  const streamSink = document.createElement('div');
+  callClaudeStream(system, prompt, streamSink, (text) => {
+    const loadingPanel2 = document.getElementById('sceneLoadingPanel');
+    const readyPanel2   = document.getElementById('sceneReadyPanel');
+    const prepText2     = document.getElementById('prepText');
+    const sceneContent2 = document.getElementById('sceneContent');
+    const timerArea2    = document.getElementById('timerArea');
+    const photoToggle2  = document.getElementById('scenePhotoToggle');
+    const newSceneBtn2  = document.getElementById('newSceneBtn');
+
     if (!text || text.trim() === '') {
       showSceneError('empty response');
+      if (loadingPanel2) loadingPanel2.style.display = 'none';
+      isGenerating = false;
+      if (newSceneBtn2) { newSceneBtn2.disabled = false; newSceneBtn2.textContent = 'New scene'; }
       return;
     }
-    // Parse the three sections — robust parser handles missing/extra whitespace
+
     const getSection = (marker, nextMarker) => {
-      const re = new RegExp('\\[' + marker + '\\]\\s*', 'i');
+      const re = new RegExp('[[]' + marker + '[]]\\s*', 'i');
       const m = re.exec(text);
       if (!m) return '';
       const contentStart = m.index + m[0].length;
       if (nextMarker) {
-        const re2 = new RegExp('\\[' + nextMarker + '\\]', 'i');
+        const re2 = new RegExp('[[]' + nextMarker + '[]]', 'i');
         const m2 = re2.exec(text.slice(contentStart));
         if (m2) return text.slice(contentStart, contentStart + m2.index).trim();
       }
@@ -2893,42 +2993,49 @@ Output all three sections. Use exactly the markers [PREP], [SCENE], [FINISH] on 
     const prepContent   = getSection('PREP', 'SCENE');
     const sceneContent_ = getSection('SCENE', 'FINISH');
     const finishContent = getSection('FINISH', null);
+    const hasMarkers    = !!(prepContent || sceneContent_ || finishContent);
 
-    // Replace prep panel with just the prep text (strip the [SCENE]/[FINISH] noise)
-    if (prepText) prepText.innerHTML = formatNarrative(prepContent || text.trim() || 'Get comfortable together.');
-
-    // Enable reveal button with clean text
-    if (revealBtn) {
-      revealBtn.disabled = false;
-      revealBtn.innerHTML = "<span>We\'re ready →</span>";
+    if (prepText2) {
+      prepText2.innerHTML = formatNarrative(
+        prepContent || (hasMarkers ? 'Get comfortable together.' : '')
+      );
     }
 
-    // Populate scene content (hidden until user taps ready)
-    if (sceneContent) {
-      sceneContent.innerHTML =
+    if (sceneContent2) {
+      const sceneText = sceneContent_ || (hasMarkers ? '' : text.trim());
+      sceneContent2.innerHTML =
         '<div class="scene-body">' +
         '<span class="scene-pill pill-spark">Tonight</span>' +
         '<div class="scene-title">' + esc(currentScene.title) + '</div>' +
-        '<div class="scene-narrative">' + formatNarrative(sceneContent_ || 'Scene generating…') + '</div>' +
+        (sceneText ? '<div class="scene-narrative">' + formatNarrative(sceneText) + '</div>' : '') +
         '</div>';
     }
 
-    // Store finish for escalation
-    if (finishContent) currentScene._lastNarrative = sceneContent_ + '\n\n' + finishContent;
-    if (finishContent) currentScene._finishText = finishContent;
+    if (finishContent) {
+      currentScene._lastNarrative = sceneContent_ + '\n\n' + finishContent;
+      currentScene._finishText = finishContent;
+    }
+
+    const pb2 = document.getElementById('sceneProgressBar');
+    if (pb2) { pb2.style.transition = 'width .25s ease'; pb2.style.width = '100%'; }
+
+    setTimeout(() => {
+      if (loadingPanel2) loadingPanel2.style.display = 'none';
+      if (readyPanel2)   readyPanel2.style.display = 'block';
+      if (timerArea2)    timerArea2.style.display = 'block';
+      if (photoToggle2)  photoToggle2.style.display = 'flex';
+      document.getElementById('sceneCard')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 280);
 
     isGenerating = false;
-    if (newSceneBtn) { newSceneBtn.disabled = false; newSceneBtn.textContent = 'New scene'; }
-
-    // Reset fail count on success
+    if (newSceneBtn2) { newSceneBtn2.disabled = false; newSceneBtn2.textContent = 'New scene'; }
     sessionStorage.setItem('spark_fail_count', '0');
-    // Increment scene counter and show rating prompt after 3rd scene
     incrementSceneCount();
     if (sceneCount >= 3 && sceneCount % 3 === 0) {
       setTimeout(() => {
         const rateCard = document.getElementById('rateCard');
         if (rateCard) rateCard.classList.add('visible');
-      }, 2000); // delay so it doesn't appear while couple is reading
+      }, 2000);
     }
   });
 }
@@ -3037,6 +3144,149 @@ function startTimer() {
 
 function addTime(m) { totalSecs += m * 60; remainSecs += m * 60; updateTimerDisplay(); }
 
+
+
+
+// ═══════════════════════════════════════════
+//  DEBUG MODE
+// ═══════════════════════════════════════════
+let debugMode = localStorage.getItem('spark_debug') === '1';
+
+function onDebugToggle() {
+  debugMode = document.getElementById('debugMode')?.checked || false;
+  localStorage.setItem('spark_debug', debugMode ? '1' : '0');
+  const status = document.getElementById('debugStatus');
+  if (status) { status.textContent = debugMode ? 'On' : 'Off'; status.className = 'toggle-status' + (debugMode ? ' on' : ''); }
+}
+
+function showDebugPrompt(system, prompt) {
+  const panel = document.getElementById('debugPanel');
+  const text  = document.getElementById('debugText');
+  if (!panel || !text) return;
+  if (debugMode) {
+    text.textContent = '-- SYSTEM --\n' + system + '\n\n-- USER --\n' + prompt;
+    panel.classList.add('visible');
+  } else {
+    panel.classList.remove('visible');
+  }
+}
+
+// ═══════════════════════════════════════════
+//  PROPS v2 — pre-scene, persistent, custom
+// ═══════════════════════════════════════════
+
+const PROPS_BASE = [
+  {id:'vibrator',   label:'Vibrator / Wand'},
+  {id:'restraints', label:'Restraints'},
+  {id:'blindfold',  label:'Blindfold'},
+  {id:'mirror',     label:'Mirror'},
+  {id:'icewax',     label:'Ice / Wax'},
+  {id:'massage_oil',label:'Massage oil'},
+  {id:'butt_plug',  label:'Butt plug'},
+  {id:'dildo',      label:'Dildo / Strap-on'},
+];
+
+// Load persisted props state
+function loadPropsState() {
+  try {
+    const saved = localStorage.getItem('spark_props_state');
+    if (saved) {
+      const state = JSON.parse(saved);
+      props = new Set(state.active || ['vibrator','blindfold','massage_oil']);
+      if (state.custom) state.custom.forEach(c => customProps.add(c));
+    }
+  } catch {}
+}
+
+function savePropsState() {
+  localStorage.setItem('spark_props_state', JSON.stringify({
+    active: [...props],
+    custom: [...customProps],
+  }));
+}
+
+let customProps = new Set(); // persisted custom items added by user
+
+function buildPropsChips() {
+  const grid = document.getElementById('propsChipGrid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  const isNone = props.has('none');
+
+  const allChips = [
+    ...PROPS_BASE,
+    ...[...customProps].map(c => ({ id: 'custom:' + c, label: c, custom: true })),
+  ];
+
+  allChips.forEach(p => {
+    const chip = document.createElement('div');
+    const active = props.has(p.id);
+    chip.className = 'props-chip' + (active ? ' active' : '') + (p.custom ? ' custom-chip' : '');
+    chip.dataset.id = p.id;
+    chip.textContent = p.label;
+    if (isNone) chip.classList.add('props-disabled');
+    chip.onclick = () => { if (!props.has('none')) togglePropsChip(p.id, chip); };
+    if (p.custom) {
+      // Long-press or double-tap to remove custom chip
+      chip.ondblclick = () => removeCustomProp(p.id.replace('custom:', ''));
+    }
+    grid.appendChild(chip);
+  });
+
+  // Update none toggle
+  const noneToggle = document.getElementById('propsNoneToggle');
+  if (noneToggle) noneToggle.checked = isNone;
+
+  // Dim the chip area if none
+  const chipArea = document.getElementById('propsChipArea');
+  if (chipArea) chipArea.classList.toggle('props-disabled', isNone);
+}
+
+function togglePropsChip(id, chip) {
+  if (props.has(id)) {
+    props.delete(id);
+    chip.classList.remove('active');
+  } else {
+    props.add(id);
+    chip.classList.add('active');
+  }
+  savePropsState();
+}
+
+function onPropsNoneToggle() {
+  const checked = document.getElementById('propsNoneToggle')?.checked;
+  if (checked) {
+    props.clear();
+    props.add('none');
+  } else {
+    props.delete('none');
+    // Restore defaults if nothing selected
+    if (props.size === 0) {
+      props.add('vibrator'); props.add('blindfold'); props.add('massage_oil');
+    }
+  }
+  savePropsState();
+  buildPropsChips();
+}
+
+function addCustomProp() {
+  const input = document.getElementById('propsCustomInput');
+  if (!input) return;
+  const val = input.value.trim();
+  if (!val || val.length > 40) return;
+  customProps.add(val);
+  props.add('custom:' + val);
+  input.value = '';
+  savePropsState();
+  buildPropsChips();
+}
+
+function removeCustomProp(label) {
+  customProps.delete(label);
+  props.delete('custom:' + label);
+  savePropsState();
+  buildPropsChips();
+}
 
 
 // ═══════════════════════════════════════════
@@ -3178,6 +3428,8 @@ updateTimerDisplay();
 setTimerBtns('idle');
 
 // Route to home if names already set, else stay on setup
+loadPropsState();
+
 (function initialRoute() {
   const n1 = localStorage.getItem('spark_name1');
   const n2 = localStorage.getItem('spark_name2');
