@@ -443,7 +443,113 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 .focus-input::placeholder{color:var(--faint)}
 .prescreen-go{margin-top:1.2rem}
 
-/* SURVEY REDESIGN — CarnalCalibration style */
+
+/* ══════════ SURVEY v2 — Macro-to-Micro ══════════ */
+
+/* Comfort zone slider */
+.comfort-zone-block{margin:1rem 0 .75rem;padding:.85rem 1rem;background:var(--card);
+  border-radius:var(--rs);border:1px solid var(--border);box-shadow:var(--sh)}
+.comfort-zone-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem}
+.comfort-zone-label{font-size:.72rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.comfort-zone-value{font-size:.82rem;font-weight:600;color:var(--ink);background:var(--bg);
+  border:1px solid var(--border);border-radius:20px;padding:.15rem .65rem}
+.comfort-slider{-webkit-appearance:none;appearance:none;width:100%;height:5px;
+  border-radius:99px;background:linear-gradient(to right,var(--sage),var(--amber),var(--blush));
+  outline:none;cursor:pointer;margin:.25rem 0}
+.comfort-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
+  width:22px;height:22px;border-radius:50%;background:var(--ink);cursor:pointer;
+  box-shadow:0 2px 6px rgba(26,23,20,.25)}
+.comfort-slider::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
+  background:var(--ink);cursor:pointer;border:none}
+.comfort-ticks{display:flex;justify-content:space-between;margin-top:.3rem}
+.comfort-ticks span{font-size:.6rem;color:var(--muted)}
+
+/* Legend */
+.kl-dot{width:7px;height:7px;border-radius:50%;display:inline-block;flex-shrink:0}
+
+/* Category pathway labels */
+.survey-pathway{font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--muted);margin:1.2rem 0 .4rem;padding-bottom:.35rem;
+  border-bottom:1px solid var(--border)}
+
+/* Category card */
+.cat-card{background:var(--card);border:1.5px solid var(--border);border-radius:var(--r);
+  margin-bottom:.65rem;overflow:hidden;box-shadow:var(--sh);transition:border-color .2s}
+.cat-card.has-likes{border-color:var(--sage-mid)}
+.cat-card.has-favs{border-color:var(--fav-mid)}
+.cat-card.has-nos{border-color:var(--blush-mid)}
+
+/* Card header */
+.cat-card-header{padding:.85rem 1rem;cursor:pointer;user-select:none;
+  display:flex;align-items:center;gap:.6rem}
+.cat-card-header:hover{background:rgba(0,0,0,.02)}
+.cat-card-icon{font-size:1.2rem;flex-shrink:0}
+.cat-card-info{flex:1;min-width:0}
+.cat-card-title{font-size:.95rem;font-weight:600;color:var(--ink);display:block}
+.cat-card-sub{font-size:.68rem;color:var(--muted);display:block;margin-top:.1rem}
+.cat-card-status{display:flex;align-items:center;gap:.3rem;flex-shrink:0}
+.cat-card-fill{width:28px;height:5px;border-radius:99px;background:var(--border);overflow:hidden}
+.cat-card-fill-inner{height:100%;border-radius:99px;background:var(--sage);transition:width .3s}
+.cat-card-chevron{font-size:.7rem;color:var(--muted);transition:transform .2s;flex-shrink:0}
+.cat-card.open .cat-card-chevron{transform:rotate(180deg)}
+
+/* Quick select row */
+.cat-quick{display:flex;gap:.35rem;padding:.55rem 1rem;border-top:1px solid var(--border);
+  background:var(--bg);flex-wrap:wrap;align-items:center}
+.cat-quick-label{font-size:.62rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--muted);margin-right:.15rem;white-space:nowrap}
+.qs-btn{padding:.28rem .65rem;border-radius:20px;border:1.5px solid var(--border);
+  background:var(--card);font-family:'DM Sans',sans-serif;font-size:.72rem;font-weight:600;
+  cursor:pointer;transition:all .15s;white-space:nowrap;color:var(--ink2)}
+.qs-btn:hover{border-color:var(--border2);background:#fff}
+.qs-btn.qs-like{background:var(--sage-bg);border-color:var(--sage-mid);color:var(--sage)}
+.qs-btn.qs-maybe{background:var(--amber-bg);border-color:var(--amber-mid);color:var(--amber)}
+.qs-btn.qs-no{background:var(--blush-bg);border-color:var(--blush-mid);color:var(--blush)}
+.qs-btn.qs-fav{background:var(--fav-bg);border-color:var(--fav-mid);color:var(--fav)}
+
+/* Role toggle */
+.role-toggle{display:flex;border:1.5px solid var(--border);border-radius:20px;overflow:hidden;
+  margin-left:auto;flex-shrink:0}
+.role-toggle-btn{padding:.22rem .55rem;font-family:'DM Sans',sans-serif;font-size:.65rem;
+  font-weight:600;border:none;background:transparent;cursor:pointer;color:var(--muted);
+  transition:all .15s}
+.role-toggle-btn.active{background:var(--ink);color:#fff}
+
+/* Accordion body */
+.cat-accordion{display:none;border-top:1px solid var(--border)}
+.cat-card.open .cat-accordion{display:block}
+.cat-accordion-inner{padding:.5rem .65rem .65rem}
+
+/* Preference row */
+.pref-row{display:flex;align-items:center;gap:.5rem;padding:.45rem .35rem;
+  border-bottom:1px solid var(--border);transition:background .15s}
+.pref-row:last-child{border-bottom:none}
+.pref-row:hover{background:rgba(0,0,0,.015)}
+.pref-row.inherited{opacity:.7}
+.pref-row-label{flex:1;min-width:0}
+.pref-row-name{font-size:.8rem;color:var(--ink2);display:block;font-weight:500}
+.pref-row-tip{font-size:.67rem;color:var(--muted);display:block;margin-top:.05rem;
+  line-height:1.3;font-style:italic}
+.pref-row-sub{font-size:.7rem;color:var(--muted);display:block}
+
+/* 5-button rating strip */
+.pref-btns{display:flex;gap:2px;flex-shrink:0}
+.pb{width:30px;height:30px;border-radius:8px;border:1.5px solid var(--border);
+  background:var(--bg);font-size:.72rem;cursor:pointer;transition:all .15s;
+  display:flex;align-items:center;justify-content:center;font-family:'DM Sans',sans-serif}
+.pb:hover{border-color:var(--border2);background:#fff;transform:scale(1.05)}
+.pb.pb-fav{background:var(--fav-bg);border-color:var(--fav-mid);color:var(--fav)}
+.pb.pb-like{background:var(--sage-bg);border-color:var(--sage-mid);color:var(--sage)}
+.pb.pb-maybe{background:var(--amber-bg);border-color:var(--amber-mid);color:var(--amber)}
+.pb.pb-no{background:var(--blush-bg);border-color:var(--blush-mid);color:var(--blush)}
+.pb.pb-inherited{opacity:.5;border-style:dashed}
+
+/* Split item header */
+.split-header{padding:.4rem .35rem .1rem;font-size:.75rem;font-weight:700;
+  color:var(--ink);border-bottom:1px solid var(--border);display:flex;align-items:center;
+  justify-content:space-between}
+
+/* SURVEY REDESIGN — CarnalCalibration style (kept for reference) */
 .survey-level-bar{display:flex;gap:.4rem;margin-bottom:1.2rem}
 .survey-level-btn{flex:1;padding:.55rem .4rem;border:1.5px solid var(--border);border-radius:var(--rs);
   background:var(--bg);text-align:center;cursor:pointer;transition:all .18s;
@@ -466,8 +572,8 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 /* PREP PANEL */
 .prep-panel{background:var(--sage-bg);border-top:2px solid var(--sage-mid);
   padding:1.4rem 1.6rem}
-.prep-label{font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
-  color:var(--sage);margin-bottom:.4rem}
+.prep-label{font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--sage);margin-bottom:.6rem;padding-bottom:.4rem;border-bottom:1px solid var(--sage-mid)}
 .prep-text{font-family:'DM Serif Display',serif;font-size:clamp(1rem,3vw,1.15rem);
   font-weight:400;line-height:1.7;color:var(--ink)}
 .prep-text .n-name{color:var(--blush);font-style:italic}
@@ -733,51 +839,51 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
   </div>
 </div>
 
-<!-- ════════ SURVEY ════════ (KinkSheet format) -->
+<!-- ════════ SURVEY ════════ -->
 <div class="screen" id="screenSurvey">
   <div class="survey-hero">
     <h2 id="surveyTitle">Your preferences</h2>
-    <p id="surveySubtitle">Private. Your partner won't see your answers.</p>
+    <p id="surveySubtitle">Private — your partner won't see your answers.</p>
   </div>
   <div class="survey-progress-label" id="surveyProgressLabel">Partner 1 of 2</div>
   <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:10%"></div></div>
 
-  <!-- Level filter -->
-  <div class="label">Experience level — filters what you see</div>
-  <div class="survey-level-bar">
-    <div class="survey-level-btn slb-active" id="slb-beginner" onclick="setSurveyLevel('beginner')">Beginner</div>
-    <div class="survey-level-btn" id="slb-intermediate" onclick="setSurveyLevel('intermediate')">Intermediate</div>
-    <div class="survey-level-btn" id="slb-advanced" onclick="setSurveyLevel('advanced')">Advanced</div>
+  <!-- Comfort zone slider -->
+  <div class="comfort-zone-block">
+    <div class="comfort-zone-header">
+      <span class="comfort-zone-label">Comfort zone</span>
+      <span class="comfort-zone-value" id="comfortLabel">Exploring</span>
+    </div>
+    <input type="range" id="comfortSlider" class="comfort-slider" min="0" max="3" step="1" value="1"
+      oninput="onComfortSlide(this.value)">
+    <div class="comfort-ticks">
+      <span>Gentle</span><span>Exploring</span><span>Adventurous</span><span>Wild</span>
+    </div>
   </div>
 
-  <!-- Category filter chips -->
-  <div class="label">Categories — tap to show / hide</div>
-  <div class="survey-cats" id="surveyCatChips"></div>
-
-  <!-- Advanced toggle -->
-  <div class="advanced-banner" id="advancedBanner" style="margin-top:.5rem;">
-    <p>Show extreme categories (blood, scat, etc.)</p>
+  <!-- Extreme toggle -->
+  <div class="advanced-banner" id="advancedBanner">
+    <p>Show extreme categories</p>
     <label class="toggle-switch" style="flex-shrink:0;">
       <input type="checkbox" id="showAdvanced" onchange="rebuildSurvey()">
       <span class="toggle-slider"></span>
     </label>
   </div>
 
-  <!-- Legend sticky -->
-  <div class="kink-legend-sticky" style="margin-top:.75rem;">
+  <!-- Legend -->
+  <div class="kink-legend-sticky">
     <div class="kink-legend">
-      <div class="legend-item"><div class="legend-dot" style="background:var(--fav)"></div>★ Fav</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--sage)"></div>✓ Like</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--amber)"></div>~ Maybe</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--blush)"></div>✕ No</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--faint)"></div>— Skip</div>
+      <div class="legend-item"><span class="kl-dot" style="background:var(--fav)"></span>★ Fav</div>
+      <div class="legend-item"><span class="kl-dot" style="background:var(--sage)"></span>✓ Like</div>
+      <div class="legend-item"><span class="kl-dot" style="background:var(--amber)"></span>~ Maybe</div>
+      <div class="legend-item"><span class="kl-dot" style="background:var(--blush)"></span>✕ No</div>
     </div>
   </div>
 
   <div id="surveyItems"></div>
 
   <div class="btn-stack" style="margin-top:1rem;">
-    <button class="btn btn-ink" id="surveyNextBtn" onclick="surveyNext()">Continue →</button>
+    <button class="btn btn-ink" id="surveyNextBtn" onclick="surveyNext()">Done →</button>
     <div style="text-align:center;margin-top:.4rem;"><button class="btn-ghost" onclick="goSetup()">← Back</button></div>
   </div>
 </div>
@@ -802,18 +908,26 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
       <span class="scene-error-banner-text" id="sceneErrorText">Something went wrong</span>
       <button onclick="retryScene()">Try again</button>
     </div>
-    <!-- Phase 1: Preparation (revealed first) -->
-    <div class="prep-panel" id="prepPanel" style="display:none;">
-      <div class="prep-label">Get ready</div>
-      <div id="prepGeneratingHint" class="prep-generating-hint">Getting your scene ready…</div>
-      <div class="prep-text" id="prepText"></div>
-      <button class="reveal-btn" id="revealSceneBtn" onclick="revealScene()" style="display:none;">
-        <span>We're ready →</span>
-      </button>
+    <!-- Loading state -->
+    <div id="sceneLoadingPanel" style="display:none;padding:1.4rem 1.6rem;text-align:center;">
+      <div class="prep-generating-hint" style="display:block;margin-bottom:.5rem;">Getting your scene ready…</div>
+      <div class="prep-loading-dots" style="display:flex;justify-content:center;gap:4px;">
+        <span style="width:6px;height:6px;border-radius:50%;background:var(--sage);display:inline-block;animation:bounce .8s infinite;"></span>
+        <span style="width:6px;height:6px;border-radius:50%;background:var(--sage);display:inline-block;animation:bounce .8s .15s infinite;"></span>
+        <span style="width:6px;height:6px;border-radius:50%;background:var(--sage);display:inline-block;animation:bounce .8s .3s infinite;"></span>
+      </div>
     </div>
-    <!-- Phase 2: Scene (revealed on tap) -->
-    <div id="sceneContent" style="display:none;"></div>
-    <!-- Phase 3: Escalation (revealed on timer end or skip) -->
+    <!-- Combined prep + scene (shown together when ready) -->
+    <div id="sceneReadyPanel" style="display:none;">
+      <!-- Prep section -->
+      <div class="prep-panel" id="prepPanel">
+        <div class="prep-label">Before you start the timer…</div>
+        <div class="prep-text" id="prepText"></div>
+      </div>
+      <!-- Scene content -->
+      <div id="sceneContent"></div>
+    </div>
+    <!-- Escalation (revealed on timer end or skip) -->
     <div class="escalation-panel" id="escalationPanel">
       <button class="escalation-back" onclick="document.getElementById('sceneContent').scrollIntoView({behavior:'smooth'})">↑ Back to scene</button>
       <div class="escalation-label">Keep going →</div>
@@ -1852,180 +1966,430 @@ function showSurveyScreen(pi) {
   const progressLabel = document.getElementById('surveyProgressLabel');
   if (progressLabel) progressLabel.textContent = pi === 0 ? 'Partner 1 of 2 — your answers are private' : `${gN(0)} done. Now ${gN(1)}'s turn.`;
   document.getElementById('surveyNextBtn').textContent = pi === 0 ? `Done — ${gN(1)}'s turn →` : 'See shared interests →';
-  // Init all non-advanced cats as active on first load
-  if (activeSurveyCats.size === 0) {
-    KINK_CATS.filter(c => !c.advanced).forEach(c => {
-      const meta = CAT_META[c.id];
-      if (!meta || LEVEL_ORDER[meta.level] <= LEVEL_ORDER[surveyLevel]) {
-        activeSurveyCats.add(c.id);
-      }
-    });
+  // Init comfort slider open cats on first load
+  if (openCats.size === 0) {
+    const level = COMFORT_LEVELS[comfortLevel];
+    if (level.expand === null) {
+      KINK_CATS.forEach(c => openCats.add(c.id));
+    } else {
+      level.expand.forEach(c => openCats.add(c));
+    }
   }
+  const slider = document.getElementById('comfortSlider');
+  if (slider) slider.value = comfortLevel;
+  const labelEl = document.getElementById('comfortLabel');
+  if (labelEl) labelEl.textContent = COMFORT_LEVELS[comfortLevel].label;
   rebuildSurvey();
   showScreen('screenSurvey');
   // Scroll after paint to avoid browser reset
   requestAnimationFrame(() => window.scrollTo(0, 0));
 }
 
-// ── Survey level + category filters ──────────────────────────────────
-function setSurveyLevel(level) {
-  surveyLevel = level;
-  ['beginner','intermediate','advanced'].forEach(l => {
-    const el = document.getElementById('slb-' + l);
-    if (el) el.classList.toggle('slb-active', l === level);
-  });
+// ═══════════════════════════════════════════
+//  SURVEY v2 — Macro-to-Micro
+// ═══════════════════════════════════════════
+
+// Pathway structure for the new UI
+const SURVEY_PATHWAYS = [
+  {
+    label: 'Foundations',
+    cats: ['intimacy', 'clothing'],
+  },
+  {
+    label: 'Exploration',
+    cats: ['general', 'positions', 'toys', 'touch'],
+  },
+  {
+    label: 'Intensity',
+    cats: ['penetration', 'butt', 'restrictive', 'domination', 'scenarios', 'pain', 'groupings'],
+  },
+  {
+    label: 'Advanced',
+    cats: ['adv_taboo', 'adv_surreal', 'adv_fluids', 'adv_pain'],
+    advanced: true,
+  },
+];
+
+// Comfort level → which pathways/cats are expanded by default
+const COMFORT_LEVELS = [
+  { label: 'Gentle',      expand: ['intimacy','clothing','general','toys'], defaultVal: 'like' },
+  { label: 'Exploring',   expand: ['intimacy','clothing','general','positions','toys','touch','penetration'], defaultVal: 'like' },
+  { label: 'Adventurous', expand: ['intimacy','clothing','general','positions','toys','touch','penetration','butt','restrictive','domination','scenarios'], defaultVal: 'like' },
+  { label: 'Wild',        expand: null, defaultVal: 'like' }, // all expanded
+];
+
+let comfortLevel = 1; // default: Exploring
+// Track which cats are open in accordion
+const openCats = new Set();
+// Track inherited values per category (from quick-select)
+const catInherited = {}; // { catId: { piIdx: 'like'|'maybe'|'no'|null } }
+// Track role overrides per split-category
+const catRoleOverride = {}; // { catId: { piIdx: 'give'|'receive'|'both' } }
+
+function onComfortSlide(val) {
+  comfortLevel = parseInt(val);
+  const level = COMFORT_LEVELS[comfortLevel];
+  document.getElementById('comfortLabel').textContent = level.label;
+  // Auto-expand appropriate cats
+  openCats.clear();
+  if (level.expand === null) {
+    SURVEY_PATHWAYS.forEach(p => p.cats.forEach(c => openCats.add(c)));
+  } else {
+    level.expand.forEach(c => openCats.add(c));
+  }
   rebuildSurvey();
 }
 
-function buildSurveyCatChips() {
-  const container = document.getElementById('surveyCatChips');
+function getCatInherited(catId) {
+  if (!catInherited[catId]) catInherited[catId] = {};
+  return catInherited[catId][surveyIdx] || null;
+}
+
+function setCatInherited(catId, val) {
+  if (!catInherited[catId]) catInherited[catId] = {};
+  catInherited[catId][surveyIdx] = val;
+}
+
+function getCatRole(catId) {
+  if (!catRoleOverride[catId]) catRoleOverride[catId] = {};
+  return catRoleOverride[catId][surveyIdx] || 'both';
+}
+
+function setCatRole(catId, role) {
+  if (!catRoleOverride[catId]) catRoleOverride[catId] = {};
+  catRoleOverride[catId][surveyIdx] = role;
+}
+
+function applyCatQuickSelect(catId, val) {
+  // Set inherited value for this cat
+  setCatInherited(catId, val);
+  // Apply to all items in this cat
+  const cat = KINK_CATS.find(c => c.id === catId);
+  if (!cat) return;
+  const role = getCatRole(catId);
+  cat.items.forEach(item => {
+    if (item.split) {
+      if (role === 'both' || role === 'give')    kinkPrefs[surveyIdx][item.id + '_give']    = val;
+      if (role === 'both' || role === 'receive') kinkPrefs[surveyIdx][item.id + '_receive'] = val;
+    } else {
+      kinkPrefs[surveyIdx][item.id] = val;
+    }
+  });
+  // Re-render just this category
+  rerenderCatRows(catId);
+  updateCatCardStatus(catId);
+}
+
+function applyRoleChange(catId, role) {
+  setCatRole(catId, role);
+  const inherited = getCatInherited(catId);
+  if (inherited) applyCatQuickSelect(catId, inherited);
+  rerenderCatRows(catId);
+}
+
+function rerenderCatRows(catId) {
+  const container = document.getElementById('cat-rows-' + catId);
   if (!container) return;
+  const cat = KINK_CATS.find(c => c.id === catId);
+  if (!cat) return;
   container.innerHTML = '';
-  // Show only non-advanced cats that are at or below current level
-  const showAdv = document.getElementById('showAdvanced')?.checked;
-  const cats = KINK_CATS.filter(c => !c.advanced || showAdv);
-  cats.filter(c => !c.advanced).forEach(cat => {
-    const meta = CAT_META[cat.id];
-    if (!meta) return;
-    // Hide cats above current level
-    if (LEVEL_ORDER[meta.level] > LEVEL_ORDER[surveyLevel]) return;
-    if (!activeSurveyCats.has(cat.id)) activeSurveyCats.add(cat.id); // default on
-    const chip = document.createElement('div');
-    chip.className = 'survey-cat-chip' + (activeSurveyCats.has(cat.id) ? ' scc-active' : '');
-    chip.dataset.id = cat.id;
-    chip.innerHTML = '<span class="survey-cat-chip-icon">' + (meta.icon||'●') + '</span><span class="survey-cat-chip-name">' + meta.label + '</span>';
-    chip.onclick = () => {
-      if (activeSurveyCats.has(cat.id)) activeSurveyCats.delete(cat.id);
-      else activeSurveyCats.add(cat.id);
-      chip.classList.toggle('scc-active', activeSurveyCats.has(cat.id));
-      rebuildSurvey();
-    };
-    container.appendChild(chip);
-  });
+  buildCatRows(cat, container);
 }
 
-function kinkBtnsHTML(id, cur) {
-  // Use data-value attributes for reliable value mapping
-  const states = [
-    { v:'fav',  cls:'k-fav',  lbl:'★', title:'Favourite'  },
-    { v:'like', cls:'k-like', lbl:'✓', title:'Like'       },
-    { v:'int',  cls:'k-int',  lbl:'~', title:'Interested' },
-    { v:'no',   cls:'k-no',   lbl:'✕', title:'No'         },
-    { v:'none', cls:'k-none', lbl:'—', title:'Not entered' },
-  ];
-  return states.map(s => {
-    const active = (s.v === 'none' ? cur === null : cur === s.v) ? ` ${s.cls}` : '';
-    const realVal = s.v === 'none' ? 'null' : s.v;
-    return `<button class="kink-btn${active}" data-id="${esc(id)}" data-value="${realVal}" title="${s.title}" aria-label="${s.title}" aria-pressed="${active ? 'true' : 'false'}">${s.lbl}</button>`;
-  }).join('');
-}
-
-function rebuildSurvey() {
-  const showAdv = document.getElementById('showAdvanced').checked;
-  const container = document.getElementById('surveyItems'); container.innerHTML = '';
-  buildSurveyCatChips();
-  // Filter by: advanced toggle + active cats + experience level
-  const cats = KINK_CATS.filter(c => {
-    if (c.advanced && !showAdv) return false;
-    if (!c.advanced && !activeSurveyCats.has(c.id)) return false;
-    const meta = CAT_META[c.id];
-    if (meta && LEVEL_ORDER[meta.level] > LEVEL_ORDER[surveyLevel]) return false;
-    return true;
-  });
-
-  cats.forEach(cat => {
-    const group = document.createElement('div'); group.className = 'kink-group';
-    const header = document.createElement('div'); header.className = 'kink-group-header';
-    const titleEl = document.createElement('div'); titleEl.className = 'kink-group-title'; titleEl.textContent = cat.label;
-    const subEl   = document.createElement('div'); subEl.className   = 'kink-group-sub';   subEl.textContent   = cat.sub;
-    // Select-all button
-    const selAll = document.createElement('button'); selAll.className = 'cat-select-all';
-    selAll.textContent = 'Like all';
-    selAll.onclick = (e) => {
-      e.stopPropagation();
-      cat.items.forEach(item => {
-        const ids = item.split ? [item.id+'_give', item.id+'_receive'] : [item.id];
-        ids.forEach(id => {
-          kinkPrefs[surveyIdx][id] = 'like';
-          const row = document.getElementById('ki_' + id);
-          if (row) row.querySelectorAll('.kink-btn').forEach(btn => {
-            const bVal = btn.dataset.value === 'null' ? null : btn.dataset.value;
-            const active = bVal === 'like';
-            btn.className = 'kink-btn' + (active ? ' k-like' : '');
-            btn.setAttribute('aria-pressed', active ? 'true' : 'false');
-          });
-        });
-      });
-    };
-    header.appendChild(titleEl); header.appendChild(subEl); header.appendChild(selAll);
-    const itemsEl = document.createElement('div'); itemsEl.className = 'kink-items'; itemsEl.id = `kg_${cat.id}`;
-    group.appendChild(header); group.appendChild(itemsEl);
-    container.appendChild(group);
-
-    cat.items.forEach(item => {
-      if (item.split) {
-        const parentRow = document.createElement('div');
-        parentRow.className = 'kink-item kink-item-parent';
-        parentRow.style.cssText = 'background:var(--bg);border-color:transparent;padding:.4rem .9rem .1rem;box-shadow:none;';
-        const lbl = document.createElement('div');
-        lbl.className = 'kink-item-label';
-        lbl.style.cssText = 'font-weight:600;font-size:.82rem;';
-        lbl.textContent = item.label;
-        if (item.tip) {
-          const tip = document.createElement('span'); tip.className = 'kink-item-sub'; tip.textContent = item.tip;
-          lbl.appendChild(tip);
-        }
-        parentRow.appendChild(lbl); itemsEl.appendChild(parentRow);
-
-        ['_give','_receive'].forEach(suffix => {
-          const sid = item.id + suffix;
-          const cur = kinkPrefs[surveyIdx][sid] ?? null;
-          const row = document.createElement('div'); row.className = 'kink-item kink-item-sub-row'; row.id = `ki_${sid}`;
-          row.style.cssText = 'margin-left:1rem;border-left:2px solid var(--border);border-radius:0 var(--rs) var(--rs) 0;' + (suffix==='_receive'?'margin-top:-1px;':'');
-          const slbl = document.createElement('div'); slbl.className = 'kink-item-label'; slbl.style.cssText = 'font-size:.78rem;color:var(--ink2);';
-          slbl.textContent = suffix === '_give' ? 'Giving' : 'Receiving';
-          const btns = document.createElement('div'); btns.className = 'kink-btns';
-          btns.innerHTML = kinkBtnsHTML(sid, cur);
-          row.appendChild(slbl); row.appendChild(btns); itemsEl.appendChild(row);
-        });
-      } else {
-        const cur = kinkPrefs[surveyIdx][item.id] ?? null;
-        const row = document.createElement('div'); row.className = 'kink-item'; row.id = `ki_${item.id}`;
-        const lbl = document.createElement('div'); lbl.className = 'kink-item-label'; lbl.textContent = item.label;
-        if (item.tip) {
-          const tip = document.createElement('span'); tip.className = 'kink-item-sub'; tip.textContent = item.tip;
-          lbl.appendChild(tip);
-        }
-        const btns = document.createElement('div'); btns.className = 'kink-btns';
-        btns.innerHTML = kinkBtnsHTML(item.id, cur);
-        row.appendChild(lbl); row.appendChild(btns); itemsEl.appendChild(row);
-      }
+function updateCatCardStatus(catId) {
+  const card = document.getElementById('cat-card-' + catId);
+  if (!card) return;
+  const cat = KINK_CATS.find(c => c.id === catId);
+  if (!cat) return;
+  // Count ratings
+  let likes = 0, favs = 0, nos = 0, total = 0;
+  cat.items.forEach(item => {
+    const ids = item.split
+      ? [item.id + '_give', item.id + '_receive']
+      : [item.id];
+    ids.forEach(id => {
+      const v = kinkPrefs[surveyIdx][id];
+      total++;
+      if (v === 'like' || v === 'int') likes++;
+      if (v === 'fav') { likes++; favs++; }
+      if (v === 'no') nos++;
     });
   });
+  // Update fill bar
+  const fill = card.querySelector('.cat-card-fill-inner');
+  if (fill) {
+    const pct = total ? Math.round((likes + favs) / total * 100) : 0;
+    fill.style.width = pct + '%';
+    fill.style.background = favs > 0 ? 'var(--fav)' : nos > likes ? 'var(--blush)' : 'var(--sage)';
+  }
+  // Update card border
+  card.classList.toggle('has-favs', favs > 0);
+  card.classList.toggle('has-likes', likes > 0 && favs === 0);
+  card.classList.toggle('has-nos', nos > 0 && likes === 0 && favs === 0);
+}
 
-  // Single delegated event listener on container
+function buildCatRows(cat, container) {
+  const role = getCatRole(cat.id);
+  const inherited = getCatInherited(cat.id);
+
+  cat.items.forEach(item => {
+    if (item.split) {
+      // Split item: show header then Give/Receive rows based on role
+      const splitHdr = document.createElement('div');
+      splitHdr.className = 'split-header';
+      const nameSpan = document.createElement('span');
+      nameSpan.style.fontWeight = '600';
+      nameSpan.textContent = item.label;
+      splitHdr.appendChild(nameSpan);
+      if (item.tip) {
+        const tip = document.createElement('span');
+        tip.style.cssText = 'font-size:.65rem;color:var(--muted);font-weight:400;font-style:italic;margin-left:.5rem;';
+        tip.textContent = item.tip;
+        splitHdr.appendChild(tip);
+      }
+      container.appendChild(splitHdr);
+
+      const showGive    = role === 'both' || role === 'give';
+      const showReceive = role === 'both' || role === 'receive';
+      if (showGive)    buildPrefRow(item.id + '_give',    'Giving',    inherited, container, cat.id);
+      if (showReceive) buildPrefRow(item.id + '_receive', 'Receiving', inherited, container, cat.id);
+    } else {
+      buildPrefRow(item.id, item.label, inherited, container, cat.id, item.tip);
+    }
+  });
+}
+
+function buildPrefRow(id, label, inherited, container, catId, tip) {
+  const cur = kinkPrefs[surveyIdx][id] ?? null;
+  const isInherited = inherited !== null && cur === inherited;
+
+  const row = document.createElement('div');
+  row.className = 'pref-row' + (isInherited ? ' inherited' : '');
+  row.id = 'ki_' + id;
+
+  const labelEl = document.createElement('div');
+  labelEl.className = 'pref-row-label';
+  const nameEl = document.createElement('span');
+  nameEl.className = 'pref-row-name';
+  nameEl.textContent = label;
+  labelEl.appendChild(nameEl);
+  if (tip) {
+    const tipEl = document.createElement('span');
+    tipEl.className = 'pref-row-tip';
+    tipEl.textContent = tip;
+    labelEl.appendChild(tipEl);
+  }
+
+  const btns = document.createElement('div');
+  btns.className = 'pref-btns';
+
+  const ratings = [
+    { v: 'fav',  cls: 'pb-fav',   lbl: '★', title: 'Favourite' },
+    { v: 'like', cls: 'pb-like',  lbl: '✓', title: 'Like' },
+    { v: 'int',  cls: 'pb-maybe', lbl: '~', title: 'Maybe' },
+    { v: 'no',   cls: 'pb-no',    lbl: '✕', title: 'No' },
+  ];
+  ratings.forEach(r => {
+    const btn = document.createElement('button');
+    const active = cur === r.v;
+    btn.className = 'pb' + (active ? ' ' + r.cls : '') + (isInherited && !active ? ' pb-inherited' : '');
+    btn.textContent = r.lbl;
+    btn.title = r.title;
+    btn.dataset.id = id;
+    btn.dataset.value = r.v;
+    btn.dataset.cat = catId;
+    btn.setAttribute('aria-label', r.title);
+    btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+    btns.appendChild(btn);
+  });
+
+  row.appendChild(labelEl);
+  row.appendChild(btns);
+  container.appendChild(row);
+}
+
+function toggleCatAccordion(catId) {
+  if (openCats.has(catId)) openCats.delete(catId);
+  else openCats.add(catId);
+  const card = document.getElementById('cat-card-' + catId);
+  if (card) card.classList.toggle('open', openCats.has(catId));
+}
+
+function setSurveyLevel(level) {
+  // Legacy compat — mapped to comfort slider
+  const map = { beginner: 0, intermediate: 1, advanced: 2 };
+  const val = map[level] !== undefined ? map[level] : 1;
+  const slider = document.getElementById('comfortSlider');
+  if (slider) { slider.value = val; onComfortSlide(val); }
+}
+
+function buildSurveyCatChips() {} // no-op — replaced by accordion
+
+function rebuildSurvey() {
+  const showAdv = document.getElementById('showAdvanced')?.checked || false;
+  const container = document.getElementById('surveyItems');
+  if (!container) return;
+  container.innerHTML = '';
+
+  // Delegated click handler for all pref buttons
   container.onclick = e => {
-    const btn = e.target.closest('.kink-btn');
-    if (!btn) return;
-    const id  = btn.dataset.id;
-    const raw = btn.dataset.value;
-    const val = raw === 'null' ? null : raw;
-    setKink(id, val);
+    const btn = e.target.closest('.pb');
+    if (btn) {
+      const id  = btn.dataset.id;
+      const val = btn.dataset.value;
+      const catId = btn.dataset.cat;
+      setKink(id, val);
+      // Clear inherited state for this item's category when manually changed
+      if (catId) setCatInherited(catId, null);
+      updateCatCardStatus(catId);
+      return;
+    }
+    // Accordion toggle
+    const hdr = e.target.closest('.cat-card-header');
+    if (hdr) {
+      const catId = hdr.dataset.cat;
+      if (catId) toggleCatAccordion(catId);
+      return;
+    }
   };
+
+  SURVEY_PATHWAYS.forEach(pathway => {
+    // Skip advanced pathway unless toggle on
+    if (pathway.advanced && !showAdv) return;
+
+    const pathwayEl = document.createElement('div');
+    pathwayEl.className = 'survey-pathway';
+    pathwayEl.textContent = pathway.label;
+    container.appendChild(pathwayEl);
+
+    pathway.cats.forEach(catId => {
+      const cat = KINK_CATS.find(c => c.id === catId);
+      if (!cat) return;
+      if (cat.advanced && !showAdv) return;
+
+      const isOpen = openCats.has(catId);
+      const meta = CAT_META[catId] || { icon: '●', label: cat.label };
+      const role = getCatRole(catId);
+      const inherited = getCatInherited(catId);
+      const hasSplitItems = cat.items.some(i => i.split);
+
+      // ── Card ──
+      const card = document.createElement('div');
+      card.className = 'cat-card' + (isOpen ? ' open' : '');
+      card.id = 'cat-card-' + catId;
+
+      // ── Card header ──
+      const hdr = document.createElement('div');
+      hdr.className = 'cat-card-header';
+      hdr.dataset.cat = catId;
+
+      const iconEl = document.createElement('span');
+      iconEl.className = 'cat-card-icon';
+      iconEl.textContent = meta.icon || '●';
+
+      const infoEl = document.createElement('div');
+      infoEl.className = 'cat-card-info';
+      const titleEl = document.createElement('span');
+      titleEl.className = 'cat-card-title';
+      titleEl.textContent = meta.label || cat.label;
+      const subEl = document.createElement('span');
+      subEl.className = 'cat-card-sub';
+      subEl.textContent = cat.sub || '';
+      infoEl.appendChild(titleEl);
+      infoEl.appendChild(subEl);
+
+      const statusEl = document.createElement('div');
+      statusEl.className = 'cat-card-status';
+      const fillWrap = document.createElement('div');
+      fillWrap.className = 'cat-card-fill';
+      const fillInner = document.createElement('div');
+      fillInner.className = 'cat-card-fill-inner';
+      fillInner.style.width = '0%';
+      fillWrap.appendChild(fillInner);
+      statusEl.appendChild(fillWrap);
+
+      const chevron = document.createElement('span');
+      chevron.className = 'cat-card-chevron';
+      chevron.textContent = '▾';
+
+      hdr.appendChild(iconEl);
+      hdr.appendChild(infoEl);
+      hdr.appendChild(statusEl);
+      hdr.appendChild(chevron);
+
+      // ── Quick select bar ──
+      const quickBar = document.createElement('div');
+      quickBar.className = 'cat-quick';
+
+      const qlbl = document.createElement('span');
+      qlbl.className = 'cat-quick-label';
+      qlbl.textContent = 'All:';
+      quickBar.appendChild(qlbl);
+
+      [
+        { v: 'like',  cls: 'qs-like',  lbl: '✓ Like' },
+        { v: 'int',   cls: 'qs-maybe', lbl: '~ Maybe' },
+        { v: 'no',    cls: 'qs-no',    lbl: '✕ No' },
+      ].forEach(({ v, cls, lbl }) => {
+        const btn = document.createElement('button');
+        btn.className = 'qs-btn ' + cls;
+        btn.textContent = lbl;
+        btn.onclick = e => { e.stopPropagation(); applyCatQuickSelect(catId, v); };
+        quickBar.appendChild(btn);
+      });
+
+      // Role toggle — only for categories with split items
+      if (hasSplitItems) {
+        const rtWrap = document.createElement('div');
+        rtWrap.className = 'role-toggle';
+        rtWrap.id = 'role-toggle-' + catId;
+        ['give','both','receive'].forEach(r => {
+          const rb = document.createElement('button');
+          rb.className = 'role-toggle-btn' + (role === r ? ' active' : '');
+          rb.textContent = r === 'give' ? 'Giving' : r === 'receive' ? 'Receiving' : 'Both';
+          rb.onclick = e => {
+            e.stopPropagation();
+            applyRoleChange(catId, r);
+            rtWrap.querySelectorAll('.role-toggle-btn').forEach(b => b.classList.toggle('active', b === rb));
+          };
+          rtWrap.appendChild(rb);
+        });
+        quickBar.appendChild(rtWrap);
+      }
+
+      // ── Accordion body ──
+      const accordion = document.createElement('div');
+      accordion.className = 'cat-accordion';
+      const inner = document.createElement('div');
+      inner.className = 'cat-accordion-inner';
+      inner.id = 'cat-rows-' + catId;
+      buildCatRows(cat, inner);
+      accordion.appendChild(inner);
+
+      card.appendChild(hdr);
+      card.appendChild(quickBar);
+      card.appendChild(accordion);
+      container.appendChild(card);
+
+      // Update fill bar on initial render
+      updateCatCardStatus(catId);
+    });
+  });
 }
 
 function setKink(id, val) {
   kinkPrefs[surveyIdx][id] = val;
-  const row = document.getElementById(`ki_${id}`);
+  const row = document.getElementById('ki_' + id);
   if (!row) return;
-  row.querySelectorAll('.kink-btn').forEach(btn => {
-    const bVal = btn.dataset.value === 'null' ? null : btn.dataset.value;
-    const active = bVal === val;
-    const cls = { fav:'k-fav', like:'k-like', int:'k-int', no:'k-no', null:'k-none' }[String(bVal)];
-    btn.className = 'kink-btn' + (active && cls ? ' ' + cls : '');
+  row.querySelectorAll('.pb').forEach(btn => {
+    const active = btn.dataset.value === val;
+    const clsMap = { fav:'pb-fav', like:'pb-like', int:'pb-maybe', no:'pb-no' };
+    const cls = clsMap[btn.dataset.value] || '';
+    btn.className = 'pb' + (active ? ' ' + cls : '');
     btn.setAttribute('aria-pressed', active ? 'true' : 'false');
   });
 }
+
 
 function surveyNext() {
   markPrefsSet();
@@ -2334,16 +2698,18 @@ function formatNarrative(text) {
 //  PLAY
 // ═══════════════════════════════════════════
 function generateInPlace() {
-  // Regenerate without navigating away — scroll to top of scene card first
+  escalationRevealed = false;
+  // Hide everything, show loading panel
+  ['sceneReadyPanel','timerArea','escalationPanel','sceneErrorBanner','rateCard'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
+  const sc = document.getElementById('sceneContent');
+  if (sc) sc.innerHTML = '';
+  // Scroll to card top then generate
   const card = document.getElementById('sceneCard');
   if (card) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  // Short delay to let scroll settle, then generate
-  setTimeout(() => {
-    escalationRevealed = false;
-    const escalPanel = document.getElementById('escalationPanel');
-    if (escalPanel) escalPanel.style.display = 'none';
-    generateFullScene();
-  }, 300);
+  setTimeout(generateFullScene, 200);
 }
 
 function confirmLeavePlay() {
@@ -2362,19 +2728,20 @@ function closeExitSheet(e) {
 }
 
 function revealScene() {
-  const sceneContent   = document.getElementById('sceneContent');
-  const timerArea      = document.getElementById('timerArea');
-  const revealBtn      = document.getElementById('revealSceneBtn');
-  const photoToggleEl  = document.getElementById('scenePhotoToggle');
-  if (sceneContent)  sceneContent.style.display = 'block';
-  if (timerArea)     timerArea.style.display = 'block';
-  if (revealBtn)     revealBtn.style.display = 'none';
-  if (photoToggleEl) photoToggleEl.style.display = 'flex';
-  // Scroll scene into view
-  setTimeout(() => sceneContent?.scrollIntoView({ behavior:'smooth', block:'start' }), 100);
+  // No longer used — prep and scene are revealed together
+  // Kept as no-op for safety in case any code still references it
 }
 
 function goPlay() {
+  // Reset all content panels before showing play screen
+  const resetIds = ['sceneLoadingPanel','sceneReadyPanel','timerArea',
+                    'escalationPanel','sceneErrorBanner','rateCard'];
+  resetIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
+  const sc = document.getElementById('sceneContent');
+  if (sc) sc.innerHTML = '';
   showScreen('screenPlay');
   document.body.classList.add('header-compact');
   generateScene();
@@ -2457,22 +2824,22 @@ function generateFullScene() {
   if (currentScene) delete currentScene._lastNarrative;
   escalationRevealed = false;
 
-  // Show prep panel, hide rest
-  const prepPanel    = document.getElementById('prepPanel');
-  const prepText     = document.getElementById('prepText');
-  const sceneContent = document.getElementById('sceneContent');
-  const timerArea    = document.getElementById('timerArea');
-  const escalPanel   = document.getElementById('escalationPanel');
-  const revealBtn    = document.getElementById('revealSceneBtn');
+  // Show loading state, hide everything else
+  const loadingPanel  = document.getElementById('sceneLoadingPanel');
+  const readyPanel    = document.getElementById('sceneReadyPanel');
+  const prepPanel     = document.getElementById('prepPanel');
+  const prepText      = document.getElementById('prepText');
+  const sceneContent  = document.getElementById('sceneContent');
+  const timerArea     = document.getElementById('timerArea');
+  const escalPanel    = document.getElementById('escalationPanel');
 
-  if (prepPanel)    { prepPanel.style.display = 'block'; }
-  if (sceneContent) { sceneContent.style.display = 'none'; sceneContent.innerHTML = ''; }
+  if (loadingPanel) loadingPanel.style.display = 'block';
+  if (readyPanel)   { readyPanel.style.display = 'none'; }
+  if (sceneContent) { sceneContent.innerHTML = ''; }
   if (timerArea)    { timerArea.style.display = 'none'; }
   if (escalPanel)   { escalPanel.style.display = 'none'; }
-  // Hide button until generation completes — shows generating hint instead
-  if (revealBtn)    { revealBtn.style.display = 'none'; revealBtn.classList.remove('appeared'); }
-  const genHint = document.getElementById('prepGeneratingHint');
-  if (genHint) genHint.style.display = 'block';
+  const photoToggleEl = document.getElementById('scenePhotoToggle');
+  if (photoToggleEl) photoToggleEl.style.display = 'none';
 
   resetTimer(300);
   document.getElementById('timerPhaseLabel').textContent = 'Duration';
