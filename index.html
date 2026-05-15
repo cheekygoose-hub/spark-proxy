@@ -564,8 +564,7 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 .their-turn-icon{font-size:1.1rem;}
 .their-turn-label{font-size:.7rem;font-weight:700;letter-spacing:.1em;
   text-transform:uppercase;color:var(--blush);}
-.their-turn-body{padding:1rem 1.4rem 1.2rem;font-family:'DM Serif Display',serif;
-  font-size:clamp(.95rem,3vw,1.05rem);line-height:1.7;color:var(--ink);}
+.their-turn-body{padding:1rem 1.4rem 1.2rem;font-family:'DM Sans',sans-serif;font-size:clamp(1.05rem,3.2vw,1.2rem);font-weight:400;line-height:1.85;color:var(--ink);letter-spacing:-.01em;}
 .their-turn-generating{color:var(--muted);font-family:'DM Sans',sans-serif;
   font-size:.82rem;font-style:italic;}
 .btn-their-turn{width:100%;padding:.8rem;border-radius:var(--r);
@@ -1141,8 +1140,8 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
     <!-- STAGE 1: PREP — shown first -->
     <div id="stagePrepWrap" style="display:none;">
       <div style="padding:1.4rem 1.6rem 1rem;">
-        <div style="font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--sage);margin-bottom:.6rem;padding-bottom:.4rem;border-bottom:1px solid var(--sage-mid);">Before you start the timer…</div>
-        <div id="stagePrepText" style="font-family:'DM Serif Display',serif;font-size:clamp(1rem,3vw,1.12rem);font-weight:400;line-height:1.75;color:var(--ink);"></div>
+        <div style="font-size:.6rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--sage);margin-bottom:.85rem;">Before you start the timer</div>
+        <div id="stagePrepText" style="font-family:'DM Sans',sans-serif;font-size:clamp(.95rem,2.8vw,1.05rem);font-weight:400;line-height:1.8;color:var(--ink2);letter-spacing:-.005em;"></div>
       </div>
       <div style="padding:.2rem 1.2rem 1.2rem;">
         <button class="btn btn-ink" id="revealSceneBtn" onclick="revealScene()" style="width:100%;">We're ready →</button>
@@ -1152,8 +1151,8 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
     <!-- STAGE 2: SCENE — revealed on tap -->
     <div id="stageSceneWrap" style="display:none;">
       <div style="padding:1.2rem 1.6rem 1rem;border-top:1px solid var(--border);">
-        <div id="stageSceneTitle" style="font-family:'DM Serif Display',serif;font-size:1.05rem;color:var(--muted);font-style:italic;margin-bottom:.6rem;"></div>
-        <div id="stageSceneText" style="font-family:'DM Serif Display',serif;font-size:clamp(1rem,3vw,1.12rem);font-weight:400;line-height:1.75;color:var(--ink);"></div>
+        <div id="stageSceneTitle" style="font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.75rem;"></div>
+        <div id="stageSceneText" style="font-family:'DM Sans',sans-serif;font-size:clamp(1.05rem,3.2vw,1.2rem);font-weight:400;line-height:1.85;color:var(--ink);letter-spacing:-.01em;"></div>
       </div>
       <!-- Photo toggle -->
       <div class="scene-photo-toggle" id="scenePhotoToggle" onclick="togglePhoto()" style="display:none;">
@@ -1170,7 +1169,7 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
     <div id="stageFinishWrap" style="display:none;">
       <div style="padding:1.2rem 1.6rem 1rem;border-top:1px solid var(--border);">
         <div style="font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--blush);margin-bottom:.6rem;">Finish</div>
-        <div id="stageFinishText" style="font-family:'DM Serif Display',serif;font-size:clamp(1rem,3vw,1.12rem);font-weight:400;line-height:1.75;color:var(--ink);"></div>
+        <div id="stageFinishText" style="font-family:'DM Sans',sans-serif;font-size:clamp(1.05rem,3.2vw,1.2rem);font-weight:400;line-height:1.85;color:var(--ink);letter-spacing:-.01em;color:var(--ink2);"></div>
       </div>
     </div>
 
@@ -3149,6 +3148,18 @@ function formatNarrative(text) {
 function generateInPlace() {
   escalationRevealed = false;
   refusalRetries = 0;
+
+  // Reset all stage panels so the waterfall works on every generation
+  ['stagePrepWrap','stageSceneWrap','stageFinishWrap'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
+  const rb = document.getElementById('revealSceneBtn');
+  if (rb) { rb.style.display = 'block'; rb.disabled = true; }
+  const kb = document.getElementById('keepGoingBtn');
+  if (kb) kb.style.display = 'block';
+  hideTheirTurnBtn();
+
   const card = document.getElementById('sceneCard');
   if (card) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
   setTimeout(generateFullScene, 150);
@@ -3184,6 +3195,8 @@ function revealScene() {
 
   sceneWrap.style.display = 'block';
   if (revealBtn) revealBtn.style.display = 'none'; // hide after tap
+  const keepBtn = document.getElementById('keepGoingBtn');
+  if (keepBtn) { keepBtn.style.display = 'block'; }
   if (photoToggle) photoToggle.style.display = 'flex';
 
   setTimeout(() => sceneWrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
@@ -3427,9 +3440,9 @@ function _generateFullSceneInner() {
     'You write a single intimate act for a couples app called Spark. The couple will do ONE thing together for 5 minutes — not a sequence of acts.' +
     '\n\nStructure your response using EXACTLY these three section markers, each on its own line with nothing else on that line:' +
     '\nPREP\nSCENE\nFINISH' +
-    '\n\n[PREP] rules: ONE sentence only. A single practical instruction — the position to get into, or the one prop to grab. No sexual acts. Example: "Lie face-down on the bed with a pillow under your hips." or "Alex, kneel on the floor in front of Jordan."' +
-    '\n\n[SCENE] rules: 3-5 sentences describing ONE sustained act. ' + explicitRule + ' This is what they do for the full five minutes — no scene changes, no "then do this next". Start with ' + currentA + '\u2019s name. Use both names throughout. Every sentence must describe the same act in more detail or from a different angle — not move on to something else.' +
-    '\n\n[FINISH] rules: 1-2 sentences. The natural ending of that same act — how it concludes and what happens immediately after. Not a new act.' +
+    '\n\n[PREP] rules: ONE sentence. The single position or prop needed. No sexual acts yet.' +
+    '\n\n[SCENE] rules: EXACTLY 2 sentences. ONE physical act only — what ' + currentA + ' does to ' + currentB + ' for the full five minutes. ' + explicitRule + ' No scene progression. No "then". Just the act, described directly.' +
+    '\n\n[FINISH] rules: ONE sentence. How the act ends.' +
     '\n\n' + ctx;
 
   const prompt =
@@ -3670,23 +3683,13 @@ function fmt(s) { return `${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60
 
 function setTimerBtns(state) {
   const el = document.getElementById('timerBtns');
+  if (!el) return;
   if (state === 'idle') {
-    el.innerHTML = `
-      <button class="t-btn t-go" onclick="startTimer()">Start</button>
-      <button class="t-btn" onclick="resetTimerBtn()">Reset</button>
-      <button class="t-btn" onclick="addTime(5)">+5 min</button>
-      <button class="t-btn t-skip" onclick="skipAhead()">Skip ahead</button>`;
+    el.innerHTML = `<button class="t-btn t-go" onclick="startTimer()" style="flex:1;">Start timer</button>`;
   } else if (state === 'running') {
-    el.innerHTML = `
-      <button class="t-btn t-go" onclick="startTimer()">Pause</button>
-      <button class="t-btn" onclick="resetTimerBtn()">Reset</button>
-      <button class="t-btn" onclick="addTime(5)">+5 min</button>
-      <button class="t-btn t-skip" onclick="skipAhead()">Skip ahead</button>`;
+    el.innerHTML = `<button class="t-btn" onclick="startTimer()" style="flex:1;">Stop timer</button>`;
   } else if (state === 'done') {
-    el.innerHTML = `
-      <button class="t-btn t-keep" onclick="keepGoing()">Keep going</button>
-      <button class="t-btn" onclick="goPreScene(false)">New scene</button>
-      <button class="t-btn" onclick="goPreScene(true)" style="font-size:.65rem;">Change mood</button>`;
+    el.innerHTML = `<button class="t-btn t-go" onclick="startTimer()" style="flex:1;">Restart</button>`;
   }
 }
 
