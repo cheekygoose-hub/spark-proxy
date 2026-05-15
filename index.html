@@ -500,9 +500,9 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 
 /* PIPELINE STATUS BAR — always visible on play screen */
 .pipeline-bar{background:#1a1714;border-radius:var(--rs) var(--rs) 0 0;
-  padding:.6rem 1rem;font-family:monospace;font-size:.68rem;display:flex;
+  padding:.6rem 1rem;font-family:monospace;font-size:.68rem;display:none;
   flex-wrap:wrap;gap:.3rem .6rem;line-height:1.6;}
-.pipeline-bar.hidden{display:none;}
+.pipeline-bar.debug-visible{display:flex;}
 .ps-item{display:flex;align-items:center;gap:.25rem;}
 .ps-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
 .ps-dot-ok{background:#a8e6cf;}
@@ -1121,16 +1121,6 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 <!-- ════════ PLAY ════════ -->
 <div class="screen" id="screenPlay">
 
-  <!-- TIMER — always at top of play screen -->
-  <div class="timer-sticky-wrap" id="timerArea" style="display:none;">
-    <div class="timer-inner" style="padding:.85rem 1.6rem;">
-      <div class="timer-tag" id="timerPhaseLabel">Duration</div>
-      <div class="timer-num" id="timerDisplay">05:00</div>
-      <div class="timer-hint" id="timerSub">Minimum 5 minutes</div>
-      <div class="timer-btns" id="timerBtns"></div>
-    </div>
-  </div>
-
   <!-- Pipeline status bar -->
   <div class="pipeline-bar" id="pipelineBar">
     <span class="ps-item"><span class="ps-dot ps-dot-pending" id="ps-proxy-dot"></span><span class="ps-text-pending" id="ps-proxy-text">proxy…</span></span>
@@ -1175,8 +1165,18 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
         <div id="stageSceneText" style="font-family:'Fraunces',Georgia,serif;font-size:clamp(1.05rem,3.2vw,1.18rem);font-weight:300;font-style:normal;line-height:1.9;color:var(--ink);letter-spacing:.005em;"></div>
       </div>
 
-      <div style="padding:.2rem 1.2rem 1.2rem;">
-        <button class="btn-stage-reveal" id="keepGoingBtn" onclick="revealFinisher()" style="width:100%;">Keep going →</button>
+      <!-- Timer sits between scene and finisher -->
+      <div class="timer-sticky-wrap" id="timerArea" style="display:none;margin:.4rem 0 0;">
+        <div class="timer-inner" style="padding:.85rem 1.2rem;">
+          <div class="timer-tag" id="timerPhaseLabel">Duration</div>
+          <div class="timer-num" id="timerDisplay">05:00</div>
+          <div class="timer-hint" id="timerSub">Minimum 5 minutes</div>
+          <div class="timer-btns" id="timerBtns"></div>
+        </div>
+      </div>
+
+      <div style="padding:.75rem 1.2rem 1.2rem;">
+        <button class="btn-stage-reveal" id="keepGoingBtn" onclick="revealFinisher()" style="width:100%;">Time to <em style="font-style:italic;font-weight:600;">climax</em> →</button>
       </div>
     </div>
 
@@ -1232,10 +1232,11 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 
   <!-- Post-scene quick rate (shown after 3rd+ scene) -->
   <div class="rate-card" id="rateCard">
-    <div class="rate-card-title">How was that?</div>
-    <div class="rate-card-btns">
-      <button class="rate-btn" onclick="rateScene('love')">❤️ Love it</button>
-      <button class="rate-btn" onclick="rateScene('good')">👍 Good</button>
+    <div class="rate-card-title">How did that feel?</div>
+    <div class="rate-card-sub">Helps Spark choose better scenes — won't repeat the same thing</div>
+    <div class="rate-btns">
+      <button class="rate-btn" onclick="rateScene('love')">❤️ Loved it</button>
+      <button class="rate-btn" onclick="rateScene('ok')">👍 Good</button>
       <button class="rate-btn" onclick="rateScene('not')">Not for us</button>
     </div>
   </div>
@@ -1902,31 +1903,49 @@ function incrementSceneCount() {
   localStorage.setItem(C.LS.SCENE_CNT, String(sceneCount));
 }
 
+// Recent scene history — prevents repeating same category too soon
+const recentSceneCats = []; // ring buffer of last 5 scene categories rated 'love' or 'ok'
+const MAX_RECENT_CATS = 5;
+
 function rateScene(rating) {
-  // Store rating against current scene
   if (currentScene) {
+    // Persist raw rating
     const ratings = JSON.parse(localStorage.getItem(C.LS.RATINGS) || '{}');
-    ratings[currentScene.id] = rating;
+    ratings[currentScene.id] = { r: rating, cat: currentScene.cat, ts: Date.now() };
     localStorage.setItem(C.LS.RATINGS, JSON.stringify(ratings));
-    // If they rated 'not', flag the scene's kinks as lower preference
+
+    // Track recent categories to enforce variety
+    if (rating === 'love' || rating === 'ok') {
+      recentSceneCats.push(currentScene.cat);
+      if (recentSceneCats.length > MAX_RECENT_CATS) recentSceneCats.shift();
+    }
+
     if (rating === 'not' && currentScene.kinks) {
+      // Disliked: nudge kinks down one level only — don't eliminate
       currentScene.kinks.forEach(k => {
-        // Reduce preference for both partners on this kink
         [0, 1].forEach(pi => {
           if (kinkPrefs[pi][k] === 'like') kinkPrefs[pi][k] = 'int';
+          // 'int' stays 'int' — one dislike doesn't erase interest
         });
       });
     }
+
     if (rating === 'love' && currentScene.kinks) {
+      // Loved: nudge kinks up one level max — but keep modest to preserve variety
+      // Only upgrade items still at 'int' (maybe) → 'like'. 
+      // Already-liked items are NOT upgraded to 'fav' from a single rating.
       currentScene.kinks.forEach(k => {
         [0, 1].forEach(pi => {
-          if (kinkPrefs[pi][k] === null || kinkPrefs[pi][k] === undefined) kinkPrefs[pi][k] = 'like';
           if (kinkPrefs[pi][k] === 'int') kinkPrefs[pi][k] = 'like';
+          // 'like' stays 'like' — rating doesn't push to 'fav'
         });
       });
     }
+    // 'ok' rating: no kink preference change — it was fine but not notable
+
+    SparkLog.info('scene:rated', { rating, scene: currentScene.id, cat: currentScene.cat });
   }
-  // Hide the card
+
   const card = document.getElementById('rateCard');
   if (card) {
     card.style.opacity = '0';
@@ -2253,6 +2272,9 @@ document.getElementById('rememberKey')?.addEventListener('change', () => {
   if (dbg) { dbg.checked = debugMode; }
   const dbgStatus = document.getElementById('debugStatus');
   if (dbgStatus) { dbgStatus.textContent = debugMode ? 'On' : 'Off'; dbgStatus.className = 'toggle-status' + (debugMode ? ' on' : ''); }
+  // Pipeline bar — only visible when debug mode is on
+  const bar = document.getElementById('pipelineBar');
+  if (bar) bar.classList.toggle('debug-visible', debugMode);
   // API key
   const saved   = sessionStorage.getItem(C.LS.API_KEY) || localStorage.getItem(C.LS.API_KEY);
   const isLocal = !!localStorage.getItem(C.LS.API_KEY);
@@ -3238,6 +3260,12 @@ function revealFinisher() {
   showTheirTurnBtn();
 
   setTimeout(() => finishWrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+  // Show rating card after a short delay — user has now seen the full scene
+  setTimeout(() => {
+    const rateCard = document.getElementById('rateCard');
+    if (rateCard) rateCard.classList.add('visible');
+  }, 1200);
+
   SparkLog.info('scene:finisher-revealed');
 }
 
@@ -3361,16 +3389,24 @@ function _generateFullSceneInner() {
 
   currentPiA = piA; currentPiB = piB;
   currentA = gN(piA); currentB = gN(piB);
-  // Prefer a scene from a different category than the previous one
+  // Build scene pool — avoid same scene, recently used categories, and previous category
   let scenePool = avScenes;
-  if (previousScene) {
-    // Try to exclude same scene and same category
-    const diffCat = avScenes.filter(s => s.id !== previousScene.id && s.cat !== previousScene.cat);
-    if (diffCat.length > 0) scenePool = diffCat;
+  // Collect cats to avoid: previous scene's cat + any loved/ok cats used recently
+  const catsToAvoid = new Set();
+  if (previousScene) catsToAvoid.add(previousScene.cat);
+  recentSceneCats.forEach(c => catsToAvoid.add(c));
+
+  if (catsToAvoid.size > 0) {
+    const freshCat = avScenes.filter(s => s.id !== previousScene?.id && !catsToAvoid.has(s.cat));
+    if (freshCat.length > 0) { scenePool = freshCat; }
     else {
-      // At minimum, exclude the exact same scene
-      const diffScene = avScenes.filter(s => s.id !== previousScene.id);
-      if (diffScene.length > 0) scenePool = diffScene;
+      // Relax: only exclude same category (not all recent)
+      const diffCat = avScenes.filter(s => s.id !== previousScene?.id && s.cat !== previousScene?.cat);
+      if (diffCat.length > 0) scenePool = diffCat;
+      else {
+        const diffScene = avScenes.filter(s => s.id !== previousScene?.id);
+        if (diffScene.length > 0) scenePool = diffScene;
+      }
     }
   }
   currentScene = pick(scenePool);
@@ -3458,7 +3494,10 @@ function _generateFullSceneInner() {
     '\nPREP\nSCENE\nFINISH' +
     '\n\n[PREP] rules: ONE sentence. The single position or prop needed. No sexual acts yet.' +
     '\n\n[SCENE] rules: EXACTLY 2 sentences. ONE physical act only — what ' + currentA + ' does to ' + currentB + ' for the full five minutes. ' + explicitRule + ' No scene progression. No "then". Just the act, described directly.' +
-    '\n\n[FINISH] rules: ONE sentence. ' + (isLight ? 'How the act ends naturally.' : currentA + ' makes ' + currentB + ' orgasm. Describe the moment directly.') + ' No new acts.' +
+    '\n\n[FINISH] rules: ONE sentence. ' + (isLight
+      ? 'How the act ends naturally.'
+      : currentA + ' actively stimulates ' + currentB + ' to orgasm using hand, mouth, or body movement — continuous motion until ' + currentB + ' finishes. Must describe the specific physical action being performed, not a static position. ' + currentB + ' orgasms during this.'
+    ) + ' No new scene.' +
     '\n\n' + ctx;
 
   const prompt =
@@ -3591,12 +3630,7 @@ function _generateFullSceneInner() {
 
     sessionStorage.setItem('spark_fail_count', '0');
     incrementSceneCount();
-    if (sceneCount >= 3 && sceneCount % 3 === 0) {
-      setTimeout(() => {
-        const rateCard = document.getElementById('rateCard');
-        if (rateCard) rateCard.classList.add('visible');
-      }, 2000);
-    }
+    // Rating card is now shown after revealFinisher() — not here
   });
 }
 
@@ -3648,14 +3682,18 @@ function generateTheirTurn() {
 
   const system =
     'You write a very short intimate scene finisher for a couples app called Spark. ' +
-    'Exactly 2-3 sentences. ' + explicit + ' No preamble, no section markers, no titles. ' +
-    'Output only the scene text.\n\n' + ctx;
+    'Exactly 2 sentences. ' + explicit + ' ' +
+    'CRITICAL RULES: The act must involve continuous physical motion — stroking, thrusting, licking, rubbing — that directly causes orgasm through stimulation. ' +
+    'Do NOT write a static position (e.g. "hold in mouth", "stay still", "remain inside"). ' +
+    'Write what the person DOES with their hand, mouth, or body that produces the orgasm. ' +
+    'No preamble, no section markers. Output only the scene text.\n\n' + ctx;
 
   const prompt =
     'The couple just did: "' + prev.slice(0, 200) + '"\n\n' +
-    'Now write 2-3 sentences where ' + giver + ' focuses entirely on making ' +
-    receiver + ' orgasm. Start with ' + giver + '\u2019s name. ' +
-    'Be specific about what ' + giver + ' does. End the moment ' + receiver + ' finishes.';
+    giver + ' now brings ' + receiver + ' to orgasm through active stimulation. ' +
+    'Sentence 1: what ' + giver + ' does (the specific motion — stroking, licking, thrusting etc) and how ' + receiver + ' responds. ' +
+    'Sentence 2: ' + receiver + ' orgasms. ' +
+    'Start sentence 1 with ' + giver + '\u2019s name. The act must require physical movement to work, not just position.';
 
   callClaudeStream(system, prompt, body, function(text) {
     isGenerating = false;
@@ -3777,8 +3815,10 @@ function onDebugToggle() {
   renderDebugChecklist();
   const status   = document.getElementById('debugStatus');
   const evtPanel = document.getElementById('debugEventPanel');
+  const bar      = document.getElementById('pipelineBar');
   if (status)   { status.textContent = debugMode ? 'On' : 'Off'; status.className = 'toggle-status' + (debugMode ? ' on' : ''); }
   if (evtPanel) { evtPanel.classList.toggle('visible', debugMode); }
+  if (bar)      { bar.classList.toggle('debug-visible', debugMode); }
   if (debugMode) {
     const logEl = document.getElementById('debugEventLog');
     if (logEl) logEl.textContent = SparkLog.dump();
@@ -3922,7 +3962,9 @@ function removeCustomProp(label) {
 //  PIPELINE STATUS BAR (always-on)
 // ═══════════════════════════════════════════
 function psSet(id, state, text) {
-  // state: 'ok' | 'fail' | 'warn' | 'pending'
+  // Pipeline bar only visible in debug mode
+  const bar = document.getElementById('pipelineBar');
+  if (bar) bar.classList.toggle('debug-visible', !!debugMode);
   const dot  = document.getElementById('ps-' + id + '-dot');
   const txt  = document.getElementById('ps-' + id + '-text');
   if (dot) dot.className = 'ps-dot ps-dot-' + state;
