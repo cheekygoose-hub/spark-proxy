@@ -4,41 +4,63 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Spark</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300;1,9..144,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#F7F5F2;--card:#FFF;--border:#E8E4DF;--border2:#D4CEC7;
-  --ink:#1A1714;--ink2:#4A4540;--muted:#9A948E;--faint:#C8C2BB;
-  --sage:#6B8C6E;--sage-bg:#EDF2ED;--sage-mid:#B8CEB9;
-  --blush:#C4796A;--blush-bg:#F9F0EE;--blush-mid:#DFB0A8;
-  --amber:#B8883A;--amber-bg:#FBF4E8;--amber-mid:#D9BA80;
-  --sky:#4A7FA5;--sky-bg:#EBF3FA;
-  --fav:#9B59B6;--fav-bg:#F5EEF8;--fav-mid:#C39BD3;
-  --r:14px;--rs:9px;
-  --sh:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.04);
-  --shm:0 2px 8px rgba(0,0,0,.08),0 8px 32px rgba(0,0,0,.06);
+  /* Premium Wellness Palette */
+  --bg:#1A1A1D;
+  --card:rgba(30,30,34,.85);
+  --border:rgba(255,255,255,.08);
+  --border2:rgba(255,255,255,.16);
+  --ink:#D1D1D1;
+  --ink2:#A8A8B0;
+  --muted:#6B6B78;
+  --faint:#3A3A42;
+  --champagne:#E2D1B3;
+  --blush:#C18C7E;
+  --blush-bg:rgba(193,140,126,.12);
+  --blush-mid:rgba(193,140,126,.3);
+  --sage:#8BAF8E;
+  --sage-bg:rgba(139,175,142,.1);
+  --sage-mid:rgba(139,175,142,.28);
+  --sage-mid2:rgba(139,175,142,.4);
+  --amber:#C8A87A;
+  --amber-bg:rgba(200,168,122,.1);
+  --amber-mid:rgba(200,168,122,.3);
+  --sky:#7BAABF;
+  --sky-bg:rgba(123,170,191,.1);
+  --fav:#B08FC4;
+  --fav-bg:rgba(176,143,196,.1);
+  --fav-mid:rgba(176,143,196,.3);
+  --r:20px;
+  --rs:12px;
+  --sh:0 2px 16px rgba(0,0,0,.35),0 0 0 1px rgba(255,255,255,.04);
+  --shm:0 4px 32px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.06);
+  --glass:blur(20px) saturate(1.4);
 }
-body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;font-size:15px;
+body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;font-size:15px;
   line-height:1.5;min-height:100vh;display:flex;flex-direction:column;align-items:center;
-  padding:2rem 1rem 5rem;-webkit-font-smoothing:antialiased}
+  padding:2rem 1rem 5rem;-webkit-font-smoothing:antialiased;
+  background-image:radial-gradient(ellipse at 20% 0%,rgba(193,140,126,.06) 0%,transparent 60%),
+    radial-gradient(ellipse at 80% 100%,rgba(139,175,142,.05) 0%,transparent 60%);}
 .container{width:100%;max-width:600px}
 
 header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
-.wordmark{font-family:'DM Serif Display',serif;font-size:clamp(2.4rem,8vw,3.6rem);
-  font-weight:400;letter-spacing:-.01em;color:var(--ink);line-height:1}
-.wordmark .dot{color:var(--blush)}
-.tagline{font-size:.8rem;color:var(--muted);margin-top:.35rem;font-weight:300}
+.wordmark{font-family:'Lora',serif;font-size:clamp(2.4rem,8vw,3.6rem);
+  font-weight:500;letter-spacing:-.02em;color:var(--champagne);line-height:1}
+.wordmark .dot{color:var(--blush);opacity:.8}
+.tagline{font-size:.75rem;color:var(--muted);margin-top:.35rem;font-weight:300;letter-spacing:.06em;text-transform:uppercase}
 
 /* EXIT CONFIRMATION SHEET */
 .exit-sheet-overlay{position:fixed;inset:0;background:rgba(26,23,20,.35);z-index:200;
   display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
 .exit-sheet-overlay.open{opacity:1;pointer-events:all}
-.exit-sheet{background:var(--card);border-radius:var(--r) var(--r) 0 0;width:100%;max-width:600px;
+.exit-sheet{background:rgba(30,30,34,.95);backdrop-filter:var(--glass);-webkit-backdrop-filter:var(--glass);border-top:1px solid var(--border);border-radius:var(--r) var(--r) 0 0;width:100%;max-width:600px;
   padding:1.4rem 1.4rem 2.5rem;transform:translateY(100%);transition:transform .28s cubic-bezier(.16,1,.3,1)}
 .exit-sheet-overlay.open .exit-sheet{transform:translateY(0)}
 .exit-sheet-handle{width:36px;height:4px;background:var(--faint);border-radius:99px;margin:0 auto 1.2rem}
-.exit-sheet-title{font-family:'DM Serif Display',serif;font-size:1.2rem;font-weight:400;
+.exit-sheet-title{font-family:'Lora',serif;font-size:1.2rem;font-weight:400;
   color:var(--ink);margin-bottom:.3rem}
 .exit-sheet-sub{font-size:.78rem;color:var(--muted);margin-bottom:1.2rem}
 .exit-sheet-btns{display:flex;flex-direction:column;gap:.5rem}
@@ -66,7 +88,7 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 .home-warn.visible{display:flex}
 .home-warn-icon{font-size:1rem;flex-shrink:0}
 .home-warn button{margin-left:auto;background:var(--amber);border:none;border-radius:6px;
-  color:#fff;font-family:'DM Sans',sans-serif;font-size:.7rem;font-weight:600;
+  color:#fff;font-family:'Inter',sans-serif;font-size:.7rem;font-weight:600;
   padding:.25rem .6rem;cursor:pointer;white-space:nowrap}
 
 /* HEADER — compact on play screen */
@@ -79,11 +101,12 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 
 /* CATEGORY SELECT ALL */
 .cat-select-all{background:none;border:none;font-size:.65rem;color:var(--sky);
-  cursor:pointer;font-family:'DM Sans',sans-serif;padding:.15rem .4rem;
+  cursor:pointer;font-family:'Inter',sans-serif;padding:.15rem .4rem;
   font-weight:600;letter-spacing:.04em}
 
 /* TIMER STICKY */
-.timer-sticky-wrap{position:sticky;bottom:0;background:var(--bg);
+.timer-sticky-wrap{position:sticky;bottom:0;background:rgba(26,26,29,.92);
+  backdrop-filter:var(--glass);-webkit-backdrop-filter:var(--glass);
   border-top:1px solid var(--border);padding:.75rem 0 .5rem;margin-top:.5rem;z-index:20}
 
 /* PHASE ORIENTATION */
@@ -103,13 +126,13 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 
 /* ESCALATION back link */
 .escalation-back{font-size:.7rem;color:var(--muted);cursor:pointer;background:none;
-  border:none;font-family:'DM Sans',sans-serif;padding:.25rem 0;display:block;
+  border:none;font-family:'Inter',sans-serif;padding:.25rem 0;display:block;
   margin-bottom:.75rem}
 .escalation-back:hover{color:var(--ink2)}
 
 /* BODY ASSET rename — available for all genders */
 .asset-rename-link{font-size:.65rem;color:var(--sky);cursor:pointer;background:none;
-  border:none;font-family:'DM Sans',sans-serif;padding:0;margin-left:.5rem}
+  border:none;font-family:'Inter',sans-serif;padding:0;margin-left:.5rem}
 
 /* PHOTO TOGGLE inside scene card */
 .scene-photo-toggle{display:flex;align-items:center;gap:.5rem;padding:.6rem .9rem;
@@ -133,11 +156,12 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
   padding:.65rem 1rem;margin-bottom:.75rem;display:none;align-items:center;justify-content:space-between;gap:.75rem}
 .return-banner span{font-size:.8rem;color:var(--amber);font-weight:500}
 .return-banner button{background:var(--amber);border:none;border-radius:var(--rs);
-  color:#fff;font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:600;
+  color:#fff;font-family:'Inter',sans-serif;font-size:.78rem;font-weight:600;
   padding:.38rem .85rem;cursor:pointer}
 
 .label{font-size:.7rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:.6rem}
-.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem 1.4rem;margin-bottom:.75rem;box-shadow:var(--sh)}
+.card{background:var(--card);backdrop-filter:var(--glass);-webkit-backdrop-filter:var(--glass);
+  border:1px solid var(--border);border-radius:var(--r);padding:1.25rem 1.4rem;margin-bottom:.75rem;box-shadow:var(--sh)}
 
 /* TOGGLE */
 .toggle-row{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
@@ -157,11 +181,11 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 .names-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem}
 .field{display:flex;flex-direction:column;gap:.35rem}
 .field label{font-size:.7rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
-.field input,.field select{background:var(--bg);border:1.5px solid var(--border);border-radius:var(--rs);
-  color:var(--ink);font-family:'DM Sans',sans-serif;font-size:.95rem;
+.field input,.field select{background:rgba(255,255,255,.05);border:1.5px solid var(--border);border-radius:var(--rs);
+  color:var(--ink);font-family:'Inter',sans-serif;font-size:.95rem;
   padding:.65rem .9rem;outline:none;transition:border-color .18s,box-shadow .18s;width:100%}
 .field input::placeholder{color:var(--faint)}
-.field input:focus,.field select:focus{border-color:var(--sky);box-shadow:0 0 0 3px var(--sky-bg)}
+.field input:focus,.field select:focus{border-color:var(--blush);box-shadow:0 0 0 3px var(--blush-bg)}
 .field select{cursor:pointer;appearance:none;-webkit-appearance:none;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239A948E' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
   background-repeat:no-repeat;background-position:right .9rem center;padding-right:2.2rem}
@@ -180,7 +204,7 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 .asset-toggle.checked{background:var(--sage);border-color:var(--sage);color:#fff}
 .asset-row-label{font-size:.82rem;color:var(--ink2);flex:1}
 .asset-name-input{background:var(--bg);border:1px solid var(--border);border-radius:6px;
-  color:var(--ink);font-family:'DM Sans',sans-serif;font-size:.8rem;padding:.35rem .6rem;
+  color:var(--ink);font-family:'Inter',sans-serif;font-size:.8rem;padding:.35rem .6rem;
   outline:none;width:110px;flex-shrink:0}
 .asset-name-input:focus{border-color:var(--sky)}
 .asset-name-input::placeholder{color:var(--faint)}
@@ -198,7 +222,7 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 .int-pills{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.75rem}
 .int-pill{flex:1;min-width:80px;background:var(--bg);border:1.5px solid var(--border);
   border-radius:var(--rs);padding:.6rem .5rem;text-align:center;cursor:pointer;transition:all .18s;
-  font-family:'DM Sans',sans-serif;user-select:none}
+  font-family:'Inter',sans-serif;user-select:none}
 .int-pill:hover{border-color:var(--border2);background:#fff}
 .int-pill.active{background:var(--ink);border-color:var(--ink);color:#fff}
 .int-pill-icon{font-size:1.1rem;margin-bottom:.15rem}
@@ -208,26 +232,26 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 
 /* BUTTONS */
 .btn{display:block;width:100%;padding:.9rem 1.2rem;border:none;border-radius:var(--rs);
-  font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:600;letter-spacing:.01em;
+  font-family:'Inter',sans-serif;font-size:.95rem;font-weight:600;letter-spacing:.01em;
   cursor:pointer;transition:transform .15s,box-shadow .15s}
-.btn-ink{background:var(--ink);color:#fff;box-shadow:0 2px 12px rgba(26,23,20,.18)}
-.btn-ink:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(26,23,20,.22)}
+.btn-ink{background:var(--champagne);color:#1A1A1D;box-shadow:0 2px 20px rgba(226,209,179,.15)}
+.btn-ink:hover{transform:translateY(-1px);box-shadow:0 4px 28px rgba(226,209,179,.25)}
 .btn-ink:active{transform:none}
 .btn-outline{background:transparent;color:var(--ink2);border:1.5px solid var(--border2)}
 .btn-outline:hover{border-color:var(--ink);color:var(--ink)}
 .btn-ghost{background:transparent;border:none;color:var(--muted);font-size:.8rem;font-weight:500;
-  cursor:pointer;font-family:'DM Sans',sans-serif;padding:.5rem}
+  cursor:pointer;font-family:'Inter',sans-serif;padding:.5rem}
 .btn-ghost:hover{color:var(--ink2)}
 .btn-stack{display:flex;flex-direction:column;gap:.5rem}
 .tease-btn{display:flex;align-items:center;justify-content:center;gap:.5rem;
   padding:.75rem 1rem;background:var(--bg);border:1.5px solid var(--border);
-  border-radius:var(--rs);color:var(--ink2);font-family:'DM Sans',sans-serif;
+  border-radius:var(--rs);color:var(--ink2);font-family:'Inter',sans-serif;
   font-size:.88rem;font-weight:500;cursor:pointer;transition:all .18s;box-shadow:var(--sh)}
 .tease-btn:hover{border-color:var(--amber-mid);background:var(--amber-bg);color:var(--amber)}
 
 /* KINK SURVEY */
 .survey-hero{text-align:center;margin-bottom:1.5rem}
-.survey-hero h2{font-family:'DM Serif Display',serif;font-size:1.8rem;font-weight:400;color:var(--ink)}
+.survey-hero h2{font-family:'Lora',serif;font-size:1.8rem;font-weight:500;color:var(--champagne)}
 .survey-hero p{font-size:.82rem;color:var(--muted);margin-top:.3rem}
 .progress-track{height:3px;background:var(--border);border-radius:99px;margin-bottom:1.5rem;overflow:hidden}
 .progress-fill{height:100%;background:var(--ink);border-radius:99px;transition:width .4s ease}
@@ -268,7 +292,7 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 
 /* RESULTS */
 .results-hero{text-align:center;margin-bottom:1.5rem}
-.results-hero h2{font-family:'DM Serif Display',serif;font-size:1.8rem;color:var(--ink)}
+.results-hero h2{font-family:'Lora',serif;font-size:1.8rem;color:var(--ink)}
 .results-hero p{font-size:.82rem;color:var(--muted);margin-top:.3rem}
 .results-section{margin-bottom:1rem}
 .results-section-header{display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem}
@@ -280,7 +304,7 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
   padding:.5rem .85rem;font-size:.82rem;color:var(--ink2);box-shadow:var(--sh)}
 
 /* PLAY */
-.scene-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);
+.scene-card{background:var(--card);backdrop-filter:var(--glass);-webkit-backdrop-filter:var(--glass);border:1px solid var(--border);border-radius:var(--r);
   overflow:hidden;margin-bottom:.75rem;box-shadow:var(--shm)}
 .scene-pill{display:inline-block;font-size:.65rem;font-weight:700;letter-spacing:.08em;
   text-transform:uppercase;padding:.25rem .6rem;border-radius:50px;margin-bottom:1rem}
@@ -289,7 +313,7 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 .scene-body{padding:1.6rem}
 .scene-title{font-size:.75rem;font-weight:600;color:var(--muted);margin-bottom:.55rem;letter-spacing:.04em}
 .scene-stream-writing{opacity:.7;}
-.scene-narrative{font-family:'DM Serif Display',serif;font-size:clamp(1.05rem,3.2vw,1.22rem);
+.scene-narrative{font-family:'Lora',serif;font-size:clamp(1.05rem,3.2vw,1.22rem);
   font-weight:400;line-height:1.75;color:var(--ink)}
 .scene-narrative .n-name{color:var(--blush);font-style:italic}
 .scene-narrative .n-body{color:var(--amber);font-style:italic}
@@ -303,7 +327,7 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 .escalation-label{font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
   color:var(--amber);margin-bottom:.4rem}
 .escalation-title{font-size:.88rem;font-weight:600;color:var(--ink2);margin-bottom:.55rem}
-.escalation-text{font-family:'DM Serif Display',serif;font-size:clamp(1rem,3vw,1.18rem);
+.escalation-text{font-family:'Lora',serif;font-size:clamp(1rem,3vw,1.18rem);
   font-weight:400;line-height:1.7;color:var(--ink)}
 .escalation-text .n-name{color:var(--blush);font-style:italic}
 .escalation-text .n-body{color:var(--amber);font-style:italic}
@@ -312,14 +336,14 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 .timer-area{background:var(--bg);border-top:1px solid var(--border);padding:1.4rem 1.6rem;text-align:center}
 .timer-inner{text-align:center;background:var(--bg)}
 .timer-tag{font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.25rem}
-.timer-num{font-family:'DM Serif Display',serif;font-size:3.4rem;font-weight:400;
+.timer-num{font-family:'Lora',serif;font-size:3.4rem;font-weight:400;
   letter-spacing:-.02em;line-height:1;color:var(--ink);margin-bottom:.3rem;transition:color .3s}
 .timer-num.warn{color:var(--blush)}
 .timer-num.done{color:var(--sage)}
 .timer-hint{font-size:.72rem;color:var(--muted);margin-bottom:1.1rem}
 .timer-btns{display:flex;gap:.45rem;justify-content:center;flex-wrap:wrap}
 .t-btn{padding:.5rem 1.1rem;border-radius:50px;border:1.5px solid var(--border);background:var(--card);
-  color:var(--ink2);font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:500;
+  color:var(--ink2);font-family:'Inter',sans-serif;font-size:.78rem;font-weight:500;
   cursor:pointer;transition:all .15s;box-shadow:var(--sh)}
 .t-btn:hover{border-color:var(--border2)}
 .t-btn.t-go{background:var(--ink);border-color:var(--ink);color:#fff;box-shadow:none}
@@ -338,7 +362,7 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 .mood-bar{display:flex;gap:.4rem;margin-bottom:.6rem}
 .mood-chip{flex:1;padding:.55rem .4rem;border:1.5px solid var(--border);border-radius:var(--rs);
   background:var(--bg);text-align:center;cursor:pointer;transition:all .18s;user-select:none;
-  font-family:'DM Sans',sans-serif}
+  font-family:'Inter',sans-serif}
 .mood-chip:hover{border-color:var(--border2);background:#fff}
 .mood-chip.active-light{background:var(--sage-bg);border-color:var(--sage-mid)}
 .mood-chip.active-medium{background:var(--amber-bg);border-color:var(--amber-mid)}
@@ -349,7 +373,7 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 .mood-chip.active-medium .mood-chip-name{color:var(--amber)}
 .mood-chip.active-hard .mood-chip-name{color:var(--blush)}
 .mood-note{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--rs);
-  color:var(--ink);font-family:'DM Sans',sans-serif;font-size:.88rem;padding:.65rem .9rem;
+  color:var(--ink);font-family:'Inter',sans-serif;font-size:.88rem;padding:.65rem .9rem;
   outline:none;resize:none;transition:border-color .18s;line-height:1.45}
 .mood-note:focus{border-color:var(--sky);box-shadow:0 0 0 3px var(--sky-bg)}
 .mood-note::placeholder{color:var(--faint)}
@@ -376,7 +400,7 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 .scene-error-banner-icon{font-size:.9rem;flex-shrink:0;color:var(--muted)}
 .scene-error-banner-text{flex:1;color:var(--ink2)}
 .scene-error-banner button{background:none;border:1px solid var(--border);border-radius:6px;
-  font-family:'DM Sans',sans-serif;font-size:.7rem;font-weight:600;color:var(--ink2);
+  font-family:'Inter',sans-serif;font-size:.7rem;font-weight:600;color:var(--ink2);
   padding:.25rem .6rem;cursor:pointer;white-space:nowrap}
 .scene-error-banner button:hover{border-color:var(--border2)}
 
@@ -397,7 +421,7 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 .rate-btns{display:flex;gap:.4rem}
 .rate-btn{flex:1;padding:.55rem .4rem;border:1.5px solid var(--border);border-radius:var(--rs);
   background:var(--bg);text-align:center;cursor:pointer;transition:all .18s;
-  font-family:'DM Sans',sans-serif;font-size:.75rem;font-weight:500;color:var(--ink2)}
+  font-family:'Inter',sans-serif;font-size:.75rem;font-weight:500;color:var(--ink2)}
 .rate-btn:hover{border-color:var(--border2);background:#fff}
 .rate-btn.rate-love{border-color:var(--fav-mid);background:var(--fav-bg);color:var(--fav)}
 .rate-btn.rate-good{border-color:var(--sage-mid);background:var(--sage-bg);color:var(--sage)}
@@ -406,10 +430,10 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 /* HOME SCREEN */
 .home-screen{display:flex;flex-direction:column;justify-content:center;min-height:60vh;gap:1rem;padding:1rem 0}
 .home-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:2.2rem 1.5rem;border-radius:var(--r);border:none;font-family:'DM Sans',sans-serif;
+  padding:2.2rem 1.5rem;border-radius:var(--r);border:none;font-family:'Inter',sans-serif;
   cursor:pointer;transition:all .2s;text-align:center;width:100%;box-shadow:var(--shm)}
 .home-btn-icon{font-size:2rem;margin-bottom:.6rem;display:block}
-.home-btn-title{font-family:'DM Serif Display',serif;font-size:1.5rem;font-weight:400;display:block;margin-bottom:.3rem}
+.home-btn-title{font-family:'Lora',serif;font-size:1.5rem;font-weight:400;display:block;margin-bottom:.3rem}
 .home-btn-sub{font-size:.75rem;font-weight:400;display:block;opacity:.7;line-height:1.4}
 .home-btn-tease{background:var(--ink);color:#fff}
 .home-btn-tease:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(26,23,20,.25)}
@@ -417,16 +441,16 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 .home-btn-scene:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(196,121,106,.35)}
 .home-settings-link{text-align:center;margin-top:.5rem}
 .home-settings-link button{background:none;border:none;color:var(--muted);font-size:.78rem;
-  font-family:'DM Sans',sans-serif;cursor:pointer;padding:.5rem}
+  font-family:'Inter',sans-serif;cursor:pointer;padding:.5rem}
 .home-settings-link button:hover{color:var(--ink2)}
 
 /* SCENE PRE-SCREEN */
 .prescreen-hero{text-align:center;margin-bottom:2rem}
-.prescreen-hero h2{font-family:'DM Serif Display',serif;font-size:2rem;font-weight:400;color:var(--ink)}
+.prescreen-hero h2{font-family:'Lora',serif;font-size:2rem;font-weight:400;color:var(--ink)}
 .prescreen-hero p{font-size:.85rem;color:var(--muted);margin-top:.4rem}
 .intensity-btn{display:flex;align-items:center;gap:1rem;width:100%;padding:1.2rem 1.4rem;
   border-radius:var(--r);border:2px solid var(--border);background:var(--card);
-  font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .2s;text-align:left;
+  font-family:'Inter',sans-serif;cursor:pointer;transition:all .2s;text-align:left;
   margin-bottom:.65rem;box-shadow:var(--sh)}
 .intensity-btn:hover{transform:translateY(-1px);box-shadow:var(--shm)}
 .intensity-btn.sel-light{border-color:var(--sage);background:var(--sage-bg)}
@@ -434,7 +458,7 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 .intensity-btn.sel-hard{border-color:var(--blush);background:var(--blush-bg)}
 .intensity-btn-icon{font-size:1.6rem;flex-shrink:0}
 .intensity-btn-body{flex:1}
-.intensity-btn-title{font-family:'DM Serif Display',serif;font-size:1.1rem;font-weight:400;
+.intensity-btn-title{font-family:'Lora',serif;font-size:1.1rem;font-weight:400;
   color:var(--ink);display:block;margin-bottom:.15rem}
 .intensity-btn-title em{font-style:italic;color:var(--blush);font-weight:400;}
 .intensity-btn.sel-hard .intensity-btn-title em{color:var(--blush);}
@@ -443,7 +467,7 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 .intensity-btn.sel-medium .intensity-btn-title{color:var(--amber)}
 .intensity-btn.sel-hard .intensity-btn-title{color:var(--blush)}
 .focus-input{width:100%;background:var(--bg);border:1.5px solid var(--border);
-  border-radius:var(--rs);color:var(--ink);font-family:'DM Sans',sans-serif;
+  border-radius:var(--rs);color:var(--ink);font-family:'Inter',sans-serif;
   font-size:.95rem;padding:.85rem 1rem;outline:none;resize:none;transition:border-color .18s;
   line-height:1.5;margin-top:1rem}
 .focus-input:focus{border-color:var(--blush);box-shadow:0 0 0 3px var(--blush-bg)}
@@ -463,7 +487,7 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 .role-row-name{font-size:.82rem;font-weight:600;color:var(--ink);min-width:60px;flex-shrink:0;}
 .role-btns{display:flex;gap:.3rem;flex:1;}
 .role-btn{flex:1;padding:.3rem .4rem;border-radius:20px;border:1.5px solid var(--border);
-  background:var(--bg);font-family:'DM Sans',sans-serif;font-size:.7rem;font-weight:600;
+  background:var(--bg);font-family:'Inter',sans-serif;font-size:.7rem;font-weight:600;
   cursor:pointer;transition:all .15s;color:var(--muted);text-align:center;user-select:none;}
 .role-btn:hover{border-color:var(--border2);color:var(--ink2);}
 .role-btn.role-dom{background:var(--ink);border-color:var(--ink);color:#fff;}
@@ -479,7 +503,7 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 .props-none-toggle input{accent-color:var(--blush);width:14px;height:14px;cursor:pointer}
 .props-chip-grid{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.5rem}
 .props-chip{padding:.35rem .75rem;border-radius:20px;border:1.5px solid var(--border);
-  background:var(--bg);font-family:'DM Sans',sans-serif;font-size:.75rem;font-weight:500;
+  background:var(--bg);font-family:'Inter',sans-serif;font-size:.75rem;font-weight:500;
   cursor:pointer;transition:all .15s;color:var(--ink2);user-select:none}
 .props-chip:hover{border-color:var(--border2);background:#fff}
 .props-chip.active{background:var(--sage-bg);border-color:var(--sage-mid);color:var(--sage)}
@@ -487,12 +511,12 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 .props-chip.custom-chip{border-style:dashed}
 .props-custom-row{display:flex;gap:.4rem;margin-top:.35rem}
 .props-custom-input{flex:1;background:var(--bg);border:1.5px solid var(--border);
-  border-radius:var(--rs);font-family:'DM Sans',sans-serif;font-size:.82rem;
+  border-radius:var(--rs);font-family:'Inter',sans-serif;font-size:.82rem;
   padding:.45rem .75rem;outline:none;color:var(--ink)}
 .props-custom-input:focus{border-color:var(--sage)}
 .props-custom-input::placeholder{color:var(--faint)}
 .props-custom-btn{background:var(--ink);border:none;border-radius:var(--rs);
-  color:#fff;font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:600;
+  color:#fff;font-family:'Inter',sans-serif;font-size:.78rem;font-weight:600;
   padding:.45rem .85rem;cursor:pointer;white-space:nowrap}
 .props-disabled{opacity:.4;pointer-events:none}
 
@@ -545,16 +569,34 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 /* PLAY ACTION BAR — always visible at bottom */
 .play-action-bar{
   position:sticky;bottom:0;z-index:20;
-  background:var(--bg);
+  background:rgba(26,26,29,.92);
+  backdrop-filter:var(--glass);-webkit-backdrop-filter:var(--glass);
   border-top:1px solid var(--border);
   padding:.75rem .1rem .5rem;
   margin-top:.75rem;
 }
+
+/* GALLERY */
+.gallery-card{background:var(--card);backdrop-filter:var(--glass);-webkit-backdrop-filter:var(--glass);
+  border:1px solid var(--border);border-radius:var(--r);
+  padding:.85rem 1rem;margin-bottom:.6rem;cursor:pointer;transition:all .2s;
+  display:flex;align-items:center;gap:.75rem;box-shadow:var(--sh);}
+.gallery-card:hover{border-color:var(--border2);}
+.gallery-card-body{flex:1;min-width:0;}
+.gallery-card-title{font-size:.9rem;font-weight:600;color:var(--ink);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.gallery-card-meta{font-size:.68rem;color:var(--muted);margin-top:.15rem;}
+.gallery-card-mood{font-size:.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  padding:.15rem .5rem;border-radius:20px;flex-shrink:0;}
+.gallery-card-del{width:28px;height:28px;border-radius:50%;border:1px solid var(--border);
+  background:none;cursor:pointer;color:var(--muted);font-size:.8rem;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.gallery-card-del:hover{background:var(--blush-bg);border-color:var(--blush-mid);color:var(--blush);}
 /* STAGED WATERFALL REVEAL */
 .btn-stage-reveal{
   width:100%;padding:.75rem 1rem;border-radius:var(--r);
   border:1.5px solid var(--border2);background:var(--bg);
-  font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;
+  font-family:'Inter',sans-serif;font-size:.88rem;font-weight:600;
   color:var(--ink2);cursor:pointer;transition:all .18s;display:block;
 }
 .btn-stage-reveal:hover{background:var(--ink);color:#fff;border-color:var(--ink);}
@@ -566,6 +608,63 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
   to{opacity:1;transform:translateY(0);}
 }
 
+
+/* ═══ SURVEY PHASE B — Custom deep-dive ═══ */
+.survey-pass-header{margin:1rem 0 .75rem;}
+.survey-pass-title{font-size:.95rem;font-weight:600;color:var(--ink);}
+.survey-pass-sub{font-size:.72rem;color:var(--muted);margin-top:.2rem;}
+
+/* Triage cards */
+.triage-section-label{font-size:.6rem;font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--muted);margin:1rem 0 .4rem;
+  padding-bottom:.3rem;border-bottom:1px solid var(--border);}
+.triage-card{background:var(--card);border:1.5px solid var(--border);
+  border-radius:var(--rs);margin-bottom:.4rem;padding:.65rem .9rem;
+  display:flex;align-items:center;gap:.75rem;box-shadow:var(--sh);
+  transition:border-color .15s;}
+.triage-card.tc-fav{border-color:var(--fav-mid);background:var(--fav-bg);}
+.triage-card.tc-yes{border-color:var(--sage-mid);background:var(--sage-bg);}
+.triage-card.tc-no{border-color:var(--blush-mid);background:var(--blush-bg);opacity:.5;}
+.triage-label{flex:1;font-size:.82rem;color:var(--ink);font-weight:500;}
+.triage-tip{font-size:.67rem;color:var(--muted);font-style:italic;display:block;margin-top:.1rem;}
+.triage-btns{display:flex;gap:3px;flex-shrink:0;}
+.triage-btn{width:34px;height:34px;border-radius:8px;border:1.5px solid var(--border);
+  background:var(--bg);font-size:.8rem;cursor:pointer;transition:all .12s;
+  display:flex;align-items:center;justify-content:center;}
+.triage-btn:hover{transform:scale(1.08);}
+.triage-btn.tb-fav.active{background:var(--fav-bg);border-color:var(--fav-mid);}
+.triage-btn.tb-yes.active{background:var(--sage-bg);border-color:var(--sage-mid);}
+.triage-btn.tb-no.active{background:var(--blush-bg);border-color:var(--blush-mid);}
+
+/* Experience level chips */
+.exp-card{background:var(--card);border:1px solid var(--border);border-radius:var(--rs);
+  margin-bottom:.5rem;padding:.6rem .9rem;box-shadow:var(--sh);}
+.exp-label{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.45rem;}
+.exp-btns{display:flex;gap:.3rem;}
+.exp-btn{flex:1;padding:.3rem .25rem;border-radius:20px;border:1.5px solid var(--border);
+  background:var(--bg);font-family:'Inter',sans-serif;font-size:.67rem;font-weight:600;
+  cursor:pointer;transition:all .15s;text-align:center;color:var(--muted);}
+.exp-btn.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+
+/* Dependency flash */
+@keyframes depFlash{0%,100%{background:var(--amber-bg);}50%{background:var(--card);}}
+.dep-flash{animation:depFlash .6s ease 2;}
+
+/* VIBE ARCHETYPES */
+.archetype-label{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);margin:.75rem 0 .5rem;}
+.archetype-grid{display:grid;grid-template-columns:1fr 1fr;gap:.45rem;margin-bottom:1rem;}
+.archetype-btn{display:flex;flex-direction:column;align-items:flex-start;gap:.15rem;
+  padding:.8rem .95rem;border-radius:var(--r);border:1px solid var(--border);
+  background:var(--card);backdrop-filter:var(--glass);-webkit-backdrop-filter:var(--glass);
+  cursor:pointer;transition:all .2s;text-align:left;
+  font-family:'Inter',sans-serif;box-shadow:var(--sh);}
+.archetype-btn:hover{border-color:var(--border2);background:rgba(255,255,255,.08);}
+.archetype-btn.active{border-color:var(--sage-mid);background:var(--sage-bg);}
+.archetype-icon{font-size:1.3rem;margin-bottom:.1rem;}
+.archetype-name{font-size:.8rem;font-weight:600;color:var(--champagne);}
+.archetype-sub{font-size:.67rem;color:var(--muted);line-height:1.3;}
+
 /* THEIR TURN */
 .their-turn-panel{margin-top:.75rem;border-radius:var(--r);overflow:hidden;
   border:1.5px solid var(--blush-mid);background:var(--blush-bg);display:none;}
@@ -575,12 +674,12 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 .their-turn-icon{font-size:1.1rem;}
 .their-turn-label{font-size:.7rem;font-weight:700;letter-spacing:.1em;
   text-transform:uppercase;color:var(--blush);}
-.their-turn-body{padding:1rem 1.4rem 1.2rem;font-family:'Fraunces',Georgia,serif;font-size:clamp(1.05rem,3.2vw,1.18rem);font-weight:300;font-style:normal;line-height:1.9;color:var(--ink);letter-spacing:.005em;}
-.their-turn-generating{color:var(--muted);font-family:'DM Sans',sans-serif;
+.their-turn-body{padding:1rem 1.4rem 1.2rem;font-family:'Lora',Georgia,serif;font-size:clamp(1.05rem,3.2vw,1.18rem);font-weight:300;font-style:normal;line-height:1.9;color:var(--ink);letter-spacing:.005em;}
+.their-turn-generating{color:var(--muted);font-family:'Inter',sans-serif;
   font-size:.82rem;font-style:italic;}
 .btn-their-turn{width:100%;padding:.8rem;border-radius:var(--r);
   border:1.5px solid var(--blush-mid);background:var(--blush-bg);
-  font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;
+  font-family:'Inter',sans-serif;font-size:.88rem;font-weight:600;
   color:var(--blush);cursor:pointer;transition:all .15s;margin-top:.5rem;display:none;}
 .btn-their-turn.visible{display:block;}
 .btn-their-turn:disabled{opacity:.5;cursor:not-allowed;}
@@ -640,7 +739,7 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 .cat-quick-label{font-size:.62rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
   color:var(--muted);margin-right:.15rem;white-space:nowrap}
 .qs-btn{padding:.28rem .65rem;border-radius:20px;border:1.5px solid var(--border);
-  background:var(--card);font-family:'DM Sans',sans-serif;font-size:.72rem;font-weight:600;
+  background:var(--card);font-family:'Inter',sans-serif;font-size:.72rem;font-weight:600;
   cursor:pointer;transition:all .15s;white-space:nowrap;color:var(--ink2)}
 .qs-btn:hover{border-color:var(--border2);background:#fff}
 .qs-btn.qs-like{background:var(--sage-bg);border-color:var(--sage-mid);color:var(--sage)}
@@ -651,7 +750,7 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 /* Role toggle */
 .role-toggle{display:flex;border:1.5px solid var(--border);border-radius:20px;overflow:hidden;
   margin-left:auto;flex-shrink:0}
-.role-toggle-btn{padding:.22rem .55rem;font-family:'DM Sans',sans-serif;font-size:.65rem;
+.role-toggle-btn{padding:.22rem .55rem;font-family:'Inter',sans-serif;font-size:.65rem;
   font-weight:600;border:none;background:transparent;cursor:pointer;color:var(--muted);
   transition:all .15s}
 .role-toggle-btn.active{background:var(--ink);color:#fff}
@@ -677,7 +776,7 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 .pref-btns{display:flex;gap:2px;flex-shrink:0}
 .pb{width:30px;height:30px;border-radius:8px;border:1.5px solid var(--border);
   background:var(--bg);font-size:.72rem;cursor:pointer;transition:all .15s;
-  display:flex;align-items:center;justify-content:center;font-family:'DM Sans',sans-serif}
+  display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif}
 .pb:hover{border-color:var(--border2);background:#fff;transform:scale(1.05)}
 .pb.pb-fav{background:var(--fav-bg);border-color:var(--fav-mid);color:var(--fav)}
 .pb.pb-like{background:var(--sage-bg);border-color:var(--sage-mid);color:var(--sage)}
@@ -694,13 +793,13 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 .survey-level-bar{display:flex;gap:.4rem;margin-bottom:1.2rem}
 .survey-level-btn{flex:1;padding:.55rem .4rem;border:1.5px solid var(--border);border-radius:var(--rs);
   background:var(--bg);text-align:center;cursor:pointer;transition:all .18s;
-  font-family:'DM Sans',sans-serif;user-select:none;font-size:.75rem;font-weight:600;color:var(--muted)}
+  font-family:'Inter',sans-serif;user-select:none;font-size:.75rem;font-weight:600;color:var(--muted)}
 .survey-level-btn:hover{border-color:var(--border2);color:var(--ink2)}
 .survey-level-btn.slb-active{background:var(--ink);border-color:var(--ink);color:#fff}
 .survey-cats{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:1.2rem}
 .survey-cat-chip{padding:.7rem .6rem;border:1.5px solid var(--border);border-radius:var(--rs);
   background:var(--bg);text-align:center;cursor:pointer;transition:all .18s;
-  font-family:'DM Sans',sans-serif;user-select:none}
+  font-family:'Inter',sans-serif;user-select:none}
 .survey-cat-chip:hover{border-color:var(--border2);background:#fff}
 .survey-cat-chip.scc-active{background:var(--blush-bg);border-color:var(--blush-mid)}
 .survey-cat-chip-icon{font-size:1.2rem;display:block;margin-bottom:.25rem}
@@ -715,11 +814,11 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
   padding:1.4rem 1.6rem}
 .prep-label{font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
   color:var(--sage);margin-bottom:.6rem;padding-bottom:.4rem;border-bottom:1px solid var(--sage-mid)}
-.prep-text{font-family:'DM Serif Display',serif;font-size:clamp(1rem,3vw,1.15rem);
+.prep-text{font-family:'Lora',serif;font-size:clamp(1rem,3vw,1.15rem);
   font-weight:400;line-height:1.7;color:var(--ink)}
 .prep-text .n-name{color:var(--blush);font-style:italic}
 .reveal-btn{width:100%;margin-top:1rem;padding:.85rem;border:none;border-radius:var(--rs);
-  background:var(--ink);color:#fff;font-family:'DM Sans',sans-serif;font-size:.95rem;
+  background:var(--ink);color:#fff;font-family:'Inter',sans-serif;font-size:.95rem;
   font-weight:600;cursor:pointer;transition:all .18s;display:flex;align-items:center;
   justify-content:center;gap:.5rem}
 .reveal-btn:hover{opacity:.88}
@@ -745,13 +844,13 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
   padding:1.5rem 1.4rem 2.5rem;transform:translateY(100%);transition:transform .3s cubic-bezier(.16,1,.3,1)}
 .modal-overlay.open .modal-sheet{transform:translateY(0)}
 .modal-handle{width:36px;height:4px;background:var(--faint);border-radius:99px;margin:0 auto 1.4rem}
-.modal-title{font-family:'DM Serif Display',serif;font-size:1.4rem;font-weight:400;color:var(--ink);margin-bottom:.3rem}
+.modal-title{font-family:'Lora',serif;font-size:1.4rem;font-weight:400;color:var(--ink);margin-bottom:.3rem}
 .modal-sub{font-size:.8rem;color:var(--muted);margin-bottom:1.2rem}
 .ambush-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);
   padding:1.1rem 1.2rem;margin-bottom:.6rem;cursor:pointer;transition:all .18s}
 .ambush-card:hover{border-color:var(--amber-mid);background:var(--amber-bg)}
 .ambush-card-title{font-size:.88rem;font-weight:600;color:var(--ink);margin-bottom:.25rem}
-.ambush-card-text{font-family:'DM Serif Display',serif;font-size:.95rem;line-height:1.55;color:var(--ink2)}
+.ambush-card-text{font-family:'Lora',serif;font-size:.95rem;line-height:1.55;color:var(--ink2)}
 .ambush-card-text .n-name{color:var(--blush);font-style:italic}
 .ambush-card-text .n-body{color:var(--amber);font-style:italic}
 
@@ -761,6 +860,38 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
   .names-grid,.gender-grid{grid-template-columns:1fr 1fr}
   .play-row{flex-direction:column}
 }
+
+/* DARK PREMIUM THEME — enhanced further from base */
+[data-theme="dark"] {
+  --bg:        #111114;
+  --card:      rgba(22,22,26,.9);
+  --border:    #38383E;
+  --border2:   #52525A;
+  --ink:       #D1D1D1;
+  --ink2:      #A0A0AA;
+  --muted:     #6B6B75;
+  --faint:     #3A3A42;
+  --blush:     #C18C7E;
+  --blush-bg:  #2A1E1C;
+  --blush-mid: #5A3832;
+  --sage:      #7EB8A0;
+  --sage-bg:   #1A2820;
+  --sage-mid:  #2E5045;
+  --sage-mid2: #3A6054;
+  --amber:     #C8A87A;
+  --amber-bg:  #26201A;
+  --amber-mid: #5A4830;
+  --fav:       #D4A04A;
+  --fav-bg:    #26201A;
+  --fav-mid:   #5A4820;
+  --sh:        0 2px 12px rgba(0,0,0,.4);
+}
+[data-theme="dark"] .pipeline-bar { background: #0F0F12; }
+[data-theme="dark"] .btn.btn-ink  { background: #D1D1D1; color: #1A1A1D; }
+[data-theme="dark"] .their-turn-panel { background: #2A1E1C; }
+[data-theme="dark"] .scene-card { background: #242428; }
+[data-theme="dark"] .play-action-bar { background: #1A1A1D; }
+
 </style>
 </head>
 <body>
@@ -893,6 +1024,23 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
   </div>
 
 
+  <!-- Dark theme toggle -->
+  <div class="card" style="margin-top:.75rem;">
+    <div class="toggle-row">
+      <div class="toggle-text">
+        <strong>Dark mode</strong>
+        <span>Premium dark aesthetic</span>
+      </div>
+      <div class="toggle-wrap">
+        <label class="toggle-switch">
+          <input type="checkbox" id="darkModeToggle" onchange="onDarkModeToggle()">
+          <span class="toggle-slider"></span>
+        </label>
+        <div class="toggle-status" id="darkModeStatus">Off</div>
+      </div>
+    </div>
+  </div>
+
   <!-- Dev/Test toggle -->
   <div class="card" style="margin-top:.75rem;">
     <div class="toggle-row">
@@ -996,6 +1144,13 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
       oninput="currentAvoid=this.value.trim()"></textarea>
   </div>
 
+  <div style="margin-top:.75rem;">
+    <div class="focus-input-label">Where are you? <span style="color:var(--muted);font-weight:400;">(optional)</span></div>
+    <input class="focus-input" id="locationInput" type="text" style="height:auto;padding:.55rem .85rem;"
+      placeholder="e.g. hotel room, at home, living room…"
+      oninput="currentLocation=this.value.trim()">
+  </div>
+
   <!-- Role selection for tonight -->
   <div class="role-section">
     <span class="role-section-label">Who's in charge tonight?</span>
@@ -1061,6 +1216,8 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 
 <!-- ════════ SURVEY ════════ -->
 <div class="screen" id="screenSurvey">
+
+  <!-- Header -->
   <div class="survey-hero">
     <h2 id="surveyTitle">Your preferences</h2>
     <p id="surveySubtitle">Private — your partner won't see your answers.</p>
@@ -1068,44 +1225,86 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
   <div class="survey-progress-label" id="surveyProgressLabel">Partner 1 of 2</div>
   <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:10%"></div></div>
 
-  <!-- Comfort zone slider -->
-  <div class="comfort-zone-block">
-    <div class="comfort-zone-header">
-      <span class="comfort-zone-label">Comfort zone</span>
-      <span class="comfort-zone-value" id="comfortLabel">Exploring</span>
+  <!-- PHASE A: Archetype picker (always shown first) -->
+  <div id="surveyPhaseA">
+    <div class="archetype-label">How would you describe your vibe?</div>
+    <div class="archetype-grid" id="archetypeGrid">
+      <button class="archetype-btn" id="arch-sensual" onclick="applyArchetype('sensual')">
+        <span class="archetype-icon">🕯️</span>
+        <span class="archetype-name">Sensual &amp; Slow</span>
+        <span class="archetype-sub">Romance, touch, massage, blindfolds</span>
+      </button>
+      <button class="archetype-btn" id="arch-explorer" onclick="applyArchetype('explorer')">
+        <span class="archetype-icon">🌊</span>
+        <span class="archetype-name">Curious Explorer</span>
+        <span class="archetype-sub">Balanced — oral, some light kink</span>
+      </button>
+      <button class="archetype-btn" id="arch-kinky" onclick="applyArchetype('kinky')">
+        <span class="archetype-icon">⚡</span>
+        <span class="archetype-name">Intense &amp; Kinky</span>
+        <span class="archetype-sub">Full range — nothing held back</span>
+      </button>
+      <button class="archetype-btn" id="arch-custom" onclick="applyArchetype('custom')">
+        <span class="archetype-icon">🎯</span>
+        <span class="archetype-name">Custom Palette</span>
+        <span class="archetype-sub">Choose exactly what you like</span>
+      </button>
     </div>
-    <input type="range" id="comfortSlider" class="comfort-slider" min="0" max="3" step="1" value="1"
-      oninput="onComfortSlide(this.value)">
-    <div class="comfort-ticks">
-      <span>Gentle</span><span>Exploring</span><span>Adventurous</span><span>Wild</span>
+
+    <div class="btn-stack" style="margin-top:1.2rem;" id="archContinueWrap" style="display:none;">
+      <button class="btn btn-ink" id="archContinueBtn" onclick="surveyNext()" style="display:none;">
+        Looks good, continue →
+      </button>
+      <div style="text-align:center;margin-top:.4rem;">
+        <button class="btn-ghost" onclick="goSetup()">← Back</button>
+      </div>
     </div>
   </div>
 
-  <!-- Extreme toggle -->
-  <div class="advanced-banner" id="advancedBanner">
+  <!-- PHASE B: Custom deep-dive (only shown when Custom tapped) -->
+  <div id="surveyPhaseB" style="display:none;">
+
+    <!-- Pass 1: Triage — Fav / Yes / No per item -->
+    <div id="surveyPass1" style="display:none;">
+      <div class="survey-pass-header">
+        <div class="survey-pass-title">Step 1 — What are you into?</div>
+        <div class="survey-pass-sub">Tap each item. Swipe doesn't apply here — just tap.</div>
+      </div>
+      <div id="triageList"></div>
+      <div class="btn-stack" style="margin-top:1rem;">
+        <button class="btn btn-ink" onclick="goToPass2()">Next — set experience →</button>
+        <div style="text-align:center;margin-top:.4rem;">
+          <button class="btn-ghost" onclick="backToArchetypes()">← Change vibe</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pass 2: Experience level for "yes" items -->
+    <div id="surveyPass2" style="display:none;">
+      <div class="survey-pass-header">
+        <div class="survey-pass-title">Step 2 — How experienced are you?</div>
+        <div class="survey-pass-sub">For each thing you said yes to, set your experience level.</div>
+      </div>
+      <div id="experienceList"></div>
+      <div class="btn-stack" style="margin-top:1rem;">
+        <button class="btn btn-ink" onclick="surveyNext()">Done →</button>
+        <div style="text-align:center;margin-top:.4rem;">
+          <button class="btn-ghost" onclick="backToPass1()">← Back</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Extreme toggle (always available in custom mode) -->
+  <div class="advanced-banner" id="advancedBanner" style="display:none;">
     <p>Show extreme categories</p>
     <label class="toggle-switch" style="flex-shrink:0;">
-      <input type="checkbox" id="showAdvanced" onchange="rebuildSurvey()">
+      <input type="checkbox" id="showAdvanced" onchange="buildTriageList()">
       <span class="toggle-slider"></span>
     </label>
   </div>
 
-  <!-- Legend -->
-  <div class="kink-legend-sticky">
-    <div class="kink-legend">
-      <div class="legend-item"><span class="kl-dot" style="background:var(--fav)"></span>★ Fav</div>
-      <div class="legend-item"><span class="kl-dot" style="background:var(--sage)"></span>✓ Like</div>
-      <div class="legend-item"><span class="kl-dot" style="background:var(--amber)"></span>~ Maybe</div>
-      <div class="legend-item"><span class="kl-dot" style="background:var(--blush)"></span>✕ No</div>
-    </div>
-  </div>
-
-  <div id="surveyItems"></div>
-
-  <div class="btn-stack" style="margin-top:1rem;">
-    <button class="btn btn-ink" id="surveyNextBtn" onclick="surveyNext()">Done →</button>
-    <div style="text-align:center;margin-top:.4rem;"><button class="btn-ghost" onclick="goSetup()">← Back</button></div>
-  </div>
 </div>
 
 <!-- ════════ RESULTS ════════ -->
@@ -1141,7 +1340,7 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 
     <!-- Generating hint (shown while streaming) -->
     <div id="sceneGeneratingHint" style="display:none;padding:1.6rem;text-align:center;">
-      <div style="font-family:'DM Sans',sans-serif;font-size:.82rem;color:var(--muted);font-style:italic;margin-bottom:.75rem;">Getting your scene ready…</div>
+      <div style="font-family:'Inter',sans-serif;font-size:.82rem;color:var(--muted);font-style:italic;margin-bottom:.75rem;">Getting your scene ready…</div>
       <div style="height:3px;border-radius:99px;background:var(--border);overflow:hidden;max-width:200px;margin:0 auto;">
         <div id="genProgressBar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--sage),var(--blush));border-radius:99px;transition:width .4s ease;"></div>
       </div>
@@ -1151,7 +1350,7 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
     <div id="stagePrepWrap" style="display:none;">
       <div style="padding:1.4rem 1.6rem 1rem;">
         <div style="font-size:.6rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--sage);margin-bottom:.85rem;">Before you start the timer</div>
-        <div id="stagePrepText" style="font-family:'Fraunces',Georgia,serif;font-size:clamp(.95rem,2.8vw,1.05rem);font-weight:300;line-height:1.85;color:var(--ink2);letter-spacing:.005em;"></div>
+        <div id="stagePrepText" style="font-family:'Lora',Georgia,serif;font-size:clamp(.95rem,2.8vw,1.05rem);font-weight:300;line-height:1.85;color:var(--ink2);letter-spacing:.005em;"></div>
       </div>
       <div style="padding:.2rem 1.2rem 1.2rem;">
         <button class="btn btn-ink" id="revealSceneBtn" onclick="revealScene()" style="width:100%;">We're ready →</button>
@@ -1162,7 +1361,7 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
     <div id="stageSceneWrap" style="display:none;">
       <div style="padding:1.2rem 1.6rem 1rem;border-top:1px solid var(--border);">
         <div id="stageSceneTitle" style="font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.75rem;"></div>
-        <div id="stageSceneText" style="font-family:'Fraunces',Georgia,serif;font-size:clamp(1.05rem,3.2vw,1.18rem);font-weight:300;font-style:normal;line-height:1.9;color:var(--ink);letter-spacing:.005em;"></div>
+        <div id="stageSceneText" style="font-family:'Lora',Georgia,serif;font-size:clamp(1.05rem,3.2vw,1.18rem);font-weight:300;font-style:normal;line-height:1.9;color:var(--ink);letter-spacing:.005em;"></div>
       </div>
 
       <!-- Timer sits between scene and finisher -->
@@ -1184,7 +1383,7 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
     <div id="stageFinishWrap" style="display:none;">
       <div style="padding:1.2rem 1.6rem 1rem;border-top:1px solid var(--border);">
         <div style="font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--blush);margin-bottom:.6rem;">Finish</div>
-        <div id="stageFinishText" style="font-family:'Fraunces',Georgia,serif;font-size:clamp(1.05rem,3.2vw,1.18rem);font-weight:300;font-style:normal;line-height:1.9;color:var(--ink);letter-spacing:.005em;color:var(--ink2);"></div>
+        <div id="stageFinishText" style="font-family:'Lora',Georgia,serif;font-size:clamp(1.05rem,3.2vw,1.18rem);font-weight:300;font-style:normal;line-height:1.9;color:var(--ink);letter-spacing:.005em;color:var(--ink2);"></div>
       </div>
     </div>
 
@@ -1198,13 +1397,18 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
     </div>
   </div>
 
+  <!-- Skip typewriter -->
+  <div id="skipTypewriterWrap" style="display:none;text-align:right;padding:.2rem .5rem 0;">
+    <button onclick="skipTypewriter()" style="background:none;border:none;font-size:.72rem;color:var(--muted);cursor:pointer;font-family:inherit;">Skip to end ↓</button>
+  </div>
   <!-- Hidden stream sink -->
   <div id="sceneStreamText" style="display:none;"></div>
 
   <!-- Sticky bottom action bar -->
   <div class="play-action-bar" id="playActionBar">
-    <button class="btn btn-ink" id="newSceneBtn" onclick="generateInPlace()" style="width:100%;margin-bottom:.45rem;">New scene</button>
-    <button class="btn-their-turn" id="theirTurnBtn" onclick="generateTheirTurn()" disabled>&#x1F525; Their turn</button>
+    <button class="btn-their-turn" id="theirTurnBtn" onclick="generateTheirTurn()" disabled>🔥 Their turn</button>
+    <button id="saveSceneBtn" onclick="gallerySave()" style="display:none;width:100%;margin-top:.4rem;padding:.6rem;border-radius:var(--r);border:1.5px solid var(--border);background:var(--bg);font-family:'Inter',sans-serif;font-size:.82rem;color:var(--ink2);cursor:pointer;">☆ Save scene</button>
+    <button class="btn btn-ink" id="newSceneBtn" onclick="generateInPlace()" style="width:100%;margin-top:.45rem;">New scene</button>
     <div style="display:flex;justify-content:space-between;align-items:center;padding:0 .1rem;margin-top:.35rem;">
       <button onclick="goPreScene(true)" style="background:none;border:none;font-size:.75rem;color:var(--muted);cursor:pointer;font-family:inherit;padding:.3rem 0;">↺ Change mood first</button>
       <button onclick="confirmLeavePlay()" style="background:none;border:none;font-size:.75rem;color:var(--muted);cursor:pointer;font-family:inherit;padding:.3rem 0;">⚙ Settings</button>
@@ -1240,6 +1444,48 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
       <button class="rate-btn" onclick="rateScene('not')">Not for us</button>
     </div>
   </div>
+
+</div><!-- /screenPlay -->
+
+<!-- ════════ GALLERY ════════ -->
+<div class="screen" id="screenGallery">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+    <h2 style="font-family:'Lora',serif;font-size:1.5rem;font-weight:400;">Saved scenes</h2>
+    <button class="btn-ghost" onclick="showScreen('screenHome')">← Back</button>
+  </div>
+  <div id="galleryList"></div>
+  <div id="galleryEmpty" style="display:none;text-align:center;padding:2rem 0;color:var(--muted);font-size:.85rem;">
+    No saved scenes yet — tap "Save scene" after generating one.
+  </div>
+</div>
+
+<!-- ════════ GALLERY REPLAY ════════ -->
+<div class="screen" id="screenReplay">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;">
+    <div>
+      <div id="replayTitle" style="font-family:'Lora',serif;font-size:1.1rem;font-weight:400;color:var(--ink);"></div>
+      <div id="replayMeta" style="font-size:.68rem;color:var(--muted);margin-top:.15rem;"></div>
+    </div>
+    <button class="btn-ghost" onclick="showScreen('screenGallery')">← Gallery</button>
+  </div>
+  <div class="scene-card">
+    <div style="padding:1.4rem 1.6rem 1rem;">
+      <div style="font-size:.6rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--sage);margin-bottom:.85rem;">Before you start</div>
+      <div id="replayPrep" style="font-family:'Lora',Georgia,serif;font-size:1.05rem;font-weight:300;line-height:1.85;color:var(--ink2);"></div>
+    </div>
+    <div style="padding:1rem 1.6rem 1rem;border-top:1px solid var(--border);">
+      <div id="replaySceneTitle" style="font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.75rem;"></div>
+      <div id="replayScene" style="font-family:'Lora',Georgia,serif;font-size:1.08rem;font-weight:300;line-height:1.9;color:var(--ink);"></div>
+    </div>
+    <div style="padding:1rem 1.6rem 1.2rem;border-top:1px solid var(--border);">
+      <div style="font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--blush);margin-bottom:.6rem;">Finish</div>
+      <div id="replayFinish" style="font-family:'Lora',Georgia,serif;font-size:1.05rem;font-weight:300;line-height:1.85;color:var(--ink2);"></div>
+    </div>
+  </div>
+  <div style="margin-top:.75rem;text-align:center;">
+    <button class="btn btn-ink" style="width:100%;" onclick="showScreen('screenGallery')">← Back to gallery</button>
+  </div>
+</div>
 
 <script>
 // ═══════════════════════════════════════════════════════════════════
@@ -2029,6 +2275,7 @@ let refusalRetries = 0;      // auto-retry count on AI refusal
 let currentMood    = null;            // 'light' | 'medium' | 'hard' | null — set on pre-screen
 let currentNote    = '';              // free-text focus from pre-screen
 let currentAvoid   = '';              // free-text avoid from pre-screen
+let currentLocation = '';             // optional location context
 let currentRoles   = ['either','either']; // 'dom'|'sub'|'either' per partner
 let photoSuggest   = false;
 // Survey filters
@@ -2079,6 +2326,8 @@ function showScreen(id) {
 function goSetup() {
   isGenerating = false;
   if (streamController) { try { streamController.abort(); } catch {} streamController = null; }
+  if (typewriterTimer) { clearInterval(typewriterTimer); typewriterTimer = null; }
+  typewriterQueue = '';
   const btn = document.getElementById('newSceneBtn');
   if (btn) { btn.disabled = false; btn.textContent = 'New scene'; }
   const banner = document.getElementById('returnBanner');
@@ -2168,7 +2417,9 @@ function goPreScene(resetMood) {
     const ai = document.getElementById('sceneAvoidInput');
     if (ni) ni.value = '';
     if (ai) ai.value = '';
-    currentNote = ''; currentAvoid = '';
+    currentNote = ''; currentAvoid = ''; currentLocation = '';
+    const li = document.getElementById('locationInput');
+    if (li) li.value = '';
     currentRoles = ['either','either'];
     setRole(0,'either'); setRole(1,'either');
     const gb = document.getElementById('goSceneBtn');
@@ -2272,6 +2523,13 @@ document.getElementById('rememberKey')?.addEventListener('change', () => {
   if (dbg) { dbg.checked = debugMode; }
   const dbgStatus = document.getElementById('debugStatus');
   if (dbgStatus) { dbgStatus.textContent = debugMode ? 'On' : 'Off'; dbgStatus.className = 'toggle-status' + (debugMode ? ' on' : ''); }
+  // Dark mode
+  const savedDark = localStorage.getItem('spark_dark_mode') === '1';
+  if (savedDark) { document.documentElement.setAttribute('data-theme','dark'); }
+  const dmToggle = document.getElementById('darkModeToggle');
+  if (dmToggle) dmToggle.checked = savedDark;
+  const dmStatus = document.getElementById('darkModeStatus');
+  if (dmStatus) { dmStatus.textContent = savedDark ? 'On' : 'Off'; dmStatus.className = 'toggle-status' + (savedDark ? ' on' : ''); }
   // Pipeline bar — only visible when debug mode is on
   const bar = document.getElementById('pipelineBar');
   if (bar) bar.classList.toggle('debug-visible', debugMode);
@@ -2362,10 +2620,10 @@ function setAmbushIntensity(level, el) {
   renderAmbushList();
 }
 
-function openAmbushModal() { renderAmbushList(); document.getElementById('ambushModal').classList.add('open'); }
+function openAmbushModal() { renderAmbushList(); const am = document.getElementById('ambushModal'); if (am) am.classList.add('open'); }
 function closeAmbushModal(e) {
-  if (e.target === document.getElementById('ambushModal'))
-    document.getElementById('ambushModal').classList.remove('open');
+  const modal = document.getElementById('ambushModal');
+  if (e.target === modal && modal) modal.classList.remove('open');
 }
 
 let ambushGenerating = false;
@@ -2425,86 +2683,42 @@ function renderAmbushList() {
 // ═══════════════════════════════════════════
 function showSurveyScreen(pi) {
   surveyIdx = pi;
-  if (!kinkPrefs[pi] || Object.keys(kinkPrefs[pi]).length === 0) kinkPrefs[pi] = mkDefaultKinkPrefs();
-  document.getElementById('surveyTitle').textContent = `${gN(pi)}'s preferences`;
-  document.getElementById('surveySubtitle').textContent =
-    pi === 0 ? "Private — your partner won't see your answers" : `${gN(0)} is done. Now ${gN(1)}'s turn.`;
-  document.getElementById('progressFill').style.width = pi === 0 ? '10%' : '55%';
-  const progressLabel = document.getElementById('surveyProgressLabel');
-  if (progressLabel) progressLabel.textContent = pi === 0 ? 'Partner 1 of 2 — your answers are private' : `${gN(0)} done. Now ${gN(1)}'s turn.`;
-  document.getElementById('surveyNextBtn').textContent = pi === 0 ? `Done — ${gN(1)}'s turn →` : 'See shared interests →';
-  // Init comfort slider open cats on first load
-  if (openCats.size === 0) {
-    const level = COMFORT_LEVELS[comfortLevel];
-    if (level.expand === null) {
-      KINK_CATS.forEach(c => openCats.add(c.id));
-    } else {
-      level.expand.forEach(c => openCats.add(c));
-    }
-  }
-  const slider = document.getElementById('comfortSlider');
-  if (slider) slider.value = comfortLevel;
-  const labelEl = document.getElementById('comfortLabel');
-  if (labelEl) labelEl.textContent = COMFORT_LEVELS[comfortLevel].label;
-  rebuildSurvey();
   showScreen('screenSurvey');
-  // Scroll after paint to avoid browser reset
-  requestAnimationFrame(() => window.scrollTo(0, 0));
+  window.scrollTo(0, 0);
+
+  // Reset UI to Phase A
+  const phaseB      = document.getElementById('surveyPhaseB');
+  const advBanner   = document.getElementById('advancedBanner');
+  const continueWrap = document.getElementById('archContinueWrap');
+  const continueBtn  = document.getElementById('archContinueBtn');
+  if (phaseB)       phaseB.style.display = 'none';
+  if (advBanner)    advBanner.style.display = 'none';
+  if (continueWrap) continueWrap.style.display = 'none';
+  if (continueBtn)  continueBtn.style.display  = 'none';
+  document.querySelectorAll('.archetype-btn').forEach(b => b.classList.remove('active'));
+  triageData = {};
+
+  // Update partner label and progress
+  const label = document.getElementById('surveyProgressLabel');
+  const fill  = document.getElementById('progressFill');
+  if (label) label.textContent = pi === 0 ? 'Partner 1 of 2' : 'Partner 2 of 2';
+  if (fill)  fill.style.width  = pi === 0 ? '10%' : '60%';
 }
-
-// ═══════════════════════════════════════════
-//  SURVEY v2 — Macro-to-Micro
-// ═══════════════════════════════════════════
-
-// Pathway structure for the new UI
-const SURVEY_PATHWAYS = [
-  {
-    label: 'Foundations',
-    cats: ['intimacy', 'clothing'],
-  },
-  {
-    label: 'Exploration',
-    cats: ['general', 'positions', 'toys', 'touch'],
-  },
-  {
-    label: 'Intensity',
-    cats: ['penetration', 'butt', 'restrictive', 'domination', 'scenarios', 'pain', 'groupings'],
-  },
-  {
-    label: 'Advanced',
-    cats: ['adv_taboo', 'adv_surreal', 'adv_fluids', 'adv_pain'],
-    advanced: true,
-  },
-];
-
-// Comfort level → which pathways/cats are expanded by default
-const COMFORT_LEVELS = [
-  { label: 'Gentle',      expand: ['intimacy','clothing','general','toys'], defaultVal: 'like' },
-  { label: 'Exploring',   expand: ['intimacy','clothing','general','positions','toys','touch','penetration'], defaultVal: 'like' },
-  { label: 'Adventurous', expand: ['intimacy','clothing','general','positions','toys','touch','penetration','butt','restrictive','domination','scenarios'], defaultVal: 'like' },
-  { label: 'Wild',        expand: null, defaultVal: 'like' }, // all expanded
-];
-
-let comfortLevel = 1; // default: Exploring
-// Track which cats are open in accordion
-const openCats = new Set();
-// Track inherited values per category (from quick-select)
-const catInherited = {}; // { catId: { piIdx: 'like'|'maybe'|'no'|null } }
-// Track role overrides per split-category
-const catRoleOverride = {}; // { catId: { piIdx: 'give'|'receive'|'both' } }
-
 function onComfortSlide(val) {
   comfortLevel = parseInt(val);
   const level = COMFORT_LEVELS[comfortLevel];
-  document.getElementById('comfortLabel').textContent = level.label;
-  // Auto-expand appropriate cats
+  const lbl = document.getElementById('comfortLabel');
+  if (lbl) lbl.textContent = level.label;
+  // Auto-expand appropriate cats (used by old accordion — harmless in new system)
   openCats.clear();
   if (level.expand === null) {
     SURVEY_PATHWAYS.forEach(p => p.cats.forEach(c => openCats.add(c)));
   } else {
     level.expand.forEach(c => openCats.add(c));
   }
-  rebuildSurvey();
+  // rebuildSurvey() only applies to old accordion — new system uses buildTriageList()
+  const container = document.getElementById('surveyItems');
+  if (container) rebuildSurvey();
 }
 
 function getCatInherited(catId) {
@@ -2860,6 +3074,9 @@ function setKink(id, val) {
 
 function surveyNext() {
   markPrefsSet();
+  // Reset to archetype phase for next partner
+  activeArchetype = null;
+  triageData = {};
   if (surveyIdx === 0) {
     showSurveyScreen(1);
   } else {
@@ -2999,6 +3216,7 @@ function buildSceneContext(piA, piB) {
     [...props].map(p => p.startsWith('custom:') ? p.slice(7) : p).join(', ');
 
   let ctx = 'COUPLE DETAILS\n==============\n';
+  if (currentLocation) ctx += 'Setting: ' + currentLocation + ' — let this inform tone, staging, and what\'s plausible.\n';
   ctx += 'Partner A (initiator / giver):\n' + pA + '\n\n';
   ctx += 'Partner B (receiver):\n' + pB + '\n\n';
   ctx += 'Props available: ' + propList + '\n\n';
@@ -3059,6 +3277,8 @@ async function callClaudeStream(systemPrompt, userPrompt, targetEl, onDone) {
   psSet('proxy','ok',endpoint.replace('https://','').replace('/v1/messages','').slice(0,20));
 
   if (streamController) { try { streamController.abort(); } catch {} streamController = null; }
+  if (typewriterTimer) { clearInterval(typewriterTimer); typewriterTimer = null; }
+  typewriterQueue = '';
   const myController = new AbortController();
   streamController = myController;
 
@@ -3068,6 +3288,9 @@ async function callClaudeStream(systemPrompt, userPrompt, targetEl, onDone) {
     if (finished) return;
     finished = true;
     if (streamController === myController) streamController = null;
+    // Flush typewriter
+    if (typewriterTimer) { clearInterval(typewriterTimer); typewriterTimer = null; }
+    if (targetEl && typewriterQueue) { targetEl.textContent += typewriterQueue; typewriterQueue = ''; }
     if (onDone) onDone(text);
   }
 
@@ -3200,6 +3423,8 @@ function generateInPlace() {
   const kb = document.getElementById('keepGoingBtn');
   if (kb) kb.style.display = 'block';
   hideTheirTurnBtn();
+  const svBtn2 = document.getElementById('saveSceneBtn');
+  if (svBtn2) { svBtn2.style.display = 'none'; svBtn2.textContent = '☆ Save scene'; svBtn2.disabled = false; }
 
   const card = document.getElementById('sceneCard');
   if (card) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -3493,7 +3718,7 @@ function _generateFullSceneInner() {
     '\n\nStructure your response using EXACTLY these three section markers, each on its own line with nothing else on that line:' +
     '\nPREP\nSCENE\nFINISH' +
     '\n\n[PREP] rules: ONE sentence. The single position or prop needed. No sexual acts yet.' +
-    '\n\n[SCENE] rules: EXACTLY 2 sentences. ONE physical act only — what ' + currentA + ' does to ' + currentB + ' for the full five minutes. ' + explicitRule + ' No scene progression. No "then". Just the act, described directly.' +
+    '\n\n[SCENE] rules: EXACTLY 2 sentences. ONE physical act only — what ' + currentA + ' does to ' + currentB + ' for the full five minutes. ' + explicitRule + ' IMPORTANT: The act MUST directly reflect the couple\u2019s stated preferences (listed in context below). This is the main scene — user preferences must appear here, not only in the finisher. No scene progression. No "then". Just the act, described directly.' +
     '\n\n[FINISH] rules: ONE sentence. ' + (isLight
       ? 'How the act ends naturally.'
       : currentA + ' actively stimulates ' + currentB + ' to orgasm using hand, mouth, or body movement — continuous motion until ' + currentB + ' finishes. Must describe the specific physical action being performed, not a static position. ' + currentB + ' orgasms during this.'
@@ -3636,9 +3861,123 @@ function _generateFullSceneInner() {
 
 
 
+
+// ═══════════════════════════════════════════
+//  GALLERY
+// ═══════════════════════════════════════════
+const GALLERY_KEY = 'spark_gallery';
+const MOOD_LABELS = { light:'🕯 Sensual', medium:'🔥 Feeling it', hard:'⚡ Intense' };
+
+function gallerySave() {
+  if (!currentScene) return;
+  const gallery = JSON.parse(localStorage.getItem(GALLERY_KEY) || '[]');
+  const entry = {
+    id:       Date.now() + '_' + Math.random().toString(36).slice(2,6),
+    savedAt:  new Date().toISOString(),
+    title:    currentScene.title || 'Untitled',
+    mood:     currentMood || 'medium',
+    location: currentLocation || '',
+    names:    [gN(0), gN(1)],
+    prep:     currentScene._prepText  || '',
+    scene:    currentScene._sceneText || '',
+    finish:   currentScene._finishText|| '',
+  };
+  gallery.unshift(entry);
+  if (gallery.length > 50) gallery.pop(); // cap at 50
+  localStorage.setItem(GALLERY_KEY, JSON.stringify(gallery));
+  SparkLog.info('gallery:saved', { id: entry.id });
+  // Flash confirmation
+  const btn = document.getElementById('saveSceneBtn');
+  if (btn) {
+    btn.textContent = '✓ Saved';
+    btn.disabled = true;
+    setTimeout(() => { btn.textContent = '☆ Save scene'; btn.disabled = false; }, 2000);
+  }
+}
+
+function galleryDelete(id) {
+  let gallery = JSON.parse(localStorage.getItem(GALLERY_KEY) || '[]');
+  gallery = gallery.filter(e => e.id !== id);
+  localStorage.setItem(GALLERY_KEY, JSON.stringify(gallery));
+  buildGalleryList();
+}
+
+function buildGalleryList() {
+  const list  = document.getElementById('galleryList');
+  const empty = document.getElementById('galleryEmpty');
+  if (!list) return;
+  const gallery = JSON.parse(localStorage.getItem(GALLERY_KEY) || '[]');
+  list.innerHTML = '';
+  if (!gallery.length) {
+    if (empty) empty.style.display = 'block';
+    return;
+  }
+  if (empty) empty.style.display = 'none';
+
+  gallery.forEach(entry => {
+    const card = document.createElement('div');
+    card.className = 'gallery-card';
+
+    const moodColors = { light:'var(--sage)', medium:'var(--amber)', hard:'var(--blush)' };
+    const moodBgs    = { light:'var(--sage-bg)', medium:'var(--amber-bg)', hard:'var(--blush-bg)' };
+
+    const date = new Date(entry.savedAt).toLocaleDateString(undefined,{month:'short',day:'numeric'});
+    const names = entry.names.join(' & ');
+
+    card.innerHTML =
+      '<div class="gallery-card-body">' +
+        '<div class="gallery-card-title">' + esc(entry.title) + '</div>' +
+        '<div class="gallery-card-meta">' + esc(names) + (entry.location ? ' · ' + esc(entry.location) : '') + ' · ' + date + '</div>' +
+      '</div>' +
+      '<div class="gallery-card-mood" style="background:' + (moodBgs[entry.mood]||'var(--border)') + ';color:' + (moodColors[entry.mood]||'var(--muted)') + '">' +
+        (MOOD_LABELS[entry.mood] || entry.mood) +
+      '</div>' +
+      '<button class="gallery-card-del" title="Delete" onclick="event.stopPropagation();galleryDelete(\'' + entry.id + '\')">✕</button>';
+
+    card.onclick = () => galleryReplay(entry);
+    list.appendChild(card);
+  });
+}
+
+function galleryReplay(entry) {
+  const titleEl  = document.getElementById('replayTitle');
+  const metaEl   = document.getElementById('replayMeta');
+  const sceneTEl = document.getElementById('replaySceneTitle');
+  const prepEl   = document.getElementById('replayPrep');
+  const sceneEl  = document.getElementById('replayScene');
+  const finishEl = document.getElementById('replayFinish');
+
+  if (titleEl)  titleEl.textContent  = entry.title;
+  if (sceneTEl) sceneTEl.textContent = entry.title;
+  if (metaEl) {
+    const date = new Date(entry.savedAt).toLocaleDateString(undefined,{month:'long',day:'numeric',year:'numeric'});
+    metaEl.textContent = entry.names.join(' & ') + (entry.location ? ' · ' + entry.location : '') + ' · ' + date;
+  }
+  if (prepEl)   prepEl.innerHTML   = formatNarrative(entry.prep   || '');
+  if (sceneEl)  sceneEl.innerHTML  = formatNarrative(entry.scene  || '');
+  if (finishEl) finishEl.innerHTML = formatNarrative(entry.finish || '');
+
+  showScreen('screenReplay');
+  window.scrollTo(0, 0);
+}
+
+function goGallery() {
+  buildGalleryList();
+  showScreen('screenGallery');
+  window.scrollTo(0, 0);
+}
+
 // ═══════════════════════════════════════════
 //  THEIR TURN
 // ═══════════════════════════════════════════
+function skipTypewriter() {
+  if (typewriterTimer) { clearInterval(typewriterTimer); typewriterTimer = null; }
+  const el = document.getElementById('sceneStreamText');
+  if (el && typewriterQueue) { el.textContent += typewriterQueue; typewriterQueue = ''; }
+  const wrap = document.getElementById('skipTypewriterWrap');
+  if (wrap) wrap.style.display = 'none';
+}
+
 function showTheirTurnBtn() {
   const btn = document.getElementById('theirTurnBtn');
   if (btn) { btn.disabled = false; btn.classList.add('visible'); }
@@ -3658,11 +3997,12 @@ function generateTheirTurn() {
   const body  = document.getElementById('theirTurnText');
   if (!panel || !body || isGenerating) return;
 
-  // "Their turn" = the receiver (currentPiB) who hasn't finished
-  const receiver = gN(currentPiB);
-  const giver    = gN(currentPiA);
+  // The finisher made currentPiB orgasm (currentPiA brought currentPiB to climax).
+  // "Their Turn" = currentPiA now receives — currentPiB is the new giver.
+  const newGiver    = gN(currentPiB);  // was the receiver, now gives
+  const nowReceives = gN(currentPiA);  // was the giver, now orgasms
 
-  if (label) label.textContent = receiver + '\u2019s turn';
+  if (label) label.textContent = nowReceives + '\u2019s turn';
   body.innerHTML = '<span class="their-turn-generating">Writing\u2026</span>';
   panel.classList.add('visible');
   panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -3670,9 +4010,10 @@ function generateTheirTurn() {
 
   isGenerating = true;
   psReset();
-  SparkLog.info('theirTurn:start', { receiver });
+  SparkLog.info('theirTurn:start', { newGiver, nowReceives });
 
-  const ctx = buildSceneContext(currentPiA, currentPiB);
+  // Swap piA/piB so buildSceneContext describes the new dynamic correctly
+  const ctx = buildSceneContext(currentPiB, currentPiA);
   const prev = currentScene?._lastNarrative || currentScene?._scene || currentScene?.title || 'the scene';
   const explicit = currentMood === 'light'
     ? 'Sensual and intimate. No graphic language required.'
@@ -3689,15 +4030,16 @@ function generateTheirTurn() {
     'No preamble, no section markers. Output only the scene text.\n\n' + ctx;
 
   const prompt =
-    'The couple just did: "' + prev.slice(0, 200) + '"\n\n' +
-    giver + ' now brings ' + receiver + ' to orgasm through active stimulation. ' +
-    'Sentence 1: what ' + giver + ' does (the specific motion — stroking, licking, thrusting etc) and how ' + receiver + ' responds. ' +
-    'Sentence 2: ' + receiver + ' orgasms. ' +
-    'Start sentence 1 with ' + giver + '\u2019s name. The act must require physical movement to work, not just position.';
+    'The couple just finished a scene where ' + nowReceives + ' gave ' + newGiver + ' an orgasm. ' +
+    'Now it is ' + nowReceives + '\u2019s turn to receive. ' +
+    newGiver + ' now brings ' + nowReceives + ' to orgasm through active stimulation. ' +
+    'Sentence 1: what ' + newGiver + ' does (the specific motion — stroking, licking, thrusting etc) and how ' + nowReceives + ' responds. ' +
+    'Sentence 2: ' + nowReceives + ' orgasms. ' +
+    'Start sentence 1 with ' + newGiver + '\u2019s name. The act must require physical movement, not just position.';
 
   callClaudeStream(system, prompt, body, function(text) {
     isGenerating = false;
-    if (btn) { btn.disabled = false; btn.textContent = '\uD83D\uDD25 Their turn again'; }
+    if (btn) { btn.disabled = false; btn.textContent = '🔥 Their turn again'; }
     if (text && text.trim()) {
       body.innerHTML = formatNarrative(text.trim());
       SparkLog.info('theirTurn:done', { chars: text.length });
@@ -3808,6 +4150,14 @@ function addTime(m) { totalSecs += m * 60; remainSecs += m * 60; updateTimerDisp
 //  DEBUG MODE  (declaration moved inline below)
 // ═══════════════════════════════════════════
 // debugMode declared early in the file — see top of STATE VARS
+
+function onDarkModeToggle() {
+  const on = document.getElementById('darkModeToggle')?.checked || false;
+  document.documentElement.setAttribute('data-theme', on ? 'dark' : '');
+  localStorage.setItem('spark_dark_mode', on ? '1' : '0');
+  const st = document.getElementById('darkModeStatus');
+  if (st) { st.textContent = on ? 'On' : 'Off'; st.className = 'toggle-status' + (on ? ' on' : ''); }
+}
 
 function onDebugToggle() {
   debugMode = document.getElementById('debugMode')?.checked || false;
@@ -4083,6 +4433,329 @@ function isRefusal(text) {
   ];
   return refusalPhrases.some(p => t.includes(p));
 }
+
+
+// ═══════════════════════════════════════════
+//  SURVEY v3 — ARCHETYPE + CUSTOM DEEP-DIVE
+// ═══════════════════════════════════════════
+
+// Experience levels per item (separate from preference rating)
+// 0 = New to me, 1 = Getting there, 2 = Expert
+let expLevels = [{}, {}]; // per partner
+
+// Item dependencies — if heavy item is set to expert, prereqs follow
+const ITEM_DEPS = {
+  // Anal items require lube/plug knowledge
+  'bu_anal_give':    ['bu_plug_give', 'bu_teasing_give'],
+  'bu_anal_receive': ['bu_plug_receive', 'bu_teasing_receive'],
+  'bu_fisting_give': ['bu_anal_give', 'bu_plug_give'],
+  'bu_fisting_receive': ['bu_anal_receive', 'bu_plug_receive'],
+  // Bondage requires restraint basics
+  'res_suspension_give': ['res_restraints_give', 'res_rope_give'],
+  'res_suspension_receive': ['res_restraints_receive', 'res_rope_receive'],
+  // Impact requires lighter impact first
+  'pa_caning_give':   ['pa_spank_give', 'pa_paddle_give'],
+  'pa_caning_receive':['pa_spank_receive', 'pa_paddle_receive'],
+};
+
+// Current triage data: { itemId: 'fav'|'yes'|'no'|null }
+let triageData = {};
+
+// ── ARCHETYPE APPLICATION ───────────────────────────────────────────────
+const ARCHETYPE_RULES = {
+  sensual: {
+    comfortLevel: 0,
+    fn: catId => {
+      if (['intimacy','clothing','touch'].includes(catId))           return 'fav';
+      if (['general','positions','toys'].includes(catId))            return 'yes';
+      return 'no';
+    }
+  },
+  explorer: {
+    comfortLevel: 1,
+    fn: catId => {
+      if (['intimacy','clothing','touch','general'].includes(catId)) return 'fav';
+      if (['positions','toys','penetration'].includes(catId))        return 'yes';
+      if (['butt','restrictive'].includes(catId))                    return 'yes'; // entry-level
+      return 'no';
+    }
+  },
+  kinky: {
+    comfortLevel: 2,
+    fn: catId => {
+      if (['adv_taboo','adv_surreal','adv_fluids','adv_pain'].includes(catId)) return 'no';
+      return 'yes'; // everything else on
+    }
+  },
+  custom: null,
+};
+
+// Map triage val to kinkPrefs val
+function triageToKink(val) {
+  if (val === 'fav') return 'fav';
+  if (val === 'yes') return 'like';
+  if (val === 'no')  return 'no';
+  return null;
+}
+
+function applyArchetype(id) {
+  activeArchetype = id;
+
+  // Highlight active button
+  document.querySelectorAll('.archetype-btn').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById('arch-' + id);
+  if (btn) btn.classList.add('active');
+
+  const phaseB = document.getElementById('surveyPhaseB');
+  const advBanner = document.getElementById('advancedBanner');
+  const continueWrap = document.getElementById('archContinueWrap');
+  const continueBtn  = document.getElementById('archContinueBtn');
+
+  if (id === 'custom') {
+    // Show deep-dive
+    if (phaseB) phaseB.style.display = 'block';
+    if (advBanner) advBanner.style.display = 'flex';
+    if (continueWrap) continueWrap.style.display = 'none';
+    showPass1();
+    return;
+  }
+
+  // Apply archetype rules
+  const rule = ARCHETYPE_RULES[id];
+  if (!rule) return;
+
+  // Set comfort slider
+  const slider = document.getElementById('comfortSlider');
+  if (slider) { slider.value = rule.comfortLevel; }
+  comfortLevel = rule.comfortLevel;
+  const lbl = document.getElementById('comfortLabel');
+  if (lbl) lbl.textContent = COMFORT_LEVELS[rule.comfortLevel].label;
+
+  // Batch-write kinkPrefs
+  KINK_CATS.forEach(cat => {
+    const val = triageToKink(rule.fn(cat.id));
+    cat.items.forEach(item => {
+      if (item.split) {
+        kinkPrefs[surveyIdx][item.id + '_give']    = val;
+        kinkPrefs[surveyIdx][item.id + '_receive'] = val;
+      } else {
+        kinkPrefs[surveyIdx][item.id] = val;
+      }
+    });
+  });
+
+  markPrefsSet();
+  if (phaseB) phaseB.style.display = 'none';
+  if (advBanner) advBanner.style.display = 'none';
+  if (continueWrap) continueWrap.style.display = 'block';
+  if (continueBtn)  continueBtn.style.display = 'block';
+  SparkLog.info('archetype:applied', { id, pi: surveyIdx });
+}
+
+// ── PASS 1: TRIAGE LIST ─────────────────────────────────────────────────
+function showPass1() {
+  const pass1 = document.getElementById('surveyPass1');
+  const pass2 = document.getElementById('surveyPass2');
+  if (pass1) pass1.style.display = 'block';
+  if (pass2) pass2.style.display = 'none';
+  buildTriageList();
+}
+
+function backToArchetypes() {
+  const phaseB = document.getElementById('surveyPhaseB');
+  const pass1  = document.getElementById('surveyPass1');
+  if (phaseB) phaseB.style.display = 'none';
+  if (pass1)  pass1.style.display  = 'none';
+  document.querySelectorAll('.archetype-btn').forEach(b => b.classList.remove('active'));
+  activeArchetype = null;
+}
+
+function backToPass1() {
+  const pass1 = document.getElementById('surveyPass1');
+  const pass2 = document.getElementById('surveyPass2');
+  if (pass1) pass1.style.display = 'block';
+  if (pass2) pass2.style.display = 'none';
+}
+
+function buildTriageList() {
+  const container = document.getElementById('triageList');
+  if (!container) return;
+  const showAdv = document.getElementById('showAdvanced')?.checked || false;
+  container.innerHTML = '';
+
+  SURVEY_PATHWAYS.forEach(pathway => {
+    if (pathway.advanced && !showAdv) return;
+
+    const secLabel = document.createElement('div');
+    secLabel.className = 'triage-section-label';
+    secLabel.textContent = pathway.label;
+    container.appendChild(secLabel);
+
+    pathway.cats.forEach(catId => {
+      const cat = KINK_CATS.find(c => c.id === catId);
+      if (!cat || (cat.advanced && !showAdv)) return;
+
+      cat.items.forEach(item => {
+        const ids = item.split
+          ? [{id: item.id+'_give', label: item.label + ' — Giving'},
+             {id: item.id+'_receive', label: item.label + ' — Receiving'}]
+          : [{id: item.id, label: item.label}];
+
+        ids.forEach(({id, label}) => {
+          const cur = triageData[id] || null;
+          const card = document.createElement('div');
+          card.className = 'triage-card' + (cur ? ' tc-'+cur : '');
+          card.id = 'tc_' + id;
+
+          const lbl = document.createElement('div');
+          lbl.className = 'triage-label';
+          lbl.textContent = label;
+          if (item.tip) {
+            const tip = document.createElement('span');
+            tip.className = 'triage-tip';
+            tip.textContent = item.tip;
+            lbl.appendChild(tip);
+          }
+
+          const btns = document.createElement('div');
+          btns.className = 'triage-btns';
+
+          [
+            {val:'fav', emoji:'★', cls:'tb-fav', title:'Favourite'},
+            {val:'yes', emoji:'✓', cls:'tb-yes', title:'Yes / Would try'},
+            {val:'no',  emoji:'✕', cls:'tb-no',  title:'No / Never'},
+          ].forEach(({val, emoji, cls, title}) => {
+            const b = document.createElement('button');
+            b.className = 'triage-btn ' + cls + (cur === val ? ' active' : '');
+            b.textContent = emoji;
+            b.title = title;
+            b.onclick = () => setTriage(id, val, item);
+            btns.appendChild(b);
+          });
+
+          card.appendChild(lbl);
+          card.appendChild(btns);
+          container.appendChild(card);
+        });
+      });
+    });
+  });
+}
+
+function setTriage(id, val, item) {
+  // Toggle: tapping active val clears it
+  triageData[id] = triageData[id] === val ? null : val;
+  const newVal = triageData[id];
+
+  // Apply to kinkPrefs immediately
+  kinkPrefs[surveyIdx][id] = triageToKink(newVal);
+
+  // Update card appearance
+  const card = document.getElementById('tc_' + id);
+  if (card) {
+    card.className = 'triage-card' + (newVal ? ' tc-'+newVal : '');
+    card.querySelectorAll('.triage-btn').forEach(b => {
+      b.classList.toggle('active',
+        (b.classList.contains('tb-fav') && newVal === 'fav') ||
+        (b.classList.contains('tb-yes') && newVal === 'yes') ||
+        (b.classList.contains('tb-no')  && newVal === 'no')
+      );
+    });
+  }
+
+  // Smart dependency grouping
+  if (newVal === 'yes' || newVal === 'fav') {
+    const deps = ITEM_DEPS[id] || [];
+    deps.forEach(depId => {
+      if (!triageData[depId] || triageData[depId] === 'no') {
+        triageData[depId] = 'yes';
+        kinkPrefs[surveyIdx][depId] = 'like';
+        const depCard = document.getElementById('tc_' + depId);
+        if (depCard) {
+          depCard.className = 'triage-card tc-yes dep-flash';
+          depCard.querySelectorAll('.triage-btn').forEach(b =>
+            b.classList.toggle('active', b.classList.contains('tb-yes'))
+          );
+          setTimeout(() => depCard.classList.remove('dep-flash'), 1500);
+        }
+      }
+    });
+  }
+  markPrefsSet();
+}
+
+// ── PASS 2: EXPERIENCE LEVELS ───────────────────────────────────────────
+function goToPass2() {
+  const pass1 = document.getElementById('surveyPass1');
+  const pass2 = document.getElementById('surveyPass2');
+  if (pass1) pass1.style.display = 'none';
+  if (pass2) pass2.style.display = 'block';
+  buildExperienceList();
+}
+
+function buildExperienceList() {
+  const container = document.getElementById('experienceList');
+  if (!container) return;
+  container.innerHTML = '';
+
+  const yesItems = Object.entries(triageData)
+    .filter(([id, val]) => val === 'yes' || val === 'fav');
+
+  if (yesItems.length === 0) {
+    container.innerHTML = '<p style="color:var(--muted);font-size:.82rem;text-align:center;padding:1rem;">No items selected — go back and tap some ✓ items first.</p>';
+    return;
+  }
+
+  yesItems.forEach(([id]) => {
+    // Find label
+    let label = id;
+    for (const cat of KINK_CATS) {
+      for (const item of cat.items) {
+        if (item.split) {
+          if (item.id+'_give' === id)    { label = item.label + ' — Giving';    break; }
+          if (item.id+'_receive' === id) { label = item.label + ' — Receiving'; break; }
+        } else if (item.id === id) { label = item.label; break; }
+      }
+    }
+
+    const cur = expLevels[surveyIdx][id] ?? 0;
+    const card = document.createElement('div');
+    card.className = 'exp-card';
+    card.id = 'ec_' + id;
+
+    const lbl = document.createElement('div');
+    lbl.className = 'exp-label';
+    lbl.textContent = label;
+
+    const btns = document.createElement('div');
+    btns.className = 'exp-btns';
+
+    [
+      {level:0, label:'New to me'},
+      {level:1, label:'Getting there'},
+      {level:2, label:'Expert'},
+    ].forEach(({level, label: ltext}) => {
+      const b = document.createElement('button');
+      b.className = 'exp-btn' + (cur === level ? ' active' : '');
+      b.textContent = ltext;
+      b.onclick = () => setExpLevel(id, level);
+      btns.appendChild(b);
+    });
+
+    card.appendChild(lbl);
+    card.appendChild(btns);
+    container.appendChild(card);
+  });
+}
+
+function setExpLevel(id, level) {
+  expLevels[surveyIdx][id] = level;
+  const card = document.getElementById('ec_' + id);
+  if (card) {
+    card.querySelectorAll('.exp-btn').forEach((b, i) => b.classList.toggle('active', i === level));
+  }
+}
+
 
 // ═══════════════════════════════════════════
 //  ROLE SELECTION
