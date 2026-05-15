@@ -539,6 +539,42 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 .debug-text{font-family:monospace;font-size:.68rem;color:#a8e6cf;line-height:1.5;
   white-space:pre-wrap;word-break:break-word;max-height:300px;overflow-y:auto}
 
+/* STAGED WATERFALL REVEAL */
+.btn-stage-reveal{
+  width:100%;padding:.75rem 1rem;border-radius:var(--r);
+  border:1.5px solid var(--border2);background:var(--bg);
+  font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;
+  color:var(--ink2);cursor:pointer;transition:all .18s;display:block;
+}
+.btn-stage-reveal:hover{background:var(--ink);color:#fff;border-color:var(--ink);}
+#stagePrepWrap,#stageSceneWrap,#stageFinishWrap{
+  animation:stageReveal .35s cubic-bezier(.16,1,.3,1);
+}
+@keyframes stageReveal{
+  from{opacity:0;transform:translateY(10px);}
+  to{opacity:1;transform:translateY(0);}
+}
+
+/* THEIR TURN */
+.their-turn-panel{margin-top:.75rem;border-radius:var(--r);overflow:hidden;
+  border:1.5px solid var(--blush-mid);background:var(--blush-bg);display:none;}
+.their-turn-panel.visible{display:block;}
+.their-turn-header{display:flex;align-items:center;gap:.5rem;
+  padding:.7rem 1.2rem;border-bottom:1px solid var(--blush-mid);}
+.their-turn-icon{font-size:1.1rem;}
+.their-turn-label{font-size:.7rem;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--blush);}
+.their-turn-body{padding:1rem 1.4rem 1.2rem;font-family:'DM Serif Display',serif;
+  font-size:clamp(.95rem,3vw,1.05rem);line-height:1.7;color:var(--ink);}
+.their-turn-generating{color:var(--muted);font-family:'DM Sans',sans-serif;
+  font-size:.82rem;font-style:italic;}
+.btn-their-turn{width:100%;padding:.8rem;border-radius:var(--r);
+  border:1.5px solid var(--blush-mid);background:var(--blush-bg);
+  font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;
+  color:var(--blush);cursor:pointer;transition:all .15s;margin-top:.5rem;display:none;}
+.btn-their-turn.visible{display:block;}
+.btn-their-turn:disabled{opacity:.5;cursor:not-allowed;}
+
 /* ══════════ SURVEY v2 — Macro-to-Micro ══════════ */
 
 /* Comfort zone slider */
@@ -1065,14 +1101,27 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 
 <!-- ════════ PLAY ════════ -->
 <div class="screen" id="screenPlay">
-  <!-- Pipeline status bar — always visible, shows what's happening -->
+
+  <!-- TIMER — always at top of play screen -->
+  <div class="timer-sticky-wrap" id="timerArea" style="display:none;">
+    <div class="timer-inner" style="padding:.85rem 1.6rem;">
+      <div class="timer-tag" id="timerPhaseLabel">Duration</div>
+      <div class="timer-num" id="timerDisplay">05:00</div>
+      <div class="timer-hint" id="timerSub">Minimum 5 minutes</div>
+      <div class="timer-btns" id="timerBtns"></div>
+    </div>
+  </div>
+
+  <!-- Pipeline status bar -->
   <div class="pipeline-bar" id="pipelineBar">
     <span class="ps-item"><span class="ps-dot ps-dot-pending" id="ps-proxy-dot"></span><span class="ps-text-pending" id="ps-proxy-text">proxy…</span></span>
     <span class="ps-item"><span class="ps-dot ps-dot-pending" id="ps-key-dot"></span><span class="ps-text-pending" id="ps-key-text">key…</span></span>
     <span class="ps-item"><span class="ps-dot ps-dot-pending" id="ps-fetch-dot"></span><span class="ps-text-pending" id="ps-fetch-text">fetch…</span></span>
     <span class="ps-item"><span class="ps-dot ps-dot-pending" id="ps-stream-dot"></span><span class="ps-text-pending" id="ps-stream-text">stream…</span></span>
   </div>
+
   <div class="no-opts" id="noOpts">No matching scenes found. Adjust your preferences in Settings.</div>
+
   <div class="scene-card" id="sceneCard">
     <!-- Error banner -->
     <div class="scene-error-banner" id="sceneErrorBanner">
@@ -1080,36 +1129,68 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
       <span class="scene-error-banner-text" id="sceneErrorText">Something went wrong</span>
       <button onclick="retryScene()">Try again</button>
     </div>
-    <!-- Live stream output — always visible, text appears as it arrives -->
-    <div id="sceneStream" style="padding:1.4rem 1.6rem;min-height:60px;">
-      <div id="sceneStreamText" style="font-family:'DM Serif Display',serif;font-size:clamp(1rem,3vw,1.15rem);font-weight:400;line-height:1.7;color:var(--ink);"></div>
-    </div>
-    <!-- Escalation (revealed on timer end or skip) -->
-    <div class="escalation-panel" id="escalationPanel">
-      <button class="escalation-back" onclick="document.getElementById('sceneContent').scrollIntoView({behavior:'smooth'})">↑ Back to scene</button>
-      <div class="escalation-label">Keep going →</div>
-      <div class="escalation-title" id="escalationTitle">How it finishes</div>
-      <div class="escalation-text" id="escalationText"></div>
-    </div>
-    <!-- Photo toggle inside card -->
-    <div class="scene-photo-toggle" id="scenePhotoToggle" onclick="togglePhoto()" style="display:none;">
-      <span>📸</span>
-      <span class="scene-photo-toggle-label">Suggest a photo moment</span>
-      <div class="scene-photo-check" id="photoCheck"></div>
-    </div>
-    <div class="timer-sticky-wrap" id="timerArea" style="display:none;">
-      <div class="timer-inner" style="padding:1rem 1.6rem;">
-        <div class="timer-tag" id="timerPhaseLabel">Duration</div>
-        <div class="timer-num" id="timerDisplay">05:00</div>
-        <div class="timer-hint" id="timerSub">Minimum 5 minutes</div>
-        <div class="timer-btns" id="timerBtns"></div>
+
+    <!-- Generating hint (shown while streaming) -->
+    <div id="sceneGeneratingHint" style="display:none;padding:1.6rem;text-align:center;">
+      <div style="font-family:'DM Sans',sans-serif;font-size:.82rem;color:var(--muted);font-style:italic;margin-bottom:.75rem;">Getting your scene ready…</div>
+      <div style="height:3px;border-radius:99px;background:var(--border);overflow:hidden;max-width:200px;margin:0 auto;">
+        <div id="genProgressBar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--sage),var(--blush));border-radius:99px;transition:width .4s ease;"></div>
       </div>
+    </div>
+
+    <!-- STAGE 1: PREP — shown first -->
+    <div id="stagePrepWrap" style="display:none;">
+      <div style="padding:1.4rem 1.6rem 1rem;">
+        <div style="font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--sage);margin-bottom:.6rem;padding-bottom:.4rem;border-bottom:1px solid var(--sage-mid);">Before you start the timer…</div>
+        <div id="stagePrepText" style="font-family:'DM Serif Display',serif;font-size:clamp(1rem,3vw,1.12rem);font-weight:400;line-height:1.75;color:var(--ink);"></div>
+      </div>
+      <div style="padding:.2rem 1.2rem 1.2rem;">
+        <button class="btn btn-ink" id="revealSceneBtn" onclick="revealScene()" style="width:100%;">We're ready →</button>
+      </div>
+    </div>
+
+    <!-- STAGE 2: SCENE — revealed on tap -->
+    <div id="stageSceneWrap" style="display:none;">
+      <div style="padding:1.2rem 1.6rem 1rem;border-top:1px solid var(--border);">
+        <div id="stageSceneTitle" style="font-family:'DM Serif Display',serif;font-size:1.05rem;color:var(--muted);font-style:italic;margin-bottom:.6rem;"></div>
+        <div id="stageSceneText" style="font-family:'DM Serif Display',serif;font-size:clamp(1rem,3vw,1.12rem);font-weight:400;line-height:1.75;color:var(--ink);"></div>
+      </div>
+      <!-- Photo toggle -->
+      <div class="scene-photo-toggle" id="scenePhotoToggle" onclick="togglePhoto()" style="display:none;">
+        <span>📸</span>
+        <span class="scene-photo-toggle-label">Suggest a photo moment</span>
+        <div class="scene-photo-check" id="photoCheck"></div>
+      </div>
+      <div style="padding:.2rem 1.2rem 1.2rem;">
+        <button class="btn-stage-reveal" id="keepGoingBtn" onclick="revealFinisher()" style="width:100%;">Keep going →</button>
+      </div>
+    </div>
+
+    <!-- STAGE 3: FINISHER — revealed on keep going -->
+    <div id="stageFinishWrap" style="display:none;">
+      <div style="padding:1.2rem 1.6rem 1rem;border-top:1px solid var(--border);">
+        <div style="font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--blush);margin-bottom:.6rem;">Finish</div>
+        <div id="stageFinishText" style="font-family:'DM Serif Display',serif;font-size:clamp(1rem,3vw,1.12rem);font-weight:400;line-height:1.75;color:var(--ink);"></div>
+      </div>
+    </div>
+
+    <!-- Their Turn panel — only after keep going -->
+    <div class="their-turn-panel" id="theirTurnPanel">
+      <div class="their-turn-header">
+        <span class="their-turn-icon">&#x1F525;</span>
+        <span class="their-turn-label" id="theirTurnLabel">Their turn</span>
+      </div>
+      <div class="their-turn-body" id="theirTurnText"></div>
     </div>
   </div>
 
+  <!-- Hidden stream sink — text collected here during generation -->
+  <div id="sceneStreamText" style="display:none;"></div>
+
   <div style="margin-top:.75rem;">
     <button class="btn btn-ink" id="newSceneBtn" onclick="generateInPlace()" style="width:100%;margin-bottom:.5rem;">New scene</button>
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:0 .25rem;">
+    <button class="btn-their-turn" id="theirTurnBtn" onclick="generateTheirTurn()" disabled>&#x1F525; Their turn</button>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:0 .25rem;margin-top:.4rem;">
       <button onclick="goPreScene(true)" style="background:none;border:none;font-size:.75rem;color:var(--muted);cursor:pointer;font-family:inherit;padding:.3rem 0;">↺ Change mood first</button>
       <button onclick="confirmLeavePlay()" style="background:none;border:none;font-size:.75rem;color:var(--muted);cursor:pointer;font-family:inherit;padding:.3rem 0;">⚙ Settings</button>
     </div>
@@ -3089,13 +3170,54 @@ function closeExitSheet(e) {
 }
 
 function revealScene() {
-  // No longer used — prep and scene are revealed together
-  // Kept as no-op for safety in case any code still references it
+  // Stage 2: reveal the scene body
+  const sceneWrap  = document.getElementById('stageSceneWrap');
+  const sceneTitle = document.getElementById('stageSceneTitle');
+  const sceneEl    = document.getElementById('stageSceneText');
+  const revealBtn  = document.getElementById('revealSceneBtn');
+  const photoToggle= document.getElementById('scenePhotoToggle');
+  if (!sceneWrap || !sceneEl) return;
+
+  const sceneText = currentScene?._sceneText || '';
+  if (sceneTitle) sceneTitle.textContent = currentScene?.title || '';
+  sceneEl.innerHTML = formatNarrative(sceneText);
+
+  sceneWrap.style.display = 'block';
+  if (revealBtn) revealBtn.style.display = 'none'; // hide after tap
+  if (photoToggle) photoToggle.style.display = 'flex';
+
+  setTimeout(() => sceneWrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+  SparkLog.info('scene:revealed');
+}
+
+function revealFinisher() {
+  // Stage 3: reveal the finish section + unlock Their Turn
+  const finishWrap = document.getElementById('stageFinishWrap');
+  const finishEl   = document.getElementById('stageFinishText');
+  const keepBtn    = document.getElementById('keepGoingBtn');
+  if (!finishWrap || !finishEl) return;
+
+  const finishText = currentScene?._finishText || currentScene?._lastNarrative || '';
+  finishEl.innerHTML = finishText ? formatNarrative(finishText) : '<em style="color:var(--muted);font-size:.82rem;">Finish however feels right.</em>';
+
+  finishWrap.style.display = 'block';
+  if (keepBtn) keepBtn.style.display = 'none'; // hide after tap
+
+  // Now unlock Their Turn
+  showTheirTurnBtn();
+
+  setTimeout(() => finishWrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+  SparkLog.info('scene:finisher-revealed');
 }
 
 function goPlay() {
   const st = document.getElementById('sceneStreamText');
   if (st) st.textContent = '';
+  ['stagePrepWrap','stageSceneWrap','stageFinishWrap'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.style.display = 'none';
+  });
+  const _rb = document.getElementById('revealSceneBtn');
+  if (_rb) { _rb.style.display = 'block'; _rb.disabled = true; }
   ['timerArea','escalationPanel','sceneErrorBanner','rateCard'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.display = 'none';
@@ -3236,6 +3358,20 @@ function _generateFullSceneInner() {
   const timerSub2   = document.getElementById('timerSub');
 
   if (streamText)  streamText.textContent = '';
+  // Reset all stage panels
+  const _stageIds = ['stagePrepWrap','stageSceneWrap','stageFinishWrap'];
+  _stageIds.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
+  // Show generating hint with animated bar
+  const _hint = document.getElementById('sceneGeneratingHint');
+  const _bar  = document.getElementById('genProgressBar');
+  if (_hint) _hint.style.display = 'block';
+  if (_bar)  {
+    _bar.style.transition = 'none'; _bar.style.width = '0%';
+    requestAnimationFrame(() => {
+      _bar.style.transition = 'width 12s cubic-bezier(0.1,0,0.3,1)';
+      _bar.style.width = '92%';
+    });
+  }
   if (timerArea)   timerArea.style.display = 'none';
   if (escalPanel)  escalPanel.style.display = 'none';
   if (photoToggle) photoToggle.style.display = 'none';
@@ -3248,6 +3384,7 @@ function _generateFullSceneInner() {
 
   isGenerating = true;
   SparkLog.info('scene:start', { id: currentScene?.id, mood: currentMood, roles: currentRoles });
+  hideTheirTurnBtn();
 
   // Build the one act the couple will do for the full five minutes
   const isLight  = currentMood === 'light';
@@ -3288,8 +3425,8 @@ function _generateFullSceneInner() {
 
   const system =
     'You write a single intimate act for a couples app called Spark. The couple will do ONE thing together for 5 minutes — not a sequence of acts.' +
-    '\n\nOutput exactly three sections with these markers on their own lines:' +
-    '\n[PREP]\n[SCENE]\n[FINISH]' +
+    '\n\nStructure your response using EXACTLY these three section markers, each on its own line with nothing else on that line:' +
+    '\nPREP\nSCENE\nFINISH' +
     '\n\n[PREP] rules: ONE sentence only. A single practical instruction — the position to get into, or the one prop to grab. No sexual acts. Example: "Lie face-down on the bed with a pillow under your hips." or "Alex, kneel on the floor in front of Jordan."' +
     '\n\n[SCENE] rules: 3-5 sentences describing ONE sustained act. ' + explicitRule + ' This is what they do for the full five minutes — no scene changes, no "then do this next". Start with ' + currentA + '\u2019s name. Use both names throughout. Every sentence must describe the same act in more detail or from a different angle — not move on to something else.' +
     '\n\n[FINISH] rules: 1-2 sentences. The natural ending of that same act — how it concludes and what happens immediately after. Not a new act.' +
@@ -3359,14 +3496,17 @@ function _generateFullSceneInner() {
     refusalRetries = 0;
 
     // Parse sections for escalation storage
+    // Matches marker in all common AI output formats:
+    // [PREP]  **[PREP]**  ## PREP  PREP:  *PREP*
+    const markerRe = m =>
+      new RegExp('(?:^|\n)[*#\\-\\s]*\\[?' + m + '\\]?[*#\\-\\s]*:?[ \\t]*', 'i');
+
     const getSection = (marker, nextMarker) => {
-      const re = new RegExp('[[]' + marker + '[]]\\s*', 'i');
-      const m = re.exec(text);
+      const m = markerRe(marker).exec(text);
       if (!m) return '';
       const cs = m.index + m[0].length;
       if (nextMarker) {
-        const re2 = new RegExp('[[]' + nextMarker + '[]]', 'i');
-        const m2 = re2.exec(text.slice(cs));
+        const m2 = markerRe(nextMarker).exec(text.slice(cs));
         if (m2) return text.slice(cs, cs + m2.index).trim();
       }
       return text.slice(cs).trim();
@@ -3375,40 +3515,50 @@ function _generateFullSceneInner() {
     const prepContent   = getSection('PREP', 'SCENE');
     const sceneContent_ = getSection('SCENE', 'FINISH');
     const finishContent = getSection('FINISH', null);
+    // Also try without brackets in case AI used plain words
+    const _prepFallback   = !prepContent   ? getSection('prep',   'scene')   : '';
+    const _sceneFallback  = !sceneContent_ ? getSection('scene',  'finish')  : '';
+    const _finishFallback = !finishContent ? getSection('finish', null)       : '';
 
-    const markersOk = !!(prepContent && sceneContent_ && finishContent);
+    const _prep   = prepContent   || _prepFallback   || '';
+    const _scene  = sceneContent_ || _sceneFallback  || '';
+    const _finish = finishContent || _finishFallback || '';
+    const markersOk = !!(_prep && _scene && _finish);
     dbStep('markersFound', markersOk ? 'ok' : (prepContent || sceneContent_ ? 'warn' : 'fail'),
       (prepContent?'PREP ':'') + (sceneContent_?'SCENE ':'') + (finishContent?'FINISH':''));
-    if (finishContent) {
-      currentScene._lastNarrative = sceneContent_ + '\n\n' + finishContent;
-      currentScene._finishText = finishContent;
+    if (_finish) {
+      currentScene._lastNarrative = _scene + '\n\n' + _finish;
+      currentScene._finishText = _finish;
     }
 
-    // Format the completed text nicely with name highlighting
-    if (streamText) {
-      // Build a clean formatted version
-      let display = '';
-      if (prepContent) {
-        display += '<div style="font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--sage);margin-bottom:.5rem;padding-bottom:.4rem;border-bottom:1px solid var(--sage-mid);">Before you start the timer…</div>';
-        display += '<div style="margin-bottom:1.2rem;">' + formatNarrative(prepContent) + '</div>';
-      }
-      if (sceneContent_) {
-        display += '<span class="scene-pill pill-spark">Tonight</span>';
-        display += '<div class="scene-title">' + esc(currentScene.title) + '</div>';
-        display += '<div class="scene-narrative">' + formatNarrative(sceneContent_) + '</div>';
-      } else if (!prepContent) {
-        // No markers — show full text as scene
-        display += '<span class="scene-pill pill-spark">Tonight</span>';
-        display += '<div class="scene-title">' + esc(currentScene.title) + '</div>';
-        display += '<div class="scene-narrative">' + formatNarrative(text.trim()) + '</div>';
-      }
-      streamText.innerHTML = display;
-    }
+    // ── Staged waterfall population ──────────────────────────────────────
+    // Store parsed sections on scene for use by reveal functions
+    currentScene._prepText   = _prep;
+    currentScene._sceneText  = _scene  || text.trim(); // fallback full text
+    currentScene._finishText = _finish;
+
+    // Hide generating hint
+    const genHint = document.getElementById('sceneGeneratingHint');
+    const genBar  = document.getElementById('genProgressBar');
+    if (genBar)  genBar.style.width = '100%';
+    setTimeout(() => { if (genHint) genHint.style.display = 'none'; }, 300);
+
+    // Populate and reveal PREP stage only
+    const prepWrap  = document.getElementById('stagePrepWrap');
+    const prepEl    = document.getElementById('stagePrepText');
+    const revealBtn = document.getElementById('revealSceneBtn');
+
+    if (prepEl) prepEl.innerHTML = formatNarrative(_prep || _scene || text.trim());
+
+    setTimeout(() => {
+      if (prepWrap) prepWrap.style.display = 'block';
+      if (revealBtn) { revealBtn.disabled = false; }
+      prepWrap?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 320);
 
     dbStep('rendered', 'ok', 'innerHTML set');
-    // Show timer and photo toggle
-    if (timerArea)   { timerArea.style.display = 'block'; dbStep('timerReady', 'ok', 'visible'); }
-    if (photoToggle) photoToggle.style.display = 'flex';
+    // Timer shown immediately at top (stage 1)
+    if (timerArea) { timerArea.style.display = 'block'; dbStep('timerReady', 'ok', 'visible'); }
 
     sessionStorage.setItem('spark_fail_count', '0');
     incrementSceneCount();
@@ -3421,6 +3571,74 @@ function _generateFullSceneInner() {
   });
 }
 
+
+
+// ═══════════════════════════════════════════
+//  THEIR TURN
+// ═══════════════════════════════════════════
+function showTheirTurnBtn() {
+  const btn = document.getElementById('theirTurnBtn');
+  if (btn) { btn.disabled = false; btn.classList.add('visible'); }
+}
+
+function hideTheirTurnBtn() {
+  const btn   = document.getElementById('theirTurnBtn');
+  const panel = document.getElementById('theirTurnPanel');
+  if (btn)   { btn.disabled = true; btn.classList.remove('visible'); }
+  if (panel) { panel.classList.remove('visible'); }
+}
+
+function generateTheirTurn() {
+  const btn   = document.getElementById('theirTurnBtn');
+  const panel = document.getElementById('theirTurnPanel');
+  const label = document.getElementById('theirTurnLabel');
+  const body  = document.getElementById('theirTurnText');
+  if (!panel || !body || isGenerating) return;
+
+  // "Their turn" = the receiver (currentPiB) who hasn't finished
+  const receiver = gN(currentPiB);
+  const giver    = gN(currentPiA);
+
+  if (label) label.textContent = receiver + '\u2019s turn';
+  body.innerHTML = '<span class="their-turn-generating">Writing\u2026</span>';
+  panel.classList.add('visible');
+  panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  if (btn) { btn.disabled = true; btn.textContent = 'Writing\u2026'; }
+
+  isGenerating = true;
+  psReset();
+  SparkLog.info('theirTurn:start', { receiver });
+
+  const ctx = buildSceneContext(currentPiA, currentPiB);
+  const prev = currentScene?._lastNarrative || currentScene?._scene || currentScene?.title || 'the scene';
+  const explicit = currentMood === 'light'
+    ? 'Sensual and intimate. No graphic language required.'
+    : currentMood === 'hard'
+    ? 'Fully explicit. Name body parts. Describe the orgasm directly.'
+    : 'Direct and physical. Specific about what happens.';
+
+  const system =
+    'You write a very short intimate scene finisher for a couples app called Spark. ' +
+    'Exactly 2-3 sentences. ' + explicit + ' No preamble, no section markers, no titles. ' +
+    'Output only the scene text.\n\n' + ctx;
+
+  const prompt =
+    'The couple just did: "' + prev.slice(0, 200) + '"\n\n' +
+    'Now write 2-3 sentences where ' + giver + ' focuses entirely on making ' +
+    receiver + ' orgasm. Start with ' + giver + '\u2019s name. ' +
+    'Be specific about what ' + giver + ' does. End the moment ' + receiver + ' finishes.';
+
+  callClaudeStream(system, prompt, body, function(text) {
+    isGenerating = false;
+    if (btn) { btn.disabled = false; btn.textContent = '\uD83D\uDD25 Their turn again'; }
+    if (text && text.trim()) {
+      body.innerHTML = formatNarrative(text.trim());
+      SparkLog.info('theirTurn:done', { chars: text.length });
+    } else {
+      body.innerHTML = '<span class="their-turn-generating">Try again.</span>';
+    }
+  });
+}
 
 function revealEscalation() {
   if (escalationRevealed) return;
