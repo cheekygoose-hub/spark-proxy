@@ -645,6 +645,7 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 .qs-btn:hover{border-color:var(--border2);background:#fff}
 .qs-btn.qs-like{background:var(--sage-bg);border-color:var(--sage-mid);color:var(--sage)}
 .qs-btn.qs-maybe{background:var(--amber-bg);border-color:var(--amber-mid);color:var(--amber)}
+.qs-btn.qs-partner{background:var(--sky-bg);border-color:var(--sky);color:var(--sky)}
 .qs-btn.qs-no{background:var(--blush-bg);border-color:var(--blush-mid);color:var(--blush)}
 .qs-btn.qs-fav{background:var(--fav-bg);border-color:var(--fav-mid);color:var(--fav)}
 
@@ -682,6 +683,7 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 .pb.pb-fav{background:var(--fav-bg);border-color:var(--fav-mid);color:var(--fav)}
 .pb.pb-like{background:var(--sage-bg);border-color:var(--sage-mid);color:var(--sage)}
 .pb.pb-maybe{background:var(--amber-bg);border-color:var(--amber-mid);color:var(--amber)}
+.pb.pb-partner{background:var(--sky-bg);border-color:var(--sky);color:var(--sky)}
 .pb.pb-no{background:var(--blush-bg);border-color:var(--blush-mid);color:var(--blush)}
 .pb.pb-inherited{opacity:.5;border-style:dashed}
 
@@ -774,6 +776,96 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
   content:'|';animation:blink .7s step-end infinite;
   color:var(--muted);margin-left:1px;font-weight:300}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* ══════════ NEW SURVEY SYSTEM ══════════ */
+
+/* Archetype cards */
+.archetype-card{
+  background:var(--card);border:2px solid var(--border);border-radius:var(--r);
+  padding:1rem 1rem .85rem;cursor:pointer;transition:all .18s;user-select:none;
+  display:flex;flex-direction:column;align-items:flex-start;gap:.3rem;
+  position:relative;min-height:96px;}
+.archetype-card:hover{border-color:var(--border2);transform:translateY(-1px);box-shadow:var(--shm)}
+.archetype-card.selected{border-color:var(--blush);background:var(--blush-bg);}
+.archetype-card.selected .archetype-check{opacity:1;}
+.archetype-icon{font-size:1.5rem;line-height:1;margin-bottom:.1rem;}
+.archetype-title{font-size:.88rem;font-weight:700;color:var(--ink);}
+.archetype-card.selected .archetype-title{color:var(--blush);}
+.archetype-sub{font-size:.68rem;color:var(--muted);line-height:1.35;}
+.archetype-check{position:absolute;top:.55rem;right:.65rem;width:18px;height:18px;
+  background:var(--blush);border-radius:50%;display:flex;align-items:center;
+  justify-content:center;color:#fff;font-size:.68rem;opacity:0;transition:opacity .15s;}
+
+/* Category interest+experience card */
+.cat-ie-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);
+  margin-bottom:.5rem;padding:.85rem 1rem;box-shadow:var(--sh);transition:border-color .2s;}
+.cat-ie-card.prefilled{border-color:var(--sage-mid);}
+.cat-ie-header{display:flex;align-items:center;gap:.6rem;margin-bottom:.75rem;}
+.cat-ie-icon{font-size:1.1rem;}
+.cat-ie-title{font-size:.9rem;font-weight:600;color:var(--ink);flex:1;}
+.cat-ie-prefilled-badge{font-size:.6rem;background:var(--sage-bg);color:var(--sage);
+  border:1px solid var(--sage-mid);border-radius:50px;padding:.1rem .5rem;font-weight:600;}
+
+/* Interest slider row */
+.cat-ie-row{display:flex;align-items:center;gap:.65rem;margin-bottom:.5rem;}
+.cat-ie-row-label{font-size:.68rem;font-weight:600;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.06em;width:72px;flex-shrink:0;}
+.cat-ie-pills{display:flex;gap:.3rem;flex:1;}
+.ie-pill{flex:1;padding:.38rem .3rem;border-radius:6px;border:1.5px solid var(--border);
+  background:var(--bg);font-family:'DM Sans',sans-serif;font-size:.68rem;font-weight:600;
+  cursor:pointer;transition:all .13s;color:var(--muted);text-align:center;user-select:none;}
+.ie-pill:hover{border-color:var(--border2);color:var(--ink2);}
+.ie-pill.int-active-curious{background:var(--amber-bg);border-color:var(--amber-mid);color:var(--amber);}
+.ie-pill.int-active-want{background:var(--sage-bg);border-color:var(--sage-mid);color:var(--sage);}
+.ie-pill.int-active-love{background:var(--fav-bg);border-color:var(--fav-mid);color:var(--fav);}
+.ie-pill.int-active-no{background:var(--blush-bg);border-color:var(--blush-mid);color:var(--blush);}
+.ie-pill.exp-active-never{background:var(--sky-bg);border-color:var(--sky);color:var(--sky);}
+.ie-pill.exp-active-tried{background:var(--amber-bg);border-color:var(--amber-mid);color:var(--amber);}
+.ie-pill.exp-active-comfortable{background:var(--sage-bg);border-color:var(--sage-mid);color:var(--sage);}
+.ie-pill.exp-active-expert{background:var(--fav-bg);border-color:var(--fav-mid);color:var(--fav);}
+
+/* 2D deep-dive grid */
+.dd-section{margin-bottom:1.2rem;}
+.dd-section-title{font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);padding:.4rem 0 .5rem;border-bottom:1px solid var(--border);margin-bottom:.5rem;}
+.dd-item{margin-bottom:.65rem;}
+.dd-item-label{font-size:.8rem;font-weight:600;color:var(--ink2);margin-bottom:.3rem;
+  display:flex;align-items:center;gap:.4rem;}
+.dd-item-tip{font-size:.64rem;color:var(--muted);font-style:italic;}
+.dd-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;}
+.dd-col-labels{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;margin-bottom:2px;}
+.dd-col-label{font-size:.55rem;text-align:center;color:var(--muted);font-weight:600;
+  text-transform:uppercase;letter-spacing:.04em;padding:.1rem 0;}
+.dd-row-wrap{display:flex;gap:3px;margin-bottom:3px;}
+.dd-row-label{width:72px;font-size:.62rem;color:var(--muted);display:flex;align-items:center;
+  flex-shrink:0;padding-left:2px;}
+.dd-cell{flex:1;height:28px;border-radius:4px;border:1.5px solid var(--border);
+  background:var(--bg);cursor:pointer;transition:all .12s;display:flex;align-items:center;
+  justify-content:center;font-size:.6rem;}
+.dd-cell:hover{border-color:var(--border2);transform:scale(1.04);}
+.dd-cell.active{border-width:2px;}
+.dd-cell.cell-curious-never{background:var(--sky-bg);border-color:var(--sky);}
+.dd-cell.cell-curious-tried{background:var(--amber-bg);border-color:var(--amber-mid);}
+.dd-cell.cell-curious-comfortable{background:rgba(184,140,58,.25);border-color:var(--amber);}
+.dd-cell.cell-curious-expert{background:rgba(184,140,58,.4);border-color:var(--amber);}
+.dd-cell.cell-want-never{background:var(--sage-bg);border-color:var(--sage-mid);}
+.dd-cell.cell-want-tried{background:rgba(107,140,110,.25);border-color:var(--sage);}
+.dd-cell.cell-want-comfortable{background:rgba(107,140,110,.4);border-color:var(--sage);}
+.dd-cell.cell-want-expert{background:var(--sage-bg);border-color:var(--sage);box-shadow:0 0 0 1px var(--sage);}
+.dd-cell.cell-love-never{background:var(--fav-bg);border-color:var(--fav-mid);}
+.dd-cell.cell-love-tried{background:rgba(155,89,182,.25);border-color:var(--fav-mid);}
+.dd-cell.cell-love-comfortable{background:rgba(155,89,182,.4);border-color:var(--fav);}
+.dd-cell.cell-love-expert{background:var(--fav-bg);border-color:var(--fav);box-shadow:0 0 0 1px var(--fav);}
+.dd-cell.cell-no{background:var(--blush-bg);border-color:var(--blush-mid);grid-column:span 4;height:24px;}
+
+/* Discovery moment */
+.discovery-card{background:var(--card);border:1.5px solid var(--border);border-radius:var(--r);
+  padding:1rem 1.2rem;text-align:left;opacity:0;transform:translateY(12px);
+  transition:opacity .4s,transform .4s;}
+.discovery-card.revealed{opacity:1;transform:translateY(0);}
+.discovery-card-emoji{font-size:1.3rem;margin-bottom:.3rem;}
+.discovery-card-title{font-size:.9rem;font-weight:600;color:var(--ink);margin-bottom:.15rem;}
+.discovery-card-sub{font-size:.75rem;color:var(--muted);}
 </style>
 </head>
 <body>
@@ -857,13 +949,13 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
     </div>
   </div>
 
-  <div class="card">
-    <div class="toggle-row">
-      <div class="toggle-text"><strong>Open to anything</strong><span>Skip the preference survey and start immediately</span></div>
-      <div class="toggle-wrap">
-        <label class="toggle-switch"><input type="checkbox" id="willingAll" checked onchange="onWillingToggle()"><span class="toggle-slider"></span></label>
-        <div class="toggle-status on" id="willingStatus">On</div>
-      </div>
+  <div class="card" id="shortcutCard">
+    <div style="font-size:.88rem;font-weight:600;color:var(--ink);margin-bottom:.2rem;">Your vibe</div>
+    <div style="font-size:.75rem;color:var(--muted);margin-bottom:.85rem;line-height:1.5;">One tap to pre-fill preferences. You can still set full details afterwards.</div>
+    <div id="shortcutGrid" style="display:flex;flex-direction:column;gap:.35rem;"></div>
+    <div id="shortcutAppliedMsg" style="display:none;margin-top:.65rem;font-size:.72rem;color:var(--sage);font-weight:600;text-align:center;"></div>
+    <div style="text-align:center;margin-top:.6rem;">
+      <button onclick="onWillingToggle()" style="background:none;border:none;font-size:.72rem;color:var(--sky);cursor:pointer;font-family:inherit;">Or set full preferences →</button>
     </div>
   </div>
 
@@ -1099,52 +1191,55 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
   </div>
 </div>
 
-<!-- ════════ SURVEY ════════ -->
+<!-- ════════ SURVEY — New Multi-Step ════════ -->
 <div class="screen" id="screenSurvey">
-  <div class="survey-hero">
-    <h2 id="surveyTitle">Your preferences</h2>
-    <p id="surveySubtitle">Private — your partner won't see your answers.</p>
-  </div>
-  <div class="survey-progress-label" id="surveyProgressLabel">Partner 1 of 2</div>
-  <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:10%"></div></div>
 
-  <!-- Comfort zone slider -->
-  <div class="comfort-zone-block">
-    <div class="comfort-zone-header">
-      <span class="comfort-zone-label">Comfort zone</span>
-      <span class="comfort-zone-value" id="comfortLabel">Exploring</span>
+  <!-- Persistent exit link -->
+  <div style="margin-bottom:.75rem;">
+    <button onclick="goSetup()" style="background:none;border:none;font-size:.75rem;color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif;padding:.25rem 0;display:flex;align-items:center;gap:.3rem;">
+      ← Settings
+    </button>
+  </div>
+
+  <!-- Step header -->
+  <div id="surveyStepHeader" style="margin-bottom:1.2rem;">
+    <div style="font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.35rem;" id="surveyStepLabel">Step 1 of 3</div>
+    <div style="height:4px;background:var(--border);border-radius:99px;overflow:hidden;margin-bottom:.9rem;">
+      <div id="surveyStepBar" style="height:100%;background:linear-gradient(90deg,var(--sage),var(--blush));border-radius:99px;transition:width .4s;width:0%"></div>
     </div>
-    <input type="range" id="comfortSlider" class="comfort-slider" min="0" max="3" step="1" value="1"
-      oninput="onComfortSlide(this.value)">
-    <div class="comfort-ticks">
-      <span>Gentle</span><span>Exploring</span><span>Adventurous</span><span>Wild</span>
-    </div>
+    <h2 id="surveyStepTitle" style="font-family:'DM Serif Display',serif;font-size:1.7rem;font-weight:400;color:var(--ink);margin-bottom:.25rem;"></h2>
+    <p id="surveyStepSub" style="font-size:.82rem;color:var(--muted);line-height:1.5;"></p>
   </div>
 
-  <!-- Extreme toggle -->
-  <div class="advanced-banner" id="advancedBanner">
-    <p>Show extreme categories</p>
-    <label class="toggle-switch" style="flex-shrink:0;">
-      <input type="checkbox" id="showAdvanced" onchange="rebuildSurvey()">
-      <span class="toggle-slider"></span>
-    </label>
-  </div>
-
-  <!-- Legend -->
-  <div class="kink-legend-sticky">
-    <div class="kink-legend">
-      <div class="legend-item"><span class="kl-dot" style="background:var(--fav)"></span>★ Fav</div>
-      <div class="legend-item"><span class="kl-dot" style="background:var(--sage)"></span>✓ Like</div>
-      <div class="legend-item"><span class="kl-dot" style="background:var(--amber)"></span>~ Maybe</div>
-      <div class="legend-item"><span class="kl-dot" style="background:var(--blush)"></span>✕ No</div>
+  <!-- Step 1: Archetypes -->
+  <div id="surveyStepArchetypes" style="display:none;">
+    <div id="archetypeGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:.55rem;margin-bottom:1rem;"></div>
+    <div style="text-align:center;margin:.5rem 0 1rem;">
+      <button onclick="surveySkipToCards()" style="background:none;border:none;font-size:.78rem;color:var(--sky);cursor:pointer;font-family:inherit;font-weight:600;padding:.4rem 0;">
+        Skip — rate items directly →
+      </button>
     </div>
   </div>
 
-  <div id="surveyItems"></div>
+  <!-- Step 2: Waterfall accordion -->
+  <div id="surveyStepWaterfall" style="display:none;">
+    <div id="waterfallList"></div>
+  </div>
 
-  <div class="btn-stack" style="margin-top:1rem;">
-    <button class="btn btn-ink" id="surveyNextBtn" onclick="surveyNext()">Done →</button>
-    <div style="text-align:center;margin-top:.4rem;"><button class="btn-ghost" onclick="goSetup()">← Back</button></div>
+  <!-- Shared discovery reveal (between partners) -->
+  <div id="surveyDiscovery" style="display:none;text-align:center;padding:1.5rem 0;">
+    <div style="font-size:2rem;margin-bottom:.75rem;">✨</div>
+    <h3 style="font-family:'DM Serif Display',serif;font-size:1.6rem;font-weight:400;color:var(--ink);margin-bottom:.4rem;">You're both into…</h3>
+    <p style="font-size:.82rem;color:var(--muted);margin-bottom:1.2rem;">Things you share that you might not have known.</p>
+    <div id="discoveryRevealCards" style="display:flex;flex-direction:column;gap:.5rem;margin-bottom:1.2rem;"></div>
+    <button class="btn btn-ink" onclick="finishSurvey()">See everything you share →</button>
+  </div>
+
+  <div class="btn-stack" id="surveyNavBtns" style="margin-top:1rem;">
+    <button class="btn btn-ink" id="surveyNextBtn" onclick="surveyStepNext()">Continue →</button>
+    <div style="text-align:center;margin-top:.4rem;">
+      <button class="btn-ghost" id="surveyBackBtn" onclick="surveyStepBack()">← Back</button>
+    </div>
   </div>
 </div>
 
@@ -1285,19 +1380,6 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
     </div>
   </div>
 
-</div><!-- /container -->
-
-<!-- ════════ SAVED SCENES MODAL ════════ -->
-<div class="modal-overlay" id="savedScenesModal" onclick="closeSavedScenesModal(event)">
-  <div class="modal-sheet" style="max-height:90vh;overflow:hidden;display:flex;flex-direction:column;">
-    <div class="modal-handle"></div>
-    <div class="modal-title">Saved scenes</div>
-    <div class="modal-sub">Scenes you put aside for when the moment is right.</div>
-    <div id="savedScenesList" style="flex:1;overflow-y:auto;padding-bottom:.5rem;"></div>
-    <button class="btn btn-outline" onclick="document.getElementById('savedScenesModal').classList.remove('open')" style="margin-top:.75rem;width:100%;flex-shrink:0;">Close</button>
-  </div>
-</div>
-
 <script>
 // ═══════════════════════════════════════════════════════════════════
 //  ██████████████████████████████████████████████████████████████
@@ -1345,6 +1427,14 @@ const C = {
     REMEMBER:   'spark_remember_key',
     SAVED_SCENES:'spark_saved_scenes',
     LOCATION:   'spark_location',
+    EXPERIENCE: 'spark_experience',
+    ARCHETYPES: 'spark_archetypes',
+    SURVEY_STEP:'spark_survey_step',
+    KINK_PREFS0:'spark_kink_prefs_0',
+    KINK_PREFS1:'spark_kink_prefs_1',
+    KINK_MANUAL:'spark_kink_manual',
+    ACTIVE_ARCH:'spark_active_archetypes',
+    SHORTCUT_ID:'spark_shortcut_id',
   },
   // Critical DOM element IDs — if these are missing the app cannot function
   EL: {
@@ -1839,16 +1929,208 @@ KINK_CATS.forEach(cat => {
 });
 
 let kinkPrefs = [{}, {}];
+// (experience is now inferred from kinkPrefs rating — no separate experience store)
+
+// Track items the user has manually changed per partner — archetypes can't override these
+let _manuallyChanged = [new Set(), new Set()];
+
+// ─── Prefs persistence ────────────────────────────────────────────────────────
+function persistPrefs() {
+  try {
+    localStorage.setItem(C.LS.KINK_PREFS0, JSON.stringify(kinkPrefs[0]));
+    localStorage.setItem(C.LS.KINK_PREFS1, JSON.stringify(kinkPrefs[1]));
+    localStorage.setItem(C.LS.KINK_MANUAL, JSON.stringify([
+      [..._manuallyChanged[0]], [..._manuallyChanged[1]]
+    ]));
+    localStorage.setItem(C.LS.ACTIVE_ARCH, JSON.stringify([
+      [...activeArchetypes[0]], [...activeArchetypes[1]]
+    ]));
+    localStorage.setItem(C.LS.SHORTCUT_ID, _currentShortcutId || '');
+  } catch(e) { SparkLog.warn('persistPrefs failed', e.message); }
+}
+
+function restorePrefs() {
+  try {
+    const p0 = localStorage.getItem(C.LS.KINK_PREFS0);
+    const p1 = localStorage.getItem(C.LS.KINK_PREFS1);
+    if (p0) kinkPrefs[0] = JSON.parse(p0);
+    if (p1) kinkPrefs[1] = JSON.parse(p1);
+    const m = localStorage.getItem(C.LS.KINK_MANUAL);
+    if (m) { const [m0,m1] = JSON.parse(m); _manuallyChanged[0] = new Set(m0); _manuallyChanged[1] = new Set(m1); }
+    const aa = localStorage.getItem(C.LS.ACTIVE_ARCH);
+    if (aa) { const [a0,a1] = JSON.parse(aa); activeArchetypes[0] = new Set(a0); activeArchetypes[1] = new Set(a1); }
+    const sid = localStorage.getItem(C.LS.SHORTCUT_ID);
+    if (sid) _currentShortcutId = sid || null;
+  } catch(e) { SparkLog.warn('restorePrefs failed', e.message); }
+}
+
+// ─── Archetype definitions ────────────────────────────────────────────────────
+// Each archetype pre-fills interest + experience for a set of kink IDs.
+// interest: 'fav'|'like'|'int'|'no'   experience: 'never'|'tried'|'comfortable'|'expert'
+const ARCHETYPES = [
+  {
+    id: 'tender',
+    icon: '🌿',
+    title: 'Tender',
+    sub: 'Slow, sensual, lots of touch',
+    fills: [
+      { cats: ['intimacy'], interest: 'fav',  exp: 'comfortable' },
+      { cats: ['clothing'], interest: 'like', exp: 'comfortable' },
+      { ids:  ['g_handjob_give','g_handjob_receive','g_cunniling_give','g_blowjob_give'], interest: 'like', exp: 'comfortable' },
+      { cats: ['touch'],    interest: 'like', exp: 'tried' },
+      { cats: ['penetration'], interest: 'like', exp: 'comfortable' },
+      { cats: ['pain','butt','domination','restrictive'], interest: 'no', exp: 'never' },
+    ],
+  },
+  {
+    id: 'passionate',
+    icon: '🔥',
+    title: 'Passionate',
+    sub: 'Direct, hungry, physical',
+    fills: [
+      { cats: ['intimacy','general','penetration','positions'], interest: 'fav', exp: 'comfortable' },
+      { cats: ['clothing','toys','touch'], interest: 'like', exp: 'tried' },
+      { cats: ['butt'], interest: 'int', exp: 'never' },
+      { cats: ['pain'], interest: 'int', exp: 'tried' },
+      { cats: ['domination'], interest: 'like', exp: 'tried' },
+    ],
+  },
+  {
+    id: 'playful',
+    icon: '🎭',
+    title: 'Playful',
+    sub: 'Teasing, roleplay, surprises',
+    fills: [
+      { cats: ['scenarios','clothing'], interest: 'fav', exp: 'tried' },
+      { cats: ['general','toys'], interest: 'like', exp: 'comfortable' },
+      { ids:  ['g_teasing_give','g_teasing_receive','g_edging_give','g_edging_receive','g_stripping_give'], interest: 'fav', exp: 'comfortable' },
+      { cats: ['domination'], interest: 'like', exp: 'tried' },
+    ],
+  },
+  {
+    id: 'power',
+    icon: '⛓',
+    title: 'Power Exchange',
+    sub: 'Dom/sub dynamics',
+    fills: [
+      { cats: ['domination','restrictive'], interest: 'fav', exp: 'tried' },
+      { ids:  ['r_cuffs','r_blindfold','r_rope','d_domsub','d_discipline','d_begging'], interest: 'fav', exp: 'comfortable' },
+      { cats: ['pain'], interest: 'like', exp: 'tried' },
+      { cats: ['general','penetration'], interest: 'like', exp: 'comfortable' },
+    ],
+  },
+  {
+    id: 'anal',
+    icon: '🍑',
+    title: 'Backdoor Curious',
+    sub: 'Anal-inclusive',
+    fills: [
+      { cats: ['butt'], interest: 'like', exp: 'tried' },
+      { ids:  ['b_tease_give','b_tease_receive','b_toy_give','b_toy_receive'], interest: 'fav', exp: 'tried' },
+      { ids:  ['b_sex_give','b_sex_receive'], interest: 'like', exp: 'tried' },
+      { cats: ['general','penetration'], interest: 'like', exp: 'comfortable' },
+    ],
+  },
+  {
+    id: 'voyeur',
+    icon: '👀',
+    title: 'Voyeur / Exhibitionist',
+    sub: 'Being seen, watching',
+    fills: [
+      { ids:  ['sc_exhib','sc_voyeur'], interest: 'fav', exp: 'tried' },
+      { cats: ['scenarios'], interest: 'like', exp: 'tried' },
+      { cats: ['clothing'], interest: 'fav', exp: 'comfortable' },
+      { cats: ['general','penetration'], interest: 'like', exp: 'comfortable' },
+    ],
+  },
+  {
+    id: 'toybox',
+    icon: '🎮',
+    title: 'Toy-Forward',
+    sub: 'Props and gear central',
+    fills: [
+      { cats: ['toys'], interest: 'fav', exp: 'comfortable' },
+      { ids:  ['t_dildo','t_vibe','t_wand','t_plug'], interest: 'fav', exp: 'comfortable' },
+      { cats: ['restrictive'], interest: 'like', exp: 'tried' },
+      { cats: ['general','penetration'], interest: 'like', exp: 'comfortable' },
+    ],
+  },
+  {
+    id: 'adventurous',
+    icon: '🌶',
+    title: 'Adventurous',
+    sub: 'Everything except hard nos',
+    fills: [
+      { cats: ['intimacy','clothing','general','penetration','positions','toys','touch','butt','restrictive','domination','scenarios','pain'], interest: 'like', exp: 'tried' },
+    ],
+  },
+];
+
+// Active archetype IDs for current partner
+let activeArchetypes = [new Set(), new Set()];
+// Current survey sub-step: 'archetypes'|'waterfall'|'discovery'
+let surveySubStep = 'archetypes';
+
+// ─── Infer experience framing from the pair of ratings for a kink ────────────
+// Returns a natural-language note for buildSceneContext.
+// fav+fav → expert. fav+like → comfortable. any int → first-time for one.
+// partner defers to the other partner's rating for experience level.
+function inferExpNote(rA, rB) {
+  // Resolve partner deference
+  const a = rA === 'partner' ? rB : rA;
+  const b = rB === 'partner' ? rA : rB;
+  if (a === 'int' || b === 'int') return 'first-time';
+  if (a === 'fav' && b === 'fav') return 'expert';
+  if (a === 'fav' || b === 'fav') return 'comfortable';
+  return 'comfortable'; // like+like default
+}
 
 function mkDefaultKinkPrefs() {
   const p = {};
   ALL_KINK_ITEMS.forEach(i => { p[i.id] = i.advanced ? null : 'like'; });
   return p;
 }
+// mkDefaultKinkExperience removed — experience inferred from ratings
+
+function applyArchetype(archetypeId, pi, on) {
+  const arch = ARCHETYPES.find(a => a.id === archetypeId);
+  if (!arch) return;
+  if (on) activeArchetypes[pi].add(archetypeId);
+  else    activeArchetypes[pi].delete(archetypeId);
+
+  arch.fills.forEach(fill => {
+    const itemIds = [];
+    if (fill.ids) itemIds.push(...fill.ids);
+    if (fill.cats) {
+      fill.cats.forEach(catId => {
+        const cat = KINK_CATS.find(c => c.id === catId);
+        if (!cat) return;
+        cat.items.forEach(item => {
+          if (item.split) { itemIds.push(item.id + '_give', item.id + '_receive'); }
+          else { itemIds.push(item.id); }
+        });
+      });
+    }
+    itemIds.forEach(id => {
+      if (!ALL_KINK_ITEMS.find(i => i.id === id)) return;
+      // Never override items the user has manually set
+      if (_manuallyChanged[pi].has(id)) return;
+      kinkPrefs[pi][id] = on ? fill.interest : 'like';
+    });
+  });
+}
 
 function isKinkAvail(itemId) {
-  const eff = pi => { const r = kinkPrefs[pi][itemId]; return (r===null||r===undefined) ? 'like' : r; };
-  return eff(0) !== 'no' && eff(1) !== 'no';
+  const r0 = kinkPrefs[0][itemId] ?? 'like';
+  const r1 = kinkPrefs[1][itemId] ?? 'like';
+  if (r0 === 'no' || r1 === 'no') return false;
+  // If both deferred to partner, neither is driving — exclude
+  if (r0 === 'partner' && r1 === 'partner') return false;
+  // partner deference is activated if other partner rates int or above
+  const activeVals = new Set(['fav','like','int']);
+  if (r0 === 'partner') return activeVals.has(r1);
+  if (r1 === 'partner') return activeVals.has(r0);
+  return true;
 }
 
 // ═══════════════════════════════════════════
@@ -2104,7 +2386,76 @@ function gN(i) {
   const v  = el ? el.value.trim() : '';
   return v || 'Partner ' + (i + 1);
 }
-function willingAll() { return document.getElementById('willingAll').checked; }
+function willingAll() {
+  // Now determined by whether prefs are set
+  return prefsAreSet();
+}
+
+function onWillingToggle() {
+  // Route to new survey instead
+  const n1 = document.getElementById('name1')?.value.trim();
+  const n2 = document.getElementById('name2')?.value.trim();
+  if (!n1 || !n2) { setupContinue(); return; }
+  localStorage.setItem(C.LS.NAME1, n1);
+  localStorage.setItem(C.LS.NAME2, n2);
+  surveyIdx = 0;
+  showSurveyScreen(0);
+}
+
+function buildShortcutGrid() {
+  const grid = document.getElementById('shortcutGrid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  ARCHETYPES.forEach(arch => {
+    const isActive = activeArchetypes[0].has(arch.id);
+    const row = document.createElement('button');
+    row.id = 'shortcut-btn-' + arch.id;
+    row.style.cssText = [
+      'display:flex;align-items:center;gap:.75rem;width:100%;',
+      'padding:.65rem .85rem;border-radius:var(--rs);cursor:pointer;',
+      'font-family:"DM Sans",sans-serif;text-align:left;transition:all .15s;',
+      isActive
+        ? 'background:var(--ink);border:2px solid var(--ink);'
+        : 'background:var(--bg);border:1.5px solid var(--border);',
+    ].join('');
+    row.innerHTML =
+      '<span style="font-size:1.25rem;flex-shrink:0;">' + arch.icon + '</span>' +
+      '<span style="flex:1;min-width:0;">' +
+        '<span style="display:block;font-size:.82rem;font-weight:600;' + (isActive ? 'color:#fff;' : 'color:var(--ink);') + '">' + arch.title + '</span>' +
+        '<span style="display:block;font-size:.68rem;' + (isActive ? 'color:rgba(255,255,255,.65);' : 'color:var(--muted);') + 'margin-top:.05rem;">' + arch.sub + '</span>' +
+      '</span>' +
+      (isActive ? '<span style="font-size:.75rem;color:rgba(255,255,255,.8);">\u2713</span>' : '');
+    row.onclick = () => applyShortcutArchetype(arch.id);
+    grid.appendChild(row);
+  });
+}
+
+// Track which shortcut is currently applied
+let _currentShortcutId = null;
+
+function applyShortcutArchetype(archetypeId) {
+  // Toggle: if already active, deselect it; otherwise select it
+  const wasActive = activeArchetypes[0].has(archetypeId);
+  [0, 1].forEach(pi => {
+    if (!kinkPrefs[pi] || Object.keys(kinkPrefs[pi]).length === 0) kinkPrefs[pi] = mkDefaultKinkPrefs();
+    applyArchetype(archetypeId, pi, !wasActive);
+  });
+  // Update single-shortcut-id tracking: if only one active use it, else null
+  const active0 = [...activeArchetypes[0]];
+  _currentShortcutId = active0.length === 1 ? active0[0] : (active0.length > 1 ? '__multi__' : null);
+  markPrefsSet();
+  persistPrefs();
+  buildShortcutGrid();
+  const msg = document.getElementById('shortcutAppliedMsg');
+  const arch = ARCHETYPES.find(a => a.id === archetypeId);
+  if (msg && arch) {
+    msg.textContent = wasActive
+      ? arch.icon + ' ' + arch.title + ' removed'
+      : arch.icon + ' ' + arch.title + ' applied \u2713';
+    msg.style.display = 'block';
+    setTimeout(() => { msg.style.display = 'none'; }, 2000);
+  }
+}
 
 // ─── Scene availability: role-aware kink check ────────────────────
 function sceneAvailForRoles(scene, piA, piB) {
@@ -2112,18 +2463,25 @@ function sceneAvailForRoles(scene, piA, piB) {
     if (props.has('none')) return false;
     if (!scene.req.every(r => props.has(r))) return false;
   }
-  // If no preferences set, restrict to vanilla scenes only
   if (!prefsAreSet() && !willingAll()) {
     if (!VANILLA_SCENE_IDS.has(scene.id)) return false;
   }
   if (willingAll()) return true;
+  const activeVals = new Set(['fav','like','int']);
   return scene.kinks.every(k => {
-    // _give → check the giver (piA); _receive → check the receiver (piB)
     if (k.endsWith('_give')) {
-      const r = kinkPrefs[piA][k]; return (r===null||r===undefined||r!=='no');
+      const rA = kinkPrefs[piA][k] ?? 'like';
+      const rB = kinkPrefs[piB][k] ?? 'like';
+      if (rA === 'no') return false;
+      if (rA === 'partner') return activeVals.has(rB);
+      return true;
     }
     if (k.endsWith('_receive')) {
-      const r = kinkPrefs[piB][k]; return (r===null||r===undefined||r!=='no');
+      const rA = kinkPrefs[piA][k] ?? 'like';
+      const rB = kinkPrefs[piB][k] ?? 'like';
+      if (rB === 'no') return false;
+      if (rB === 'partner') return activeVals.has(rA);
+      return true;
     }
     return isKinkAvail(k);
   });
@@ -2146,6 +2504,7 @@ function goSetup() {
   const banner = document.getElementById('returnBanner');
   if (banner) banner.style.display = currentScene ? 'flex' : 'none';
   document.body.classList.remove('header-compact');
+  buildShortcutGrid();
   showScreen('screenSetup');
 }
 
@@ -2155,20 +2514,15 @@ function goSetup() {
 (function initSetup() {
   buildAssetGrid(0);
   buildAssetGrid(1);
+  restorePrefs();
+  buildShortcutGrid();
 
   // Props grid now in pre-scene screen
 })();
 
 // toggleProp replaced by togglePropsChip in props v2
 
-function onWillingToggle() {
-  const on = willingAll();
-  const ws = document.getElementById('willingStatus');
-  const sb = document.getElementById('setupContinueBtn');
-  if (ws) { ws.textContent = on ? 'On' : 'Off'; ws.className = 'toggle-status' + (on ? ' on' : ''); }
-  if (sb) sb.textContent = on ? 'Continue' : 'Set preferences →';
-  if (on) markPrefsSet();
-}
+// onWillingToggle is defined near willingAll above
 
 function setupContinue() {
   const f1 = document.getElementById('name1');
@@ -2193,13 +2547,11 @@ function setupContinue() {
   localStorage.setItem(C.LS.NAME1, n1);
   localStorage.setItem(C.LS.NAME2, n2);
 
-  if (willingAll()) {
-    // Open to anything — set full defaults and go home
-    kinkPrefs = [mkDefaultKinkPrefs(), mkDefaultKinkPrefs()];
-    markPrefsSet();
+  if (prefsAreSet()) {
+    // Already have prefs (via shortcut or previous survey) — go home
     goHome();
   } else {
-    // Wants to set preferences — go to survey
+    // Wants to set preferences — go to new survey
     surveyIdx = 0;
     showSurveyScreen(0);
   }
@@ -2491,450 +2843,468 @@ function renderAmbushList() {
 }
 
 // ═══════════════════════════════════════════
-//  SURVEY
+//  SURVEY — New Multi-Step System
 // ═══════════════════════════════════════════
+
+// surveyIdx: 0 = partner1, 1 = partner2
+// surveySubStep: 'archetypes' | 'category' | 'deep' | 'discovery'
+
+const SURVEY_PATHWAYS = [
+  { label: 'Foundations',  cats: ['intimacy','clothing'] },
+  { label: 'Exploration',  cats: ['general','positions','toys','touch'] },
+  { label: 'Intensity',    cats: ['penetration','butt','restrictive','domination','scenarios','pain','groupings'] },
+  { label: 'Advanced',     cats: ['adv_taboo','adv_surreal','adv_fluids','adv_pain'], advanced: true },
+];
+
+// Deep-dive shows only categories where at least one item has interest ≠ 'no'
+function getActiveCatsForDeepDive(pi) {
+  return KINK_CATS.filter(cat => !cat.advanced && cat.items.some(item => {
+    const ids = item.split ? [item.id+'_give', item.id+'_receive'] : [item.id];
+    return ids.some(id => {
+      const v = kinkPrefs[pi][id];
+      return v && v !== 'no';
+    });
+  }));
+}
+
 function showSurveyScreen(pi) {
   surveyIdx = pi;
-  if (!kinkPrefs[pi] || Object.keys(kinkPrefs[pi]).length === 0) kinkPrefs[pi] = mkDefaultKinkPrefs();
-  document.getElementById('surveyTitle').textContent = `${gN(pi)}'s preferences`;
-  document.getElementById('surveySubtitle').textContent =
-    pi === 0 ? "Private — your partner won't see your answers" : `${gN(0)} is done. Now ${gN(1)}'s turn.`;
-  document.getElementById('progressFill').style.width = pi === 0 ? '10%' : '55%';
-  const progressLabel = document.getElementById('surveyProgressLabel');
-  if (progressLabel) progressLabel.textContent = pi === 0 ? 'Partner 1 of 2 — your answers are private' : `${gN(0)} done. Now ${gN(1)}'s turn.`;
-  document.getElementById('surveyNextBtn').textContent = pi === 0 ? `Done — ${gN(1)}'s turn →` : 'See shared interests →';
-  // Init comfort slider open cats on first load
-  if (openCats.size === 0) {
-    const level = COMFORT_LEVELS[comfortLevel];
-    if (level.expand === null) {
-      KINK_CATS.forEach(c => openCats.add(c.id));
-    } else {
-      level.expand.forEach(c => openCats.add(c));
-    }
+  surveySubStep = 'archetypes';
+  if (!kinkPrefs[pi] || Object.keys(kinkPrefs[pi]).length === 0) {
+    kinkPrefs[pi] = mkDefaultKinkPrefs();
+    _manuallyChanged[pi].clear(); // fresh start — no manual overrides yet
   }
-  const slider = document.getElementById('comfortSlider');
-  if (slider) slider.value = comfortLevel;
-  const labelEl = document.getElementById('comfortLabel');
-  if (labelEl) labelEl.textContent = COMFORT_LEVELS[comfortLevel].label;
-  rebuildSurvey();
+  renderSurveyStep();
   showScreen('screenSurvey');
-  // Scroll after paint to avoid browser reset
   requestAnimationFrame(() => window.scrollTo(0, 0));
 }
 
-// ═══════════════════════════════════════════
-//  SURVEY v2 — Macro-to-Micro
-// ═══════════════════════════════════════════
-
-// Pathway structure for the new UI
-const SURVEY_PATHWAYS = [
-  {
-    label: 'Foundations',
-    cats: ['intimacy', 'clothing'],
-  },
-  {
-    label: 'Exploration',
-    cats: ['general', 'positions', 'toys', 'touch'],
-  },
-  {
-    label: 'Intensity',
-    cats: ['penetration', 'butt', 'restrictive', 'domination', 'scenarios', 'pain', 'groupings'],
-  },
-  {
-    label: 'Advanced',
-    cats: ['adv_taboo', 'adv_surreal', 'adv_fluids', 'adv_pain'],
-    advanced: true,
-  },
-];
-
-// Comfort level → which pathways/cats are expanded by default
-const COMFORT_LEVELS = [
-  { label: 'Gentle',      expand: ['intimacy','clothing','general','toys'], defaultVal: 'like' },
-  { label: 'Exploring',   expand: ['intimacy','clothing','general','positions','toys','touch','penetration'], defaultVal: 'like' },
-  { label: 'Adventurous', expand: ['intimacy','clothing','general','positions','toys','touch','penetration','butt','restrictive','domination','scenarios'], defaultVal: 'like' },
-  { label: 'Wild',        expand: null, defaultVal: 'like' }, // all expanded
-];
-
-let comfortLevel = 1; // default: Exploring
-// Track which cats are open in accordion
-const openCats = new Set();
-// Track inherited values per category (from quick-select)
-const catInherited = {}; // { catId: { piIdx: 'like'|'maybe'|'no'|null } }
-// Track role overrides per split-category
-const catRoleOverride = {}; // { catId: { piIdx: 'give'|'receive'|'both' } }
-
-function onComfortSlide(val) {
-  comfortLevel = parseInt(val);
-  const level = COMFORT_LEVELS[comfortLevel];
-  document.getElementById('comfortLabel').textContent = level.label;
-  // Auto-expand appropriate cats
-  openCats.clear();
-  if (level.expand === null) {
-    SURVEY_PATHWAYS.forEach(p => p.cats.forEach(c => openCats.add(c)));
-  } else {
-    level.expand.forEach(c => openCats.add(c));
-  }
-  rebuildSurvey();
-}
-
-function getCatInherited(catId) {
-  if (!catInherited[catId]) catInherited[catId] = {};
-  return catInherited[catId][surveyIdx] || null;
-}
-
-function setCatInherited(catId, val) {
-  if (!catInherited[catId]) catInherited[catId] = {};
-  catInherited[catId][surveyIdx] = val;
-}
-
-function getCatRole(catId) {
-  if (!catRoleOverride[catId]) catRoleOverride[catId] = {};
-  return catRoleOverride[catId][surveyIdx] || 'both';
-}
-
-function setCatRole(catId, role) {
-  if (!catRoleOverride[catId]) catRoleOverride[catId] = {};
-  catRoleOverride[catId][surveyIdx] = role;
-}
-
-function applyCatQuickSelect(catId, val) {
-  // Set inherited value for this cat
-  setCatInherited(catId, val);
-  // Apply to all items in this cat
-  const cat = KINK_CATS.find(c => c.id === catId);
-  if (!cat) return;
-  const role = getCatRole(catId);
-  cat.items.forEach(item => {
-    if (item.split) {
-      if (role === 'both' || role === 'give')    kinkPrefs[surveyIdx][item.id + '_give']    = val;
-      if (role === 'both' || role === 'receive') kinkPrefs[surveyIdx][item.id + '_receive'] = val;
-    } else {
-      kinkPrefs[surveyIdx][item.id] = val;
-    }
+function renderSurveyStep() {
+  ['surveyStepArchetypes','surveyStepWaterfall','surveyDiscovery'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
   });
-  // Re-render just this category
-  rerenderCatRows(catId);
-  updateCatCardStatus(catId);
+  const navBtns = document.getElementById('surveyNavBtns');
+  const bar     = document.getElementById('surveyStepBar');
+  const label   = document.getElementById('surveyStepLabel');
+  const title   = document.getElementById('surveyStepTitle');
+  const sub     = document.getElementById('surveyStepSub');
+  const nextBtn = document.getElementById('surveyNextBtn');
+  const backBtn = document.getElementById('surveyBackBtn');
+
+  if (surveySubStep === 'archetypes') {
+    if (bar)   bar.style.width = surveyIdx === 0 ? '5%' : '52%';
+    if (label) label.textContent = (surveyIdx === 0 ? 'Partner 1 of 2' : 'Partner 2 of 2') + ' \u00b7 Step 1 of 2';
+    if (title) title.textContent = gN(surveyIdx) + ', what\u2019s your vibe?';
+    if (sub)   sub.textContent   = 'Pick one or more. Pre-fills your preferences \u2014 you can still refine.';
+    if (nextBtn) { nextBtn.textContent = 'Rate items \u2192'; nextBtn.style.display = 'block'; }
+    if (backBtn) backBtn.textContent = '\u2190 Back to settings';
+    if (navBtns) navBtns.style.display = 'block';
+    buildArchetypeGrid();
+    document.getElementById('surveyStepArchetypes').style.display = 'block';
+
+  } else if (surveySubStep === 'waterfall') {
+    if (bar)   bar.style.width = surveyIdx === 0 ? '40%' : '90%';
+    if (label) label.textContent = (surveyIdx === 0 ? 'Partner 1 of 2' : 'Partner 2 of 2') + ' \u00b7 Step 2 of 2';
+    if (title) title.textContent = 'What are you into?';
+    if (sub)   sub.textContent   = 'Your vibe has pre-filled these. Only change what doesn\u2019t fit.';
+    if (nextBtn) {
+      nextBtn.textContent = surveyIdx === 0
+        ? 'Done \u2014 ' + gN(1) + '\u2019s turn \u2192'
+        : 'See what you share \u2192';
+      nextBtn.style.display = 'block';
+    }
+    if (backBtn) { backBtn.textContent = '\u2190 Change vibe'; backBtn.style.display = 'inline'; }
+    if (navBtns) navBtns.style.display = 'block';
+    buildWaterfall();
+    document.getElementById('surveyStepWaterfall').style.display = 'block';
+
+  } else if (surveySubStep === 'discovery') {
+    if (bar)   bar.style.width = '100%';
+    if (label) label.textContent = 'Both done!';
+    if (title) title.textContent = '';
+    if (sub)   sub.textContent   = '';
+    if (navBtns) navBtns.style.display = 'none';
+    buildDiscoveryReveal();
+    document.getElementById('surveyDiscovery').style.display = 'block';
+  }
 }
 
-function applyRoleChange(catId, role) {
-  setCatRole(catId, role);
-  const inherited = getCatInherited(catId);
-  if (inherited) applyCatQuickSelect(catId, inherited);
-  rerenderCatRows(catId);
+function surveyStepNext() {
+  if (surveySubStep === 'archetypes') {
+    surveySubStep = 'waterfall';
+    renderSurveyStep(); window.scrollTo(0,0);
+  } else if (surveySubStep === 'waterfall') {
+    markPrefsSet();
+    persistPrefs();
+    if (surveyIdx === 0) {
+      surveyIdx = 1;
+      surveySubStep = 'archetypes';
+      if (!kinkPrefs[1] || Object.keys(kinkPrefs[1]).length === 0) kinkPrefs[1] = mkDefaultKinkPrefs();
+      renderSurveyStep(); window.scrollTo(0,0);
+    } else {
+      surveySubStep = 'discovery';
+      renderSurveyStep(); window.scrollTo(0,0);
+    }
+  }
 }
 
-function rerenderCatRows(catId) {
-  const container = document.getElementById('cat-rows-' + catId);
+function surveyStepBack() {
+  if (surveySubStep === 'archetypes' && surveyIdx === 0) {
+    goSetup();
+  } else if (surveySubStep === 'archetypes' && surveyIdx === 1) {
+    surveyIdx = 0; surveySubStep = 'waterfall';
+    renderSurveyStep(); window.scrollTo(0,0);
+  } else if (surveySubStep === 'waterfall') {
+    surveySubStep = 'archetypes';
+    renderSurveyStep(); window.scrollTo(0,0);
+  }
+}
+
+function surveySkipToCards()    { surveySubStep = 'waterfall'; renderSurveyStep(); window.scrollTo(0,0); }
+function surveySkipToCategory() { surveySkipToCards(); }
+function surveySkipDeepDive()   { surveyStepNext(); }
+function surveyNext()           { surveyStepNext(); }
+
+// ─── Rating definitions (5-button strip) ─────────────────────────────────────
+const RATING_BTNS = [
+  { v:'fav',     label:'Love it',       cls:'pb-fav'     },
+  { v:'like',    label:'Like it',       cls:'pb-like'    },
+  { v:'int',     label:'I want to try', cls:'pb-maybe'   },
+  { v:'partner', label:'If [P] wants',  cls:'pb-partner' },
+  { v:'no',      label:'No',            cls:'pb-no'      },
+];
+// Legacy constant aliases
+const INT_OPTIONS   = RATING_BTNS;
+const EXP_OPTIONS   = [];
+const INTEREST_COLS = RATING_BTNS;
+const EXP_ROWS      = [];
+
+function partnerPronoun(pi) {
+  const g = document.getElementById('gender' + ((pi === 0 ? 1 : 0) + 1))?.value || '';
+  return g === 'male' ? 'he' : g === 'female' ? 'she' : 'they';
+}
+
+function getCatsExpandedByArchetypes(pi) {
+  const expanded = new Set(['intimacy','clothing','general','penetration']);
+  activeArchetypes[pi].forEach(aid => {
+    const arch = ARCHETYPES.find(a => a.id === aid);
+    if (!arch) return;
+    arch.fills.forEach(fill => { if (fill.cats) fill.cats.forEach(c => expanded.add(c)); });
+  });
+  return expanded;
+}
+
+function buildWaterfall() {
+  const container = document.getElementById('waterfallList');
   if (!container) return;
-  const cat = KINK_CATS.find(c => c.id === catId);
-  if (!cat) return;
   container.innerHTML = '';
-  buildCatRows(cat, container);
-}
+  const pi       = surveyIdx;
+  const pronoun  = partnerPronoun(pi);
+  const autoExp  = getCatsExpandedByArchetypes(pi);
 
-function updateCatCardStatus(catId) {
-  const card = document.getElementById('cat-card-' + catId);
-  if (!card) return;
-  const cat = KINK_CATS.find(c => c.id === catId);
-  if (!cat) return;
-  // Count ratings
-  let likes = 0, favs = 0, nos = 0, total = 0;
-  cat.items.forEach(item => {
-    const ids = item.split
-      ? [item.id + '_give', item.id + '_receive']
-      : [item.id];
-    ids.forEach(id => {
-      const v = kinkPrefs[surveyIdx][id];
-      total++;
-      if (v === 'like' || v === 'int') likes++;
-      if (v === 'fav') { likes++; favs++; }
-      if (v === 'no') nos++;
+  // Reset banner — only shown if there are manual overrides
+  if (_manuallyChanged[pi].size > 0) {
+    const resetBar = document.createElement('div');
+    resetBar.style.cssText = 'display:flex;align-items:center;justify-content:space-between;background:var(--amber-bg);border:1px solid var(--amber-mid);border-radius:var(--rs);padding:.55rem .85rem;margin-bottom:.75rem;';
+    resetBar.innerHTML =
+      '<span style="font-size:.75rem;color:var(--amber);">' + _manuallyChanged[pi].size + ' item' + (_manuallyChanged[pi].size === 1 ? '' : 's') + ' edited manually</span>' +
+      '<button style="background:none;border:none;font-size:.72rem;color:var(--amber);font-weight:700;cursor:pointer;font-family:\'DM Sans\',sans-serif;padding:.15rem .4rem;" onclick="resetWaterfallToArchetype()">Reset to vibe defaults</button>';
+    container.appendChild(resetBar);
+  }
+
+  SURVEY_PATHWAYS.forEach(pathway => {
+    if (pathway.advanced) return; // hidden behind toggle below
+
+    const pathEl = document.createElement('div');
+    pathEl.style.cssText = 'font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:.5rem 0 .4rem;border-bottom:1px solid var(--border);margin-top:.75rem;margin-bottom:.1rem;';
+    pathEl.textContent = pathway.label;
+    container.appendChild(pathEl);
+
+    pathway.cats.forEach(catId => {
+      const cat  = KINK_CATS.find(c => c.id === catId);
+      if (!cat) return;
+      container.appendChild(_buildCatCard(cat, pi, pronoun, autoExp.has(catId)));
     });
   });
-  // Update fill bar
-  const fill = card.querySelector('.cat-card-fill-inner');
-  if (fill) {
-    const pct = total ? Math.round((likes + favs) / total * 100) : 0;
-    fill.style.width = pct + '%';
-    fill.style.background = favs > 0 ? 'var(--fav)' : nos > likes ? 'var(--blush)' : 'var(--sage)';
-  }
-  // Update card border
-  card.classList.toggle('has-favs', favs > 0);
-  card.classList.toggle('has-likes', likes > 0 && favs === 0);
-  card.classList.toggle('has-nos', nos > 0 && likes === 0 && favs === 0);
+
+  // Advanced toggle
+  const advBtn = document.createElement('button');
+  advBtn.style.cssText = 'display:block;width:100%;margin-top:1rem;padding:.55rem;background:none;border:1.5px dashed var(--border);border-radius:var(--rs);font-family:"DM Sans",sans-serif;font-size:.75rem;color:var(--muted);cursor:pointer;';
+  advBtn.textContent = '+ Show advanced / extreme categories';
+  advBtn.onclick = () => { advBtn.remove(); buildWaterfallAdvanced(container, pi, pronoun); };
+  container.appendChild(advBtn);
 }
 
-function buildCatRows(cat, container) {
-  const role = getCatRole(cat.id);
-  const inherited = getCatInherited(cat.id);
+function _buildCatCard(cat, pi, pronoun, isOpen) {
+  const meta    = CAT_META[cat.id] || { icon:'', label:cat.label };
+  const itemIds = cat.items.flatMap(i => i.split ? [i.id+'_give',i.id+'_receive'] : [i.id]);
+  const yesCount = itemIds.filter(id => { const v = kinkPrefs[pi][id]; return v && v !== 'no' && v !== null; }).length;
+  const pct     = itemIds.length ? Math.round(yesCount / itemIds.length * 100) : 0;
+  const fillBg  = pct > 60 ? 'var(--sage)' : pct > 20 ? 'var(--amber)' : 'var(--blush)';
+
+  const card = document.createElement('div');
+  card.className = 'cat-card' + (isOpen ? ' open' : '');
+  card.id = 'wf-cat-' + cat.id;
+
+  const hdr = document.createElement('div');
+  hdr.className = 'cat-card-header';
+  hdr.dataset.cat = cat.id;
+  hdr.innerHTML =
+    '<span class="cat-card-icon">' + meta.icon + '</span>' +
+    '<div class="cat-card-info"><span class="cat-card-title">' + meta.label + '</span></div>' +
+    '<div class="cat-card-status"><div class="cat-card-fill"><div class="cat-card-fill-inner" id="wf-fill-' + cat.id + '" style="width:' + pct + '%;background:' + fillBg + '"></div></div></div>' +
+    '<span class="cat-card-chevron">\u25be</span>';
+  hdr.onclick = () => card.classList.toggle('open');
+  card.appendChild(hdr);
+
+  // Quick-select bar
+  const qbar = document.createElement('div');
+  qbar.className = 'cat-quick';
+  qbar.innerHTML = '<span class="cat-quick-label">All:</span>';
+  [
+    { v:'fav',     lbl:'\u2665 Love it',          cls:'qs-fav'     },
+    { v:'like',    lbl:'\u2713 Like it',           cls:'qs-like'    },
+    { v:'int',     lbl:'Try',                      cls:'qs-maybe'   },
+    { v:'partner', lbl:'If ' + pronoun + ' wants', cls:'qs-partner' },
+    { v:'no',      lbl:'\u2715 No',                cls:'qs-no'      },
+  ].forEach(({ v, lbl, cls }) => {
+    const btn = document.createElement('button');
+    btn.className = 'qs-btn ' + cls;
+    btn.textContent = lbl;
+    btn.onclick = e => { e.stopPropagation(); _applyCatQS(cat, v, pi, pronoun); };
+    qbar.appendChild(btn);
+  });
+  card.appendChild(qbar);
+
+  // Accordion
+  const accordion = document.createElement('div');
+  accordion.className = 'cat-accordion';
+  const inner = document.createElement('div');
+  inner.className = 'cat-accordion-inner';
+  inner.id = 'wf-rows-' + cat.id;
+  _buildWfRows(cat, inner, pi, pronoun);
+  accordion.appendChild(inner);
+  card.appendChild(accordion);
+  return card;
+}
+
+function _buildWfRows(cat, container, pi, pronoun) {
+  container.innerHTML = '';
+  container.onclick = e => {
+    const btn = e.target.closest('.pb');
+    if (!btn) return;
+    const id = btn.dataset.id, val = btn.dataset.value;
+    if (!id || !val) return;
+    kinkPrefs[pi][id] = val;
+    // Mark as manually changed — archetypes won't override this
+    _manuallyChanged[pi].add(id);
+    const row = btn.closest('.pref-row');
+    if (row) row.querySelectorAll('.pb').forEach(b => {
+      b.className = 'pb' + (b.dataset.value === val ? ' ' + _rCls(val) : '');
+    });
+    _updateFill(cat.id, pi);
+    persistPrefs();
+  };
 
   cat.items.forEach(item => {
     if (item.split) {
-      // Split item: show header then Give/Receive rows based on role
-      const splitHdr = document.createElement('div');
-      splitHdr.className = 'split-header';
-      const nameSpan = document.createElement('span');
-      nameSpan.style.fontWeight = '600';
-      nameSpan.textContent = item.label;
-      splitHdr.appendChild(nameSpan);
-      if (item.tip) {
-        const tip = document.createElement('span');
-        tip.style.cssText = 'font-size:.65rem;color:var(--muted);font-weight:400;font-style:italic;margin-left:.5rem;';
-        tip.textContent = item.tip;
-        splitHdr.appendChild(tip);
-      }
-      container.appendChild(splitHdr);
-
-      const showGive    = role === 'both' || role === 'give';
-      const showReceive = role === 'both' || role === 'receive';
-      if (showGive)    buildPrefRow(item.id + '_give',    'Giving',    inherited, container, cat.id);
-      if (showReceive) buildPrefRow(item.id + '_receive', 'Receiving', inherited, container, cat.id);
+      const hdr = document.createElement('div');
+      hdr.className = 'split-header';
+      hdr.innerHTML = '<span style="font-weight:600;">' + esc(item.label) + '</span>' +
+        (item.tip ? '<span style="font-size:.65rem;color:var(--muted);font-style:italic;margin-left:.5rem;">' + esc(item.tip) + '</span>' : '');
+      container.appendChild(hdr);
+      // Indent Give/Receive rows
+      container.appendChild(_mkPrefRow(item.id+'_give',    'Giving',    pi, pronoun, null, true));
+      container.appendChild(_mkPrefRow(item.id+'_receive', 'Receiving', pi, pronoun, null, true));
     } else {
-      buildPrefRow(item.id, item.label, inherited, container, cat.id, item.tip);
+      container.appendChild(_mkPrefRow(item.id, item.label, pi, pronoun, item.tip, false));
     }
   });
 }
 
-function buildPrefRow(id, label, inherited, container, catId, tip) {
-  const cur = kinkPrefs[surveyIdx][id] ?? null;
-  const isInherited = inherited !== null && cur === inherited;
+function _rCls(v) {
+  return { fav:'pb-fav', like:'pb-like', int:'pb-maybe', partner:'pb-partner', no:'pb-no' }[v] || '';
+}
 
+function _mkPrefRow(id, label, pi, pronoun, tip, indented) {
+  const cur = kinkPrefs[pi][id] ?? 'like';
+  const isManual = _manuallyChanged[pi].has(id);
   const row = document.createElement('div');
-  row.className = 'pref-row' + (isInherited ? ' inherited' : '');
-  row.id = 'ki_' + id;
+  row.className = 'pref-row';
+  if (indented) row.style.paddingLeft = '1rem';
 
-  const labelEl = document.createElement('div');
-  labelEl.className = 'pref-row-label';
-  const nameEl = document.createElement('span');
-  nameEl.className = 'pref-row-name';
-  nameEl.textContent = label;
-  labelEl.appendChild(nameEl);
-  if (tip) {
-    const tipEl = document.createElement('span');
-    tipEl.className = 'pref-row-tip';
-    tipEl.textContent = tip;
-    labelEl.appendChild(tipEl);
-  }
+  const lbl = document.createElement('div');
+  lbl.className = 'pref-row-label';
+  lbl.innerHTML = '<span class="pref-row-name">' + esc(label) + '</span>' +
+    (tip ? '<span class="pref-row-tip">' + esc(tip) + '</span>' : '') +
+    (isManual ? '<span style="font-size:.58rem;color:var(--sky);margin-left:.4rem;font-weight:600;">edited</span>' : '');
+  row.appendChild(lbl);
 
   const btns = document.createElement('div');
   btns.className = 'pref-btns';
-
-  const ratings = [
-    { v: 'fav',  cls: 'pb-fav',   lbl: '★', title: 'Favourite' },
-    { v: 'like', cls: 'pb-like',  lbl: '✓', title: 'Like' },
-    { v: 'int',  cls: 'pb-maybe', lbl: '~', title: 'Maybe' },
-    { v: 'no',   cls: 'pb-no',    lbl: '✕', title: 'No' },
-  ];
-  ratings.forEach(r => {
+  const shortLbls = { fav:'\u2665', like:'\u2713', int:'Try', partner:'If ' + pronoun, no:'\u2715' };
+  RATING_BTNS.forEach(r => {
     const btn = document.createElement('button');
-    const active = cur === r.v;
-    btn.className = 'pb' + (active ? ' ' + r.cls : '') + (isInherited && !active ? ' pb-inherited' : '');
-    btn.textContent = r.lbl;
-    btn.title = r.title;
-    btn.dataset.id = id;
+    btn.className = 'pb' + (cur === r.v ? ' ' + r.cls : '');
+    btn.title = r.v === 'partner' ? 'If ' + pronoun + ' wants' : r.label;
+    btn.dataset.id    = id;
     btn.dataset.value = r.v;
-    btn.dataset.cat = catId;
-    btn.setAttribute('aria-label', r.title);
-    btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+    btn.textContent   = shortLbls[r.v] || r.label;
     btns.appendChild(btn);
   });
-
-  row.appendChild(labelEl);
   row.appendChild(btns);
-  container.appendChild(row);
+  return row;
 }
 
-function toggleCatAccordion(catId) {
-  if (openCats.has(catId)) openCats.delete(catId);
-  else openCats.add(catId);
-  const card = document.getElementById('cat-card-' + catId);
-  if (card) card.classList.toggle('open', openCats.has(catId));
+function resetWaterfallToArchetype() {
+  const pi = surveyIdx;
+  // Clear manual overrides for this partner
+  _manuallyChanged[pi].clear();
+  // Rebuild prefs from scratch using active archetypes
+  kinkPrefs[pi] = mkDefaultKinkPrefs();
+  activeArchetypes[pi].forEach(aid => applyArchetype(aid, pi, true));
+  persistPrefs();
+  buildWaterfall();
 }
 
-function setSurveyLevel(level) {
-  // Legacy compat — mapped to comfort slider
-  const map = { beginner: 0, intermediate: 1, advanced: 2 };
-  const val = map[level] !== undefined ? map[level] : 1;
-  const slider = document.getElementById('comfortSlider');
-  if (slider) { slider.value = val; onComfortSlide(val); }
+function _applyCatQS(cat, val, pi, pronoun) {
+  cat.items.forEach(item => {
+    const ids = item.split ? [item.id+'_give',item.id+'_receive'] : [item.id];
+    ids.forEach(id => {
+      kinkPrefs[pi][id] = val;
+      _manuallyChanged[pi].add(id); // quick-select counts as manual
+    });
+  });
+  const inner = document.getElementById('wf-rows-' + cat.id);
+  if (inner) _buildWfRows(cat, inner, pi, pronoun);
+  _updateFill(cat.id, pi);
+  persistPrefs();
+  // Refresh reset banner
+  buildWaterfall();
 }
 
-function buildSurveyCatChips() {} // no-op — replaced by accordion
+function _updateFill(catId, pi) {
+  const cat = KINK_CATS.find(c => c.id === catId); if (!cat) return;
+  const itemIds = cat.items.flatMap(i => i.split ? [i.id+'_give',i.id+'_receive'] : [i.id]);
+  const yes = itemIds.filter(id => { const v = kinkPrefs[pi][id]; return v && v !== 'no' && v !== null; }).length;
+  const pct = itemIds.length ? Math.round(yes / itemIds.length * 100) : 0;
+  const fill = document.getElementById('wf-fill-' + catId);
+  if (fill) { fill.style.width = pct + '%'; fill.style.background = pct > 60 ? 'var(--sage)' : pct > 20 ? 'var(--amber)' : 'var(--blush)'; }
+}
 
-function rebuildSurvey() {
-  const showAdv = document.getElementById('showAdvanced')?.checked || false;
-  const container = document.getElementById('surveyItems');
+function buildWaterfallAdvanced(container, pi, pronoun) {
+  KINK_CATS.filter(c => c.advanced).forEach(cat => {
+    container.appendChild(_buildCatCard(cat, pi, pronoun, false));
+  });
+}
+
+// Legacy no-op stubs
+function buildCategorySliders() {}
+function setCatInterest(catId, interest, pi) {
+  const cat = KINK_CATS.find(c => c.id === catId); if (!cat) return;
+  cat.items.forEach(item => {
+    const ids = item.split ? [item.id+'_give',item.id+'_receive'] : [item.id];
+    ids.forEach(id => { kinkPrefs[pi][id] = interest; });
+  });
+}
+function setCatExperience() {}
+function buildDeepDive()    {}
+function appendDDItem()     {}
+function refreshDDItem()    {}
+function buildDeck()        {}
+function deckYes()          {}
+function deckNo()           {}
+function deckUndo()         {}
+function deckDetailConfirm(){}
+function _advanceDeck()     {}
+function _renderMacroCard() {}
+function _renderSubCard()   {}
+function _showDetailPanel() {}
+function buildReviewList()  {}
+function _buildReviewRow()  { return document.createElement('div'); }
+
+// ─── Discovery reveal ─────────────────────────────────────────────────────────
+function buildDiscoveryReveal() {
+  const container = document.getElementById('discoveryRevealCards');
   if (!container) return;
   container.innerHTML = '';
 
-  // Delegated click handler for all pref buttons
-  container.onclick = e => {
-    const btn = e.target.closest('.pb');
-    if (btn) {
-      const id  = btn.dataset.id;
-      const val = btn.dataset.value;
-      const catId = btn.dataset.cat;
-      setKink(id, val);
-      // Clear inherited state for this item's category when manually changed
-      if (catId) setCatInherited(catId, null);
-      updateCatCardStatus(catId);
-      return;
-    }
-    // Accordion toggle
-    const hdr = e.target.closest('.cat-card-header');
-    if (hdr) {
-      const catId = hdr.dataset.cat;
-      if (catId) toggleCatAccordion(catId);
-      return;
-    }
-  };
+  const overlaps = ALL_KINK_ITEMS.filter(i => {
+    const a = kinkPrefs[0][i.id];
+    const b = kinkPrefs[1][i.id];
+    return (a === 'like' || a === 'fav') && (b === 'like' || b === 'fav') && !i.advanced;
+  });
+  const favFav = overlaps.filter(i => kinkPrefs[0][i.id] === 'fav' && kinkPrefs[1][i.id] === 'fav');
+  const picks  = shuffle([...favFav, ...overlaps.filter(i => !favFav.includes(i))]).slice(0, 3);
 
-  SURVEY_PATHWAYS.forEach(pathway => {
-    // Skip advanced pathway unless toggle on
-    if (pathway.advanced && !showAdv) return;
+  if (picks.length === 0) {
+    container.innerHTML = '<div style="font-size:.82rem;color:var(--muted);padding:.5rem 0;">No exact matches yet \u2014 Spark will still suggest scenes based on your preferences.</div>';
+    setTimeout(() => {
+      const btn = document.createElement('button');
+      btn.className = 'btn btn-ink';
+      btn.textContent = 'Continue \u2192';
+      btn.onclick = finishSurvey;
+      container.appendChild(btn);
+    }, 300);
+    return;
+  }
 
-    const pathwayEl = document.createElement('div');
-    pathwayEl.className = 'survey-pathway';
-    pathwayEl.textContent = pathway.label;
-    container.appendChild(pathwayEl);
+  picks.forEach((item, i) => {
+    const card = document.createElement('div');
+    card.className = 'discovery-card';
+    const meta = CAT_META[item.cat] || { icon:'\u2736' };
+    card.innerHTML =
+      '<div class="discovery-card-emoji">' + meta.icon + '</div>' +
+      '<div class="discovery-card-title">' + esc(item.label.replace(' \u2014 Giving','').replace(' \u2014 Receiving','')) + '</div>' +
+      '<div class="discovery-card-sub">Both of you \u2014 ' + (kinkPrefs[0][item.id]==='fav'&&kinkPrefs[1][item.id]==='fav' ? 'both favourited this' : 'both said yes') + '</div>';
+    container.appendChild(card);
+    setTimeout(() => card.classList.add('revealed'), 200 + i * 350);
+  });
 
-    pathway.cats.forEach(catId => {
-      const cat = KINK_CATS.find(c => c.id === catId);
-      if (!cat) return;
-      if (cat.advanced && !showAdv) return;
+  setTimeout(() => {
+    const btn = document.createElement('button');
+    btn.className = 'btn btn-ink';
+    btn.style.cssText = 'width:100%;margin-top:.75rem;opacity:0;transition:opacity .4s;';
+    btn.textContent = 'See everything you share \u2192';
+    btn.onclick = finishSurvey;
+    container.appendChild(btn);
+    requestAnimationFrame(() => { btn.style.opacity = '1'; });
+  }, 200 + picks.length * 350 + 400);
+}
 
-      const isOpen = openCats.has(catId);
-      const meta = CAT_META[catId] || { icon: '●', label: cat.label };
-      const role = getCatRole(catId);
-      const inherited = getCatInherited(catId);
-      const hasSplitItems = cat.items.some(i => i.split);
+function finishSurvey() {
+  markPrefsSet();
+  showMatches();
+  showScreen('screenResults');
+  window.scrollTo(0,0);
+}
 
-      // ── Card ──
-      const card = document.createElement('div');
-      card.className = 'cat-card' + (isOpen ? ' open' : '');
-      card.id = 'cat-card-' + catId;
-
-      // ── Card header ──
-      const hdr = document.createElement('div');
-      hdr.className = 'cat-card-header';
-      hdr.dataset.cat = catId;
-
-      const iconEl = document.createElement('span');
-      iconEl.className = 'cat-card-icon';
-      iconEl.textContent = meta.icon || '●';
-
-      const infoEl = document.createElement('div');
-      infoEl.className = 'cat-card-info';
-      const titleEl = document.createElement('span');
-      titleEl.className = 'cat-card-title';
-      titleEl.textContent = meta.label || cat.label;
-      const subEl = document.createElement('span');
-      subEl.className = 'cat-card-sub';
-      subEl.textContent = cat.sub || '';
-      infoEl.appendChild(titleEl);
-      infoEl.appendChild(subEl);
-
-      const statusEl = document.createElement('div');
-      statusEl.className = 'cat-card-status';
-      const fillWrap = document.createElement('div');
-      fillWrap.className = 'cat-card-fill';
-      const fillInner = document.createElement('div');
-      fillInner.className = 'cat-card-fill-inner';
-      fillInner.style.width = '0%';
-      fillWrap.appendChild(fillInner);
-      statusEl.appendChild(fillWrap);
-
-      const chevron = document.createElement('span');
-      chevron.className = 'cat-card-chevron';
-      chevron.textContent = '▾';
-
-      hdr.appendChild(iconEl);
-      hdr.appendChild(infoEl);
-      hdr.appendChild(statusEl);
-      hdr.appendChild(chevron);
-
-      // ── Quick select bar ──
-      const quickBar = document.createElement('div');
-      quickBar.className = 'cat-quick';
-
-      const qlbl = document.createElement('span');
-      qlbl.className = 'cat-quick-label';
-      qlbl.textContent = 'All:';
-      quickBar.appendChild(qlbl);
-
-      [
-        { v: 'like',  cls: 'qs-like',  lbl: '✓ Like' },
-        { v: 'int',   cls: 'qs-maybe', lbl: '~ Maybe' },
-        { v: 'no',    cls: 'qs-no',    lbl: '✕ No' },
-      ].forEach(({ v, cls, lbl }) => {
-        const btn = document.createElement('button');
-        btn.className = 'qs-btn ' + cls;
-        btn.textContent = lbl;
-        btn.onclick = e => { e.stopPropagation(); applyCatQuickSelect(catId, v); };
-        quickBar.appendChild(btn);
-      });
-
-      // Role toggle — only for categories with split items
-      if (hasSplitItems) {
-        const rtWrap = document.createElement('div');
-        rtWrap.className = 'role-toggle';
-        rtWrap.id = 'role-toggle-' + catId;
-        ['give','both','receive'].forEach(r => {
-          const rb = document.createElement('button');
-          rb.className = 'role-toggle-btn' + (role === r ? ' active' : '');
-          rb.textContent = r === 'give' ? 'Giving' : r === 'receive' ? 'Receiving' : 'Both';
-          rb.onclick = e => {
-            e.stopPropagation();
-            applyRoleChange(catId, r);
-            rtWrap.querySelectorAll('.role-toggle-btn').forEach(b => b.classList.toggle('active', b === rb));
-          };
-          rtWrap.appendChild(rb);
-        });
-        quickBar.appendChild(rtWrap);
-      }
-
-      // ── Accordion body ──
-      const accordion = document.createElement('div');
-      accordion.className = 'cat-accordion';
-      const inner = document.createElement('div');
-      inner.className = 'cat-accordion-inner';
-      inner.id = 'cat-rows-' + catId;
-      buildCatRows(cat, inner);
-      accordion.appendChild(inner);
-
-      card.appendChild(hdr);
-      card.appendChild(quickBar);
-      card.appendChild(accordion);
-      container.appendChild(card);
-
-      // Update fill bar on initial render
-      updateCatCardStatus(catId);
-    });
+function buildArchetypeGrid() {
+  const grid = document.getElementById('archetypeGrid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  const pi = surveyIdx;
+  ARCHETYPES.forEach(arch => {
+    const card = document.createElement('div');
+    card.className = 'archetype-card' + (activeArchetypes[pi].has(arch.id) ? ' selected' : '');
+    card.innerHTML =
+      '<div class="archetype-check">✓</div>' +
+      '<div class="archetype-icon">' + arch.icon + '</div>' +
+      '<div class="archetype-title">' + arch.title + '</div>' +
+      '<div class="archetype-sub">' + arch.sub + '</div>';
+    card.onclick = () => {
+      const on = !activeArchetypes[pi].has(arch.id);
+      applyArchetype(arch.id, pi, on);
+      card.classList.toggle('selected', on);
+      persistPrefs();
+    };
+    grid.appendChild(card);
   });
 }
 
 function setKink(id, val) {
   kinkPrefs[surveyIdx][id] = val;
-  const row = document.getElementById('ki_' + id);
-  if (!row) return;
-  row.querySelectorAll('.pb').forEach(btn => {
-    const active = btn.dataset.value === val;
-    const clsMap = { fav:'pb-fav', like:'pb-like', int:'pb-maybe', no:'pb-no' };
-    const cls = clsMap[btn.dataset.value] || '';
-    btn.className = 'pb' + (active ? ' ' + cls : '');
-    btn.setAttribute('aria-pressed', active ? 'true' : 'false');
-  });
-}
-
-
-function surveyNext() {
-  markPrefsSet();
-  if (surveyIdx === 0) {
-    showSurveyScreen(1);
-  } else {
-    showMatches();
-  }
 }
 
 // ═══════════════════════════════════════════
@@ -2985,7 +3355,6 @@ function showMatches() {
     makeSection(likeM, 'var(--sage)', 'Both enjoy',     'var(--sage-bg)');
     makeSection(intM,  'var(--amber)','Worth exploring', 'var(--amber-bg)');
   }
-  document.getElementById('progressFill').style.width = '100%';
   showScreen('screenResults');
 }
 
@@ -3085,6 +3454,23 @@ function buildSceneContext(piA, piB) {
   // Location context
   const locLabel = currentLocation && currentLocation !== 'home' ? currentLocation : 'at home';
   ctx += 'Current location: ' + locLabel + ' — write the scene to suit this environment.\n\n';
+
+  // Infer experience framing from the pair's ratings for this scene's kinks
+  const sceneKinks = currentScene?.kinks || [];
+  if (sceneKinks.length > 0) {
+    const notes = new Set();
+    sceneKinks.forEach(k => {
+      const rA = kinkPrefs[piA][k] ?? 'like';
+      const rB = kinkPrefs[piB][k] ?? 'like';
+      notes.add(inferExpNote(rA, rB));
+    });
+    // Determine dominant note: first-time > comfortable > expert
+    const expLabel =
+      notes.has('first-time') ? 'One or both partners are trying this for the first time — write it as a gentle, exploratory introduction. Include preparation steps. Go slow. Don\'t assume prior knowledge.' :
+      notes.has('comfortable') ? 'Both partners are comfortable with this — write directly and confidently.' :
+      'Both partners are very experienced with this — write with full confidence and variety.';
+    ctx += 'Experience framing: ' + expLabel + '\n\n';
+  }
   ctx += 'WRITING RULES\n=============\n';
   ctx += '- Second-person directive style ("Alex, put your hand on...").\n';
   ctx += '- Use each partner\u2019s exact name throughout.\n';
@@ -3367,8 +3753,7 @@ async function callClaudeStream(systemPrompt, userPrompt, targetEl, onDone) {
           const evt = JSON.parse(raw);
           if (evt.type === 'content_block_delta' && evt.delta?.type === 'text_delta') {
             fullText += evt.delta.text;
-            // Don't update targetEl during stream for scene elements — typewriter handles it
-            if (targetEl && targetEl._liveStream) targetEl.textContent = fullText;
+            if (targetEl) targetEl.textContent = fullText;
             dbStep('streaming','ok',fullText.length+' chars'); psSet('stream','ok', fullText.length+' ch');
           }
         } catch {}
@@ -4603,5 +4988,67 @@ function resetEverything() {
 }
 
 </script>
+
+<!-- ════════ EXIT / CONFIRM LEAVE SHEET ════════ -->
+<div class="exit-sheet-overlay" id="exitSheet" onclick="closeExitSheet(event)">
+  <div class="exit-sheet">
+    <div class="exit-sheet-handle"></div>
+    <div class="exit-sheet-title">Leave this scene?</div>
+    <div class="exit-sheet-sub">Your current scene will still be here if you come back.</div>
+    <div class="exit-sheet-btns">
+      <button class="btn btn-ink" onclick="closeExitSheet();goSetup()">Go to Settings</button>
+      <button class="btn btn-outline" onclick="closeExitSheet()">Stay in scene</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ AMBUSH / TEASE MODAL ════════ -->
+<div class="modal-overlay" id="ambushModal" onclick="closeAmbushModal(event)">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Tease them</div>
+    <div class="modal-sub">A quick move — right now, wherever you are.</div>
+    <!-- Intensity pills -->
+    <div class="int-pills" id="ambushIntensityPills" style="display:flex;gap:.4rem;margin-bottom:1rem;">
+      <div class="int-pill active" data-level="light"    onclick="setAmbushIntensity('light',this)"   style="flex:1;padding:.55rem .4rem;border:1.5px solid var(--border);border-radius:var(--rs);background:var(--bg);text-align:center;cursor:pointer;transition:all .18s;font-family:'DM Sans',sans-serif;">
+        <div class="int-pill-icon" style="font-size:1rem;margin-bottom:.15rem;">🌸</div>
+        <span class="int-pill-name" style="font-size:.72rem;font-weight:600;display:block;color:var(--ink2);">Light</span>
+        <span class="int-pill-hint" style="font-size:.62rem;color:var(--muted);display:block;">Subtle</span>
+      </div>
+      <div class="int-pill" data-level="moderate" onclick="setAmbushIntensity('moderate',this)" style="flex:1;padding:.55rem .4rem;border:1.5px solid var(--border);border-radius:var(--rs);background:var(--bg);text-align:center;cursor:pointer;transition:all .18s;font-family:'DM Sans',sans-serif;">
+        <div class="int-pill-icon" style="font-size:1rem;margin-bottom:.15rem;">🔥</div>
+        <span class="int-pill-name" style="font-size:.72rem;font-weight:600;display:block;color:var(--ink2);">Moderate</span>
+        <span class="int-pill-hint" style="font-size:.62rem;color:var(--muted);display:block;">Suggestive</span>
+      </div>
+      <div class="int-pill" data-level="explicit" onclick="setAmbushIntensity('explicit',this)"  style="flex:1;padding:.55rem .4rem;border:1.5px solid var(--border);border-radius:var(--rs);background:var(--bg);text-align:center;cursor:pointer;transition:all .18s;font-family:'DM Sans',sans-serif;">
+        <div class="int-pill-icon" style="font-size:1rem;margin-bottom:.15rem;">⚡</div>
+        <span class="int-pill-name" style="font-size:.72rem;font-weight:600;display:block;color:var(--ink2);">Explicit</span>
+        <span class="int-pill-hint" style="font-size:.62rem;color:var(--muted);display:block;">Graphic</span>
+      </div>
+    </div>
+    <div id="ambushList"></div>
+    <button class="btn btn-outline" onclick="renderAmbushList()" style="width:100%;margin-top:.75rem;">↻ Shuffle</button>
+  </div>
+</div>
+
+<!-- ════════ ESCALATION PANEL (inside scene card, injected by JS) ════════ -->
+<!-- Note: escalationPanel is dynamically shown inside sceneCard by JS -->
+<div id="escalationPanel" class="escalation-panel" style="display:none;">
+  <div class="escalation-label">Escalation</div>
+  <div class="escalation-title" id="escalationTitle"></div>
+  <div class="escalation-text" id="escalationText"></div>
+</div>
+
+<!-- ════════ SAVED SCENES MODAL ════════ -->
+<div class="modal-overlay" id="savedScenesModal" onclick="closeSavedScenesModal(event)">
+  <div class="modal-sheet" style="max-height:90vh;overflow:hidden;display:flex;flex-direction:column;">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Saved scenes</div>
+    <div class="modal-sub">Scenes you put aside for when the moment is right.</div>
+    <div id="savedScenesList" style="flex:1;overflow-y:auto;padding-bottom:.5rem;"></div>
+    <button class="btn btn-outline" onclick="document.getElementById('savedScenesModal').classList.remove('open')" style="margin-top:.75rem;width:100%;flex-shrink:0;">Close</button>
+  </div>
+</div>
+
 </body>
 </html>
