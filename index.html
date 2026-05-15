@@ -761,6 +761,19 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
   .names-grid,.gender-grid{grid-template-columns:1fr 1fr}
   .play-row{flex-direction:column}
 }
+
+/* LOCATION PILLS */
+.loc-pill{background:var(--bg);border:1.5px solid var(--border);border-radius:50px;
+  padding:.4rem .85rem;font-size:.75rem;font-weight:500;color:var(--muted);
+  cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;white-space:nowrap}
+.loc-pill:hover{border-color:var(--border2);color:var(--ink2)}
+.loc-pill.active{background:var(--sky-bg);border-color:var(--sky);color:var(--sky);font-weight:600}
+
+/* TYPEWRITER cursor blink while writing */
+.scene-stream-writing::after{
+  content:'|';animation:blink .7s step-end infinite;
+  color:var(--muted);margin-left:1px;font-weight:300}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
 </style>
 </head>
 <body>
@@ -948,105 +961,132 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
   </div>
   <div class="home-settings-link">
     <button onclick="goSetup()">⚙ Settings &amp; preferences</button>
+    <button onclick="openSavedScenesModal()" style="margin-left:1rem;">🔖 Saved scenes</button>
   </div>
 </div>
 
 <!-- ════════ SCENE PRE-SCREEN ════════ -->
 <div class="screen" id="screenPreScene">
   <div class="prescreen-hero">
-    <h2>How are you feeling?</h2>
-    <p>Set the mood — Spark writes your scene around it</p>
+    <h2>Set the mood</h2>
+    <p>How are you feeling tonight?</p>
   </div>
 
   <button class="intensity-btn" id="intensityLight" onclick="selectIntensity('light')">
     <span class="intensity-btn-icon">🌸</span>
     <div class="intensity-btn-body">
-      <span class="intensity-btn-title">We're Taking It Slow</span>
-      <span class="intensity-btn-sub">Sensual and intimate — touching, kissing, slow exploration.</span>
+      <span class="intensity-btn-title">Taking It Slow</span>
+      <span class="intensity-btn-sub">Sensual and intimate.</span>
     </div>
   </button>
 
   <button class="intensity-btn" id="intensityMedium" onclick="selectIntensity('medium')">
     <span class="intensity-btn-icon">🔥</span>
     <div class="intensity-btn-body">
-      <span class="intensity-btn-title">We're Feeling It</span>
-      <span class="intensity-btn-sub">Direct and sexual — oral, manual, penetration. Specific and physical.</span>
+      <span class="intensity-btn-title">Feeling It</span>
+      <span class="intensity-btn-sub">Direct, sexual, specific.</span>
     </div>
   </button>
 
   <button class="intensity-btn" id="intensityHard" onclick="selectIntensity('hard')">
     <span class="intensity-btn-icon">⚡</span>
     <div class="intensity-btn-body">
-      <span class="intensity-btn-title">We're <em>Really</em> in the Mood</span>
-      <span class="intensity-btn-sub">Fully explicit, graphic, no holding back.</span>
+      <span class="intensity-btn-title"><em>Really</em> in the Mood</span>
+      <span class="intensity-btn-sub">Fully explicit, nothing held back.</span>
     </div>
   </button>
 
-  <div style="margin-top:1rem;">
-    <div class="focus-input-label">Anything you're really in the mood for?</div>
-    <textarea class="focus-input" id="sceneNoteInput" rows="2"
-      placeholder="e.g. anal, cumplay, use the blindfold, she's in charge…"
-      oninput="currentNote=this.value.trim()"></textarea>
+  <!-- Quick note inputs — compact single-row -->
+  <div style="margin-top:.85rem;display:grid;grid-template-columns:1fr 1fr;gap:.5rem;">
+    <div class="field">
+      <label style="font-size:.65rem;">In the mood for</label>
+      <input id="sceneNoteInput" type="text" placeholder="e.g. anal, blindfold…"
+        oninput="currentNote=this.value.trim()">
+    </div>
+    <div class="field">
+      <label style="font-size:.65rem;">Skip tonight</label>
+      <input id="sceneAvoidInput" type="text" placeholder="e.g. no oral…"
+        oninput="currentAvoid=this.value.trim()">
+    </div>
   </div>
 
-  <div style="margin-top:.75rem;">
-    <div class="focus-input-label">Anything you'd rather skip tonight?</div>
-    <textarea class="focus-input" id="sceneAvoidInput" rows="2"
-      placeholder="e.g. no anal tonight, skip oral, keep it gentle…"
-      oninput="currentAvoid=this.value.trim()"></textarea>
+  <!-- Location -->
+  <div style="margin-top:.6rem;">
+    <div class="focus-input-label" style="margin-bottom:.35rem;">Where are you?</div>
+    <div style="display:flex;gap:.35rem;flex-wrap:wrap;" id="locationPills">
+      <button class="loc-pill active" data-loc="home" onclick="setLocation('home',this)">🏠 Home</button>
+      <button class="loc-pill" data-loc="hotel" onclick="setLocation('hotel',this)">🏨 Hotel</button>
+      <button class="loc-pill" data-loc="car" onclick="setLocation('car',this)">🚗 Car</button>
+      <button class="loc-pill" data-loc="outdoors" onclick="setLocation('outdoors',this)">🌳 Outside</button>
+      <button class="loc-pill" data-loc="custom" onclick="setLocation('custom',this)">✏️ Other</button>
+    </div>
+    <input class="focus-input" id="locationCustomInput" type="text"
+      placeholder="e.g. at a bar, library, friend's house…"
+      style="display:none;margin-top:.4rem;"
+      oninput="currentLocation=this.value.trim()||'custom'">
   </div>
 
-  <!-- Role selection for tonight -->
-  <div class="role-section">
-    <span class="role-section-label">Who's in charge tonight?</span>
-    <div class="role-pair">
-      <div class="role-row">
-        <span class="role-row-name" id="roleLabel0">Partner 1</span>
-        <div class="role-btns">
-          <button class="role-btn" id="role0-dom"     onclick="setRole(0,'dom')">Dom</button>
-          <button class="role-btn role-either" id="role0-either" onclick="setRole(0,'either')">Either</button>
-          <button class="role-btn" id="role0-sub"     onclick="setRole(0,'sub')">Sub</button>
+  <!-- Options — collapsible -->
+  <details style="margin-top:.75rem;">
+    <summary style="font-size:.72rem;font-weight:600;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;cursor:pointer;list-style:none;display:flex;align-items:center;gap:.4rem;padding:.4rem 0;">
+      <span>▸</span> More options
+    </summary>
+    <div style="margin-top:.65rem;display:flex;flex-direction:column;gap:.65rem;">
+
+      <!-- Role selection -->
+      <div class="role-section" style="margin-top:0;">
+        <span class="role-section-label">Who's in charge?</span>
+        <div class="role-pair">
+          <div class="role-row">
+            <span class="role-row-name" id="roleLabel0">Partner 1</span>
+            <div class="role-btns">
+              <button class="role-btn" id="role0-dom"     onclick="setRole(0,'dom')">Dom</button>
+              <button class="role-btn role-either" id="role0-either" onclick="setRole(0,'either')">Either</button>
+              <button class="role-btn" id="role0-sub"     onclick="setRole(0,'sub')">Sub</button>
+            </div>
+          </div>
+          <div class="role-row">
+            <span class="role-row-name" id="roleLabel1">Partner 2</span>
+            <div class="role-btns">
+              <button class="role-btn" id="role1-dom"     onclick="setRole(1,'dom')">Dom</button>
+              <button class="role-btn role-either" id="role1-either" onclick="setRole(1,'either')">Either</button>
+              <button class="role-btn" id="role1-sub"     onclick="setRole(1,'sub')">Sub</button>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="role-row">
-        <span class="role-row-name" id="roleLabel1">Partner 2</span>
-        <div class="role-btns">
-          <button class="role-btn" id="role1-dom"     onclick="setRole(1,'dom')">Dom</button>
-          <button class="role-btn role-either" id="role1-either" onclick="setRole(1,'either')">Either</button>
-          <button class="role-btn" id="role1-sub"     onclick="setRole(1,'sub')">Sub</button>
+
+      <!-- Props -->
+      <div class="props-section" id="propsSection" style="margin-top:0;">
+        <div class="props-section-header">
+          <span class="props-section-title">What you have available</span>
+          <label class="props-none-toggle">
+            <input type="checkbox" id="propsNoneToggle" onchange="onPropsNoneToggle()">
+            Nothing tonight
+          </label>
+        </div>
+        <div id="propsChipArea">
+          <div class="props-chip-grid" id="propsChipGrid"></div>
+          <div class="props-custom-row">
+            <input class="props-custom-input" id="propsCustomInput" type="text"
+              placeholder="Add custom item…"
+              onkeydown="if(event.key==='Enter'){event.preventDefault();addCustomProp();}">
+            <button class="props-custom-btn" onclick="addCustomProp()">Add</button>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
 
-  <!-- What's available tonight -->
-  <div class="props-section" id="propsSection">
-    <div class="props-section-header">
-      <span class="props-section-title">What you have available</span>
-      <label class="props-none-toggle" title="Toggle to use no additional items">
-        <input type="checkbox" id="propsNoneToggle" onchange="onPropsNoneToggle()">
-        Nothing tonight
-      </label>
-    </div>
-    <div id="propsChipArea">
-      <div class="props-chip-grid" id="propsChipGrid"></div>
-      <div class="props-custom-row">
-        <input class="props-custom-input" id="propsCustomInput" type="text"
-          placeholder="Add custom item… e.g. feather, rope, candle"
-          onkeydown="if(event.key==='Enter'){event.preventDefault();addCustomProp();}">
-        <button class="props-custom-btn" onclick="addCustomProp()">Add</button>
+      <!-- Photo moment toggle -->
+      <div style="display:flex;align-items:center;justify-content:space-between;
+        padding:.65rem .9rem;background:var(--card);border:1px solid var(--border);
+        border-radius:var(--rs);cursor:pointer;"
+        onclick="togglePhoto()" id="scenePhotoToggle">
+        <span style="font-size:.8rem;color:var(--ink2);">📸 Suggest a photo moment</span>
+        <div class="scene-photo-check" id="photoCheck" style="font-size:.85rem;color:var(--sage);font-weight:600;"></div>
       </div>
-    </div>
-  </div>
 
-  <!-- Photo moment toggle -->
-  <div style="display:flex;align-items:center;justify-content:space-between;
-    padding:.65rem .9rem;background:var(--card);border:1px solid var(--border);
-    border-radius:var(--rs);margin-bottom:.75rem;cursor:pointer;"
-    onclick="togglePhoto()" id="scenePhotoToggle">
-    <span style="font-size:.8rem;color:var(--ink2);">📸 Suggest a photo moment</span>
-    <div class="scene-photo-check" id="photoCheck" style="font-size:.85rem;color:var(--sage);font-weight:600;"></div>
-  </div>
+    </div>
+  </details>
 
   <div class="prescreen-go">
     <button class="btn btn-ink" id="goSceneBtn" onclick="goPlay()" disabled
@@ -1120,6 +1160,9 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 
 <!-- ════════ PLAY ════════ -->
 <div class="screen" id="screenPlay">
+
+  <!-- Phone holder banner — shown when scene is revealed -->
+  <div id="phoneHolderBanner" style="display:none;background:var(--sky-bg);border:1px solid var(--sky);border-radius:var(--rs);padding:.6rem 1rem;margin-bottom:.75rem;font-size:.78rem;color:var(--sky);font-weight:500;text-align:center;transition:opacity .6s;"></div>
 
   <!-- Pipeline status bar -->
   <div class="pipeline-bar" id="pipelineBar">
@@ -1207,6 +1250,7 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
     <button class="btn-their-turn" id="theirTurnBtn" onclick="generateTheirTurn()" disabled>&#x1F525; Their turn</button>
     <div style="display:flex;justify-content:space-between;align-items:center;padding:0 .1rem;margin-top:.35rem;">
       <button onclick="goPreScene(true)" style="background:none;border:none;font-size:.75rem;color:var(--muted);cursor:pointer;font-family:inherit;padding:.3rem 0;">↺ Change mood first</button>
+      <button id="saveSceneBtn" onclick="saveCurrentScene()" style="background:none;border:none;font-size:.75rem;color:var(--sky);cursor:pointer;font-family:inherit;padding:.3rem 0;">🔖 Save for later</button>
       <button onclick="confirmLeavePlay()" style="background:none;border:none;font-size:.75rem;color:var(--muted);cursor:pointer;font-family:inherit;padding:.3rem 0;">⚙ Settings</button>
     </div>
   </div>
@@ -1240,6 +1284,19 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
       <button class="rate-btn" onclick="rateScene('not')">Not for us</button>
     </div>
   </div>
+
+</div><!-- /container -->
+
+<!-- ════════ SAVED SCENES MODAL ════════ -->
+<div class="modal-overlay" id="savedScenesModal" onclick="closeSavedScenesModal(event)">
+  <div class="modal-sheet" style="max-height:90vh;overflow:hidden;display:flex;flex-direction:column;">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Saved scenes</div>
+    <div class="modal-sub">Scenes you put aside for when the moment is right.</div>
+    <div id="savedScenesList" style="flex:1;overflow-y:auto;padding-bottom:.5rem;"></div>
+    <button class="btn btn-outline" onclick="document.getElementById('savedScenesModal').classList.remove('open')" style="margin-top:.75rem;width:100%;flex-shrink:0;">Close</button>
+  </div>
+</div>
 
 <script>
 // ═══════════════════════════════════════════════════════════════════
@@ -1286,6 +1343,8 @@ const C = {
     DEBUG:      'spark_debug',
     PROPS:      'spark_props_state',
     REMEMBER:   'spark_remember_key',
+    SAVED_SCENES:'spark_saved_scenes',
+    LOCATION:   'spark_location',
   },
   // Critical DOM element IDs — if these are missing the app cannot function
   EL: {
@@ -2031,11 +2090,14 @@ let currentNote    = '';              // free-text focus from pre-screen
 let currentAvoid   = '';              // free-text avoid from pre-screen
 let currentRoles   = ['either','either']; // 'dom'|'sub'|'either' per partner
 let photoSuggest   = false;
+let currentLocation = 'home';        // where the couple are right now
 // Survey filters
 let surveyLevel    = 'beginner';      // 'beginner' | 'intermediate' | 'advanced'
 let activeSurveyCats = new Set();     // which category IDs are shown
 // Phased scene reveal — tracked by DOM element visibility
 let streamController = null;         // AbortController for active stream
+// Typewriter state
+let _twTimer = null;                  // setInterval handle for typewriter effect
 
 function gN(i) {
   const el = document.getElementById('name' + (i + 1));
@@ -2157,6 +2219,14 @@ function goHome() {
 function goPreScene(resetMood) {
   buildPropsChips(); // refresh chip grid with persisted state
   updateRoleLabels(); // sync names to role rows
+  // Restore persisted location
+  const savedLoc = localStorage.getItem(C.LS.LOCATION) || 'home';
+  currentLocation = savedLoc;
+  document.querySelectorAll('#locationPills .loc-pill').forEach(p => {
+    p.classList.toggle('active', p.dataset.loc === savedLoc);
+  });
+  const customInput = document.getElementById('locationCustomInput');
+  if (customInput) customInput.style.display = savedLoc === 'custom' ? 'block' : 'none';
   // If resetMood not requested, keep current intensity
   if (resetMood) {
     currentMood = null;
@@ -2945,6 +3015,16 @@ function clearMood() {
 
 // updateMoodUI removed — handled by selectIntensity/pre-screen
 
+function setLocation(loc, btn) {
+  currentLocation = loc;
+  localStorage.setItem(C.LS.LOCATION, loc);
+  document.querySelectorAll('#locationPills .loc-pill').forEach(p => p.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  const customInput = document.getElementById('locationCustomInput');
+  if (customInput) customInput.style.display = loc === 'custom' ? 'block' : 'none';
+  if (loc !== 'custom') currentLocation = loc;
+}
+
 function togglePhoto() {
   photoSuggest = !photoSuggest;
   const tog   = document.getElementById('scenePhotoToggle');
@@ -3002,6 +3082,9 @@ function buildSceneContext(piA, piB) {
   ctx += 'Partner A (initiator / giver):\n' + pA + '\n\n';
   ctx += 'Partner B (receiver):\n' + pB + '\n\n';
   ctx += 'Props available: ' + propList + '\n\n';
+  // Location context
+  const locLabel = currentLocation && currentLocation !== 'home' ? currentLocation : 'at home';
+  ctx += 'Current location: ' + locLabel + ' — write the scene to suit this environment.\n\n';
   ctx += 'WRITING RULES\n=============\n';
   ctx += '- Second-person directive style ("Alex, put your hand on...").\n';
   ctx += '- Use each partner\u2019s exact name throughout.\n';
@@ -3035,6 +3118,168 @@ function buildSceneContext(piA, piB) {
   }
 
   return ctx;
+}
+
+/** Typewriter effect — reveals text character by character into el using innerHTML.
+ *  Clears any running typewriter first. onDone called when finished. */
+function typewriterReveal(el, htmlContent, onDone) {
+  if (_twTimer) { clearInterval(_twTimer); _twTimer = null; }
+  // Strip to plain text for character-by-character feed, then re-format inline
+  // We reveal the raw text char by char and apply formatNarrative once done,
+  // but for the live effect we progressively slice the text and update innerHTML.
+  const plainText = htmlContent.replace(/<[^>]+>/g, ''); // strip tags for char count
+  const totalChars = plainText.length;
+  if (totalChars === 0) { el.innerHTML = htmlContent; if (onDone) onDone(); return; }
+
+  let revealed = 0;
+  const CHARS_PER_TICK = 2;   // characters revealed per tick
+  const TICK_MS        = 18;  // ms between ticks — ~110 chars/sec
+  el.innerHTML = '';
+  el.classList.add('scene-stream-writing');
+
+  _twTimer = setInterval(() => {
+    revealed = Math.min(revealed + CHARS_PER_TICK, totalChars);
+    // Slice the original formatted HTML to the correct text-length position
+    // by finding char boundaries in the plain text slice
+    el.innerHTML = sliceHtmlToTextLen(htmlContent, revealed);
+    if (revealed >= totalChars) {
+      clearInterval(_twTimer); _twTimer = null;
+      el.classList.remove('scene-stream-writing');
+      el.innerHTML = htmlContent; // ensure final state is clean
+      if (onDone) onDone();
+    }
+  }, TICK_MS);
+}
+
+/** Slice an HTML string so that its plain-text content is at most `len` chars.
+ *  Tags are not counted. Handles partial reveals mid-word cleanly. */
+function sliceHtmlToTextLen(html, len) {
+  let textCount = 0;
+  let result = '';
+  let i = 0;
+  while (i < html.length && textCount < len) {
+    if (html[i] === '<') {
+      // Skip the whole tag
+      const end = html.indexOf('>', i);
+      if (end === -1) break;
+      result += html.slice(i, end + 1);
+      i = end + 1;
+    } else {
+      result += html[i];
+      textCount++;
+      i++;
+    }
+  }
+  return result;
+}
+
+// ─── Saved Scenes ────────────────────────────────────────────────────────────
+function loadSavedScenes() {
+  try { return JSON.parse(localStorage.getItem(C.LS.SAVED_SCENES) || '[]'); } catch { return []; }
+}
+function persistSavedScenes(arr) {
+  localStorage.setItem(C.LS.SAVED_SCENES, JSON.stringify(arr));
+}
+function saveCurrentScene() {
+  if (!currentScene) return;
+  const scenes = loadSavedScenes();
+  const entry = {
+    id: Date.now(),
+    savedAt: new Date().toISOString(),
+    sceneId: currentScene.id,
+    sceneTitle: currentScene.title,
+    mood: currentMood,
+    location: currentLocation,
+    prep:   currentScene._prepText   || '',
+    scene:  currentScene._sceneText  || '',
+    finish: currentScene._finishText || '',
+    note:   currentNote,
+    piA: currentPiA, piB: currentPiB,
+    nameA: currentA, nameB: currentB,
+  };
+  scenes.unshift(entry);
+  if (scenes.length > 20) scenes.splice(20); // cap at 20
+  persistSavedScenes(scenes);
+  // brief feedback
+  const btn = document.getElementById('saveSceneBtn');
+  if (btn) { btn.textContent = '✓ Saved'; btn.disabled = true; setTimeout(() => { btn.textContent = '🔖 Save for later'; btn.disabled = false; }, 2000); }
+}
+
+function deleteSavedScene(id) {
+  const scenes = loadSavedScenes().filter(s => s.id !== id);
+  persistSavedScenes(scenes);
+  renderSavedScenesModal();
+}
+
+function openSavedScenesModal() {
+  renderSavedScenesModal();
+  document.getElementById('savedScenesModal')?.classList.add('open');
+}
+function closeSavedScenesModal(e) {
+  if (!e || e.target === document.getElementById('savedScenesModal'))
+    document.getElementById('savedScenesModal')?.classList.remove('open');
+}
+
+function renderSavedScenesModal() {
+  const list = document.getElementById('savedScenesList');
+  if (!list) return;
+  const scenes = loadSavedScenes();
+  if (scenes.length === 0) {
+    list.innerHTML = '<div style="text-align:center;color:var(--muted);font-size:.82rem;padding:1.5rem 0;">No saved scenes yet.<br>Tap <strong>Save for later</strong> during a scene.</div>';
+    return;
+  }
+  list.innerHTML = '';
+  scenes.forEach(s => {
+    const card = document.createElement('div');
+    card.style.cssText = 'background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);padding:.9rem 1rem;margin-bottom:.5rem;';
+    const when = new Date(s.savedAt).toLocaleDateString(undefined,{month:'short',day:'numeric'});
+    const locBadge = s.location && s.location !== 'home'
+      ? ' <span style="font-size:.65rem;background:var(--sky-bg);color:var(--sky);border-radius:50px;padding:.1rem .45rem;margin-left:.3rem;">' + esc(s.location) + '</span>' : '';
+    card.innerHTML =
+      '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:.5rem;">' +
+        '<div>' +
+          '<div style="font-size:.82rem;font-weight:600;color:var(--ink);">' + esc(s.sceneTitle || 'Scene') + locBadge + '</div>' +
+          '<div style="font-size:.7rem;color:var(--muted);margin-top:.15rem;">' + esc(s.nameA) + ' &amp; ' + esc(s.nameB) + ' · ' + when + '</div>' +
+        '</div>' +
+        '<button onclick="deleteSavedScene(' + s.id + ')" style="background:none;border:none;font-size:.8rem;color:var(--muted);cursor:pointer;padding:.2rem .35rem;flex-shrink:0;" title="Delete">✕</button>' +
+      '</div>' +
+      '<div style="font-family:\'Fraunces\',serif;font-size:.85rem;line-height:1.65;color:var(--ink2);margin-top:.5rem;">' + (s.prep ? esc(s.prep).slice(0,120) + '…' : '') + '</div>' +
+      '<button onclick="playSavedScene(' + s.id + ')" style="margin-top:.65rem;width:100%;padding:.55rem;background:var(--ink);border:none;border-radius:var(--rs);color:#fff;font-family:\'DM Sans\',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;">Play this scene →</button>';
+    list.appendChild(card);
+  });
+}
+
+function playSavedScene(id) {
+  const scenes = loadSavedScenes();
+  const s = scenes.find(x => x.id === id);
+  if (!s) return;
+  document.getElementById('savedScenesModal')?.classList.remove('open');
+  // Restore minimal state
+  currentPiA = s.piA; currentPiB = s.piB;
+  currentA = s.nameA; currentB = s.nameB;
+  currentMood = s.mood;
+  currentLocation = s.location || 'home';
+  // Synthesise a minimal currentScene
+  currentScene = { id: s.sceneId, title: s.sceneTitle, kinks: [], cat: '',
+    _prepText: s.prep, _sceneText: s.scene, _finishText: s.finish };
+  showScreen('screenPlay');
+  document.body.classList.add('header-compact');
+  // Reset and display stages
+  ['stagePrepWrap','stageSceneWrap','stageFinishWrap'].forEach(id2 => {
+    const el = document.getElementById(id2); if (el) el.style.display = 'none';
+  });
+  const genHint = document.getElementById('sceneGeneratingHint');
+  if (genHint) genHint.style.display = 'none';
+  const prepEl  = document.getElementById('stagePrepText');
+  const prepWrap = document.getElementById('stagePrepWrap');
+  const revealBtn = document.getElementById('revealSceneBtn');
+  if (prepEl) prepEl.innerHTML = formatNarrative(s.prep || s.scene || '');
+  if (prepWrap) prepWrap.style.display = 'block';
+  if (revealBtn) { revealBtn.disabled = false; revealBtn.style.display = 'block'; }
+  hideTheirTurnBtn();
+  const timerArea = document.getElementById('timerArea');
+  if (timerArea) timerArea.style.display = 'block';
+  resetTimer(300);
 }
 
 /** Stream Claude response into targetEl. Resolves when done. */
@@ -3122,7 +3367,8 @@ async function callClaudeStream(systemPrompt, userPrompt, targetEl, onDone) {
           const evt = JSON.parse(raw);
           if (evt.type === 'content_block_delta' && evt.delta?.type === 'text_delta') {
             fullText += evt.delta.text;
-            if (targetEl) targetEl.textContent = fullText;
+            // Don't update targetEl during stream for scene elements — typewriter handles it
+            if (targetEl && targetEl._liveStream) targetEl.textContent = fullText;
             dbStep('streaming','ok',fullText.length+' chars'); psSet('stream','ok', fullText.length+' ch');
           }
         } catch {}
@@ -3227,19 +3473,26 @@ function revealScene() {
   const sceneTitle = document.getElementById('stageSceneTitle');
   const sceneEl    = document.getElementById('stageSceneText');
   const revealBtn  = document.getElementById('revealSceneBtn');
-  const photoToggle= document.getElementById('scenePhotoToggle');
   if (!sceneWrap || !sceneEl) return;
 
   const sceneText = currentScene?._sceneText || '';
   if (sceneTitle) sceneTitle.textContent = currentScene?.title || '';
-  sceneEl.innerHTML = formatNarrative(sceneText);
+  const formattedHtml = formatNarrative(sceneText);
 
   sceneWrap.style.display = 'block';
-  if (revealBtn) revealBtn.style.display = 'none'; // hide after tap
+  if (revealBtn) revealBtn.style.display = 'none';
   const keepBtn = document.getElementById('keepGoingBtn');
-  if (keepBtn) { keepBtn.style.display = 'block'; }
+  if (keepBtn) { keepBtn.style.display = 'none'; } // hide until typewriter done
 
   setTimeout(() => sceneWrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+
+  typewriterReveal(sceneEl, formattedHtml, () => {
+    // Show "Time to climax" button only after text fully revealed
+    if (keepBtn) keepBtn.style.display = 'block';
+  });
+
+  // Show who should hold the phone
+  showPhoneHolder();
   SparkLog.info('scene:revealed');
 }
 
@@ -3251,20 +3504,24 @@ function revealFinisher() {
   if (!finishWrap || !finishEl) return;
 
   const finishText = currentScene?._finishText || currentScene?._lastNarrative || '';
-  finishEl.innerHTML = finishText ? formatNarrative(finishText) : '<em style="color:var(--muted);font-size:.82rem;">Finish however feels right.</em>';
+  const formattedHtml = finishText
+    ? formatNarrative(finishText)
+    : '<em style="color:var(--muted);font-size:.82rem;">Finish however feels right.</em>';
 
   finishWrap.style.display = 'block';
-  if (keepBtn) keepBtn.style.display = 'none'; // hide after tap
-
-  // Now unlock Their Turn
-  showTheirTurnBtn();
+  if (keepBtn) keepBtn.style.display = 'none';
 
   setTimeout(() => finishWrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
-  // Show rating card after a short delay — user has now seen the full scene
-  setTimeout(() => {
-    const rateCard = document.getElementById('rateCard');
-    if (rateCard) rateCard.classList.add('visible');
-  }, 1200);
+
+  typewriterReveal(finishEl, formattedHtml, () => {
+    // Unlock Their Turn only after finisher text is fully revealed
+    showTheirTurnBtn();
+    // Show rating card
+    setTimeout(() => {
+      const rateCard = document.getElementById('rateCard');
+      if (rateCard) rateCard.classList.add('visible');
+    }, 800);
+  });
 
   SparkLog.info('scene:finisher-revealed');
 }
@@ -3342,6 +3599,18 @@ function hideSceneError() {
 }
 
 function generateScene() { generateFullScene(); }
+
+/** Determine who should hold the phone based on who is the receiver in the scene */
+function showPhoneHolder() {
+  const banner = document.getElementById('phoneHolderBanner');
+  if (!banner) return;
+  // The person reading the scene is typically the giver/initiator (piA)
+  // The receiver (piB) should put their phone down and be present
+  const reader = currentA || gN(currentPiA);
+  banner.textContent = '📱 ' + reader + ' — hold the phone and read aloud.';
+  banner.style.display = 'block';
+  setTimeout(() => { banner.style.opacity = '0'; setTimeout(() => { banner.style.display = 'none'; banner.style.opacity = '1'; }, 1200); }, 5000);
+}
 
 function generateFullScene() {
   if (isGenerating) return;
@@ -3488,15 +3757,22 @@ function _generateFullSceneInner() {
     ? 'This is a direct sexual scene. Be specific and physical. Name body parts. Describe the act clearly without being gratuitously graphic.'
     : 'This is fully explicit and hardcore. Be completely graphic. Name every body part and act directly. Nothing held back.';
 
+  // Check if scene involves acts requiring physical preparation
+  const analKinks = ['b_sex','b_toy','b_dp','b_fist'];
+  const needsAnalPrep = currentScene.kinks && currentScene.kinks.some(k => analKinks.some(ak => k.includes(ak)));
+  const prepNote = needsAnalPrep
+    ? '\n\n[PREP] IMPORTANT: This scene involves anal. The PREP section MUST include preparation steps: have ' + currentB + ' communicate readiness, then ' + currentA + ' should use fingers with lubricant to gently prepare ' + currentB + ' before anything else. Make this feel sensual and caring, not clinical.'
+    : '';
+
   const system =
     'You write a single intimate act for a couples app called Spark. The couple will do ONE thing together for 5 minutes — not a sequence of acts.' +
     '\n\nStructure your response using EXACTLY these three section markers, each on its own line with nothing else on that line:' +
     '\nPREP\nSCENE\nFINISH' +
-    '\n\n[PREP] rules: ONE sentence. The single position or prop needed. No sexual acts yet.' +
+    '\n\n[PREP] rules: ONE sentence. The single position or prop needed. No sexual acts yet.' + prepNote +
     '\n\n[SCENE] rules: EXACTLY 2 sentences. ONE physical act only — what ' + currentA + ' does to ' + currentB + ' for the full five minutes. ' + explicitRule + ' No scene progression. No "then". Just the act, described directly.' +
-    '\n\n[FINISH] rules: ONE sentence. ' + (isLight
-      ? 'How the act ends naturally.'
-      : currentA + ' actively stimulates ' + currentB + ' to orgasm using hand, mouth, or body movement — continuous motion until ' + currentB + ' finishes. Must describe the specific physical action being performed, not a static position. ' + currentB + ' orgasms during this.'
+    '\n\n[FINISH] rules: TWO sentences. ' + (isLight
+      ? 'Sentence 1: how the act ends naturally. Sentence 2: brief tender aftercare.'
+      : 'MANDATORY SEQUENCE — do not deviate: Sentence 1: ' + currentA + ' actively stimulates ' + currentB + ' to orgasm — name the exact motion (stroking, thrusting, licking, rubbing). Sentence 2: ' + currentB + ' orgasms explicitly. After ' + currentB + ' finishes, do NOT add more — stop there. The scene ends with ' + currentB + '\'s orgasm.'
     ) + ' No new scene.' +
     '\n\n' + ctx;
 
@@ -3683,17 +3959,21 @@ function generateTheirTurn() {
   const system =
     'You write a very short intimate scene finisher for a couples app called Spark. ' +
     'Exactly 2 sentences. ' + explicit + ' ' +
-    'CRITICAL RULES: The act must involve continuous physical motion — stroking, thrusting, licking, rubbing — that directly causes orgasm through stimulation. ' +
-    'Do NOT write a static position (e.g. "hold in mouth", "stay still", "remain inside"). ' +
-    'Write what the person DOES with their hand, mouth, or body that produces the orgasm. ' +
+    'CRITICAL RULES: ' +
+    'This is "their turn" — ' + receiver + ' now gets to climax. ' +
+    giver + ' performs a specific continuous physical act (stroking, thrusting, licking, rubbing) on ' + receiver + '. ' +
+    'Sentence 1: what ' + giver + ' does with their hand/mouth/body — the exact motion — and how ' + receiver + ' responds/sounds. ' +
+    'Sentence 2: ' + receiver + ' orgasms. Be explicit about the orgasm. ' +
+    'Do NOT write a static position. Do NOT write about ' + giver + ' finishing — only ' + receiver + '. ' +
     'No preamble, no section markers. Output only the scene text.\n\n' + ctx;
 
   const prompt =
     'The couple just did: "' + prev.slice(0, 200) + '"\n\n' +
-    giver + ' now brings ' + receiver + ' to orgasm through active stimulation. ' +
-    'Sentence 1: what ' + giver + ' does (the specific motion — stroking, licking, thrusting etc) and how ' + receiver + ' responds. ' +
-    'Sentence 2: ' + receiver + ' orgasms. ' +
-    'Start sentence 1 with ' + giver + '\u2019s name. The act must require physical movement to work, not just position.';
+    'Now it is ' + receiver + '\'s turn to receive pleasure and orgasm.\n' +
+    giver + ' brings ' + receiver + ' to orgasm using a specific physical motion. ' +
+    'Sentence 1: ' + giver + ' [specific continuous motion — stroking/licking/thrusting] ' + receiver + '\'s [body part] and ' + receiver + ' [responds — moans/arches/grips/etc]. ' +
+    'Sentence 2: ' + receiver + ' orgasms. Describe it explicitly.\n' +
+    'Start sentence 1 with ' + giver + '\'s name. Output 2 sentences only.';
 
   callClaudeStream(system, prompt, body, function(text) {
     isGenerating = false;
