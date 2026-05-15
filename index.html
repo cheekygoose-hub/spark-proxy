@@ -867,9 +867,13 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
   <div class="btn-stack" style="margin-top:1rem;">
     <button class="btn btn-ink" id="setupContinueBtn" onclick="setupContinue()">Continue</button>
   </div>
+  <div style="text-align:center;margin-top:1.5rem;">
+    <button class="btn-ghost" onclick="resetEverything()"
+      style="font-size:.72rem;color:var(--muted);opacity:.6;">
+      ↺ Reset everything
+    </button>
+  </div>
 </div>
-
-<!-- ════════ HOME ════════ -->
 <div class="screen" id="screenHome">
   <div class="return-banner" id="returnBannerHome">
     <span>⏱ A scene is in progress</span>
@@ -1117,6 +1121,12 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
     <div class="debug-text" id="debugText"></div>
   </div>
 
+  <!-- Debug event log — last 20 SparkLog entries -->
+  <div class="debug-panel" id="debugEventPanel" style="margin-top:.5rem;">
+    <div class="debug-panel-label">Event log</div>
+    <div class="debug-text" id="debugEventLog" style="color:#8ec6e6;font-size:.63rem;"></div>
+  </div>
+
 
   <!-- Debug checklist — pipeline status -->
   <div class="debug-checklist" id="debugChecklist">
@@ -1129,10 +1139,162 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
     <div class="rate-card-title">How was that?</div>
     <div c
 <script>
+// ═══════════════════════════════════════════════════════════════════
+//  ██████████████████████████████████████████████████████████████
+//  EDIT FRAMEWORK — READ BEFORE MODIFYING THIS FILE
+//  ██████████████████████████████████████████████████████████████
+//
+//  RULES FOR ALL FUTURE EDITS:
+//  1. ALWAYS use view() to read target lines BEFORE editing.
+//  2. ALWAYS use str_replace with the SMALLEST unique anchor.
+//  3. ALWAYS run `node --check` on extracted JS after EVERY edit.
+//  4. ALWAYS verify: single <script> tag, file ends with </html>.
+//  5. NEVER use Python str.replace() on blocks > 20 lines.
+//  6. NEVER nest template literals in string edits.
+//  7. ALL new state variables go in the STATE block (~line 1684).
+//  8. ALL new constants go in the CONSTANTS block below.
+//  9. ALL new HTML element IDs go in C.EL (CONSTANTS).
+//  10. Commit to git after every successful feature.
+//
+//  ABORT CRITERIA (stop editing, fix syntax first):
+//  - node --check fails → revert and fix before proceeding
+//  - <script> count != 1 → critical corruption, revert immediately
+//  - File does not end with </html> → critical corruption, revert
+//
+// ═══════════════════════════════════════════════════════════════════
+
+// ═══════════════════════════════════════════
+//  CONSTANTS — single source of truth
+// ═══════════════════════════════════════════
+const C = {
+  // API
+  MODEL:        'claude-sonnet-4-6',
+  MAX_TOKENS:   1000,
+  PROXY_PATH:   '/v1/messages',
+  // localStorage keys
+  LS: {
+    NAME1:      'spark_name1',
+    NAME2:      'spark_name2',
+    API_KEY:    'spark_api_key',
+    PROXY_URL:  'spark_proxy_url',
+    PREFS_SET:  'spark_prefs_set',
+    SCENE_CNT:  'spark_scene_count',
+    RATINGS:    'spark_ratings',
+    DEBUG:      'spark_debug',
+    PROPS:      'spark_props_state',
+    REMEMBER:   'spark_remember_key',
+  },
+  // Critical DOM element IDs — if these are missing the app cannot function
+  EL: {
+    STREAM_TEXT:   'sceneStreamText',
+    SCENE_CARD:    'sceneCard',
+    TIMER_AREA:    'timerArea',
+    NEW_SCENE_BTN: 'newSceneBtn',
+    ERROR_BANNER:  'sceneErrorBanner',
+    ERROR_TEXT:    'sceneErrorText',
+    PIPELINE_BAR:  'pipelineBar',
+    GO_SCENE_BTN:  'goSceneBtn',
+  },
+  // Refusal retry limit
+  MAX_REFUSAL_RETRIES: 4,
+  // Generation timeout ms
+  STREAM_TIMEOUT_MS: 45000,
+};
+Object.freeze(C); Object.freeze(C.LS); Object.freeze(C.EL);
+
 // ─── Debug mode (declared early — used in restoreSettings) ──────
 let debugMode = typeof localStorage !== 'undefined'
-  ? localStorage.getItem('spark_debug') === '1'
+  ? localStorage.getItem(C.LS.DEBUG) === '1'
   : false;
+
+// ═══════════════════════════════════════════
+//  STRUCTURED LOGGER
+// ═══════════════════════════════════════════
+const SparkLog = {
+  _ring: [],   // last 20 events for debug panel
+  _push(level, msg, data) {
+    const entry = { t: Date.now(), level, msg, data };
+    this._ring.push(entry);
+    if (this._ring.length > 20) this._ring.shift();
+    if (debugMode) {
+      const style = level === 'error' ? 'color:#ff8b8b'
+                  : level === 'warn'  ? 'color:#ffd97d'
+                  : 'color:#a8e6cf';
+      console.log('%c[Spark] ' + msg, style, data ?? '');
+    }
+  },
+  info:  (msg, data) => SparkLog._push('info',  msg, data),
+  warn:  (msg, data) => SparkLog._push('warn',  msg, data),
+  error: (msg, data) => SparkLog._push('error', msg, data),
+  dump() { return SparkLog._ring.map(e =>
+    new Date(e.t).toISOString().slice(11,19) + ' [' + e.level.toUpperCase() + '] ' + e.msg
+    + (e.data ? ' — ' + JSON.stringify(e.data).slice(0,80) : '')
+  ).join('\n'); },
+};
+
+// ═══════════════════════════════════════════
+//  SAFE ELEMENT GETTER
+// ═══════════════════════════════════════════
+/**
+ * $id(id) — safe getElementById.
+ * Returns the element, or null with a logged warning.
+ * Use for optional elements. For required elements call $req(id).
+ */
+function $id(id) {
+  const el = document.getElementById(id);
+  if (!el) SparkLog.warn('Missing optional element #' + id);
+  return el;
+}
+
+/**
+ * $req(id) — required getElementById.
+ * Throws a visible error if missing. Use for elements the app
+ * cannot function without.
+ */
+function $req(id) {
+  const el = document.getElementById(id);
+  if (!el) {
+    const msg = 'Required element #' + id + ' missing from DOM';
+    SparkLog.error(msg);
+    showCriticalError(msg, null);
+    throw new Error(msg);
+  }
+  return el;
+}
+
+// ═══════════════════════════════════════════
+//  GLOBAL ERROR HANDLERS
+//  Catches all uncaught JS errors and surfaces
+//  them in the UI so no failure is silent.
+// ═══════════════════════════════════════════
+function showCriticalError(message, stack) {
+  SparkLog.error('Critical: ' + message, stack);
+  // Show error in stream area if visible, otherwise console only
+  const streamEl = document.getElementById(C.EL.STREAM_TEXT);
+  const cardEl   = document.getElementById(C.EL.SCENE_CARD);
+  if (streamEl && cardEl) {
+    cardEl.style.display = 'block';
+    if (!streamEl.textContent.includes('Error:')) { // don't overwrite existing
+      streamEl.textContent = 'App error: ' + message
+        + (stack ? '\n\n' + stack.slice(0, 400) : '')
+        + '\n\nTap "New scene" to retry or reload the page.';
+    }
+  }
+  // Always reset generating state so the UI isn't permanently stuck
+  if (typeof isGenerating !== 'undefined') isGenerating = false;
+  const btn = document.getElementById(C.EL.NEW_SCENE_BTN);
+  if (btn) { btn.disabled = false; btn.textContent = 'New scene'; }
+}
+
+window.addEventListener('error', e => {
+  if (e.error && e.error._sparkHandled) return;
+  showCriticalError(e.message || 'Unknown error', e.error?.stack);
+});
+
+window.addEventListener('unhandledrejection', e => {
+  const msg = e.reason?.message || String(e.reason) || 'Unhandled promise rejection';
+  showCriticalError(msg, e.reason?.stack);
+});
 
 // ═══════════════════════════════════════════
 //  AI PANEL TOGGLE
@@ -1564,28 +1726,86 @@ const VANILLA_SCENE_IDS = new Set([
 ]);
 
 function prefsAreSet() {
-  // True if either partner has explicitly rated any item (not just defaults)
-  return localStorage.getItem('spark_prefs_set') === '1';
+  return localStorage.getItem(C.LS.PREFS_SET) === '1';
 }
 
 function markPrefsSet() {
-  localStorage.setItem('spark_prefs_set', '1');
+  localStorage.setItem(C.LS.PREFS_SET, '1');
+}
+
+// ═══════════════════════════════════════════
+//  SELF-TEST — runs on load, catches data bugs
+// ═══════════════════════════════════════════
+function runSelfTest() {
+  const results = [];
+  const fail = (name, detail) => results.push({ name, ok: false, detail });
+  const pass = (name)         => results.push({ name, ok: true  });
+
+  // 1. SCENES kinks all exist in ALL_KINK_ITEMS
+  const kinkIds    = new Set(ALL_KINK_ITEMS.map(i => i.id));
+  const badKinks   = SCENES.flatMap(s =>
+    (s.kinks||[]).filter(k => !kinkIds.has(k)).map(k => s.id+':'+k));
+  badKinks.length  ? fail('SCENES kink refs', badKinks.slice(0,3).join(','))
+                   : pass('SCENES kink refs');
+
+  // 2. VANILLA_SCENE_IDS all exist in SCENES
+  const sceneIds   = new Set(SCENES.map(s => s.id));
+  const badVanilla = [...VANILLA_SCENE_IDS].filter(id => !sceneIds.has(id));
+  badVanilla.length ? fail('VANILLA_SCENE_IDS', badVanilla.join(','))
+                    : pass('VANILLA_SCENE_IDS');
+
+  // 3. SCENES — no duplicate IDs
+  const dupeIds = SCENES.map(s=>s.id).filter((id,i,a)=>a.indexOf(id)!==i);
+  dupeIds.length ? fail('SCENES duplicate IDs', dupeIds.join(','))
+                 : pass('SCENES no dupes');
+
+  // 4. Split kink items have _give/_receive expansions
+  const splitMissing = KINK_CATS.flatMap(cat =>
+    cat.items.filter(i=>i.split).flatMap(i => [
+      ...(kinkIds.has(i.id+'_give')    ? [] : [i.id+'_give']),
+      ...(kinkIds.has(i.id+'_receive') ? [] : [i.id+'_receive']),
+    ]));
+  splitMissing.length ? fail('Split kink expansion', splitMissing.slice(0,3).join(','))
+                      : pass('Split kink expansion');
+
+  // 5. SURVEY_PATHWAYS covers every non-advanced KINK_CAT
+  const pwCats    = new Set(SURVEY_PATHWAYS.flatMap(p => p.cats));
+  const uncovered = KINK_CATS.filter(c => !c.advanced && !pwCats.has(c.id)).map(c=>c.id);
+  uncovered.length ? fail('Survey pathway coverage', uncovered.join(','))
+                   : pass('Survey pathway coverage');
+
+  const failures = results.filter(r => !r.ok);
+  if (failures.length) {
+    failures.forEach(r => SparkLog.error('Self-test FAIL: '+r.name, r.detail));
+    if (debugMode) {
+      const panel = document.getElementById('debugPanel');
+      const dbg   = document.getElementById('debugText');
+      if (panel && dbg) {
+        panel.classList.add('visible');
+        dbg.textContent = 'SELF-TEST FAILURES:\n'
+          + failures.map(r => '  ✗ '+r.name+': '+r.detail).join('\n');
+      }
+    }
+  } else {
+    SparkLog.info('Self-test passed', results.length + ' checks');
+  }
+  return failures;
 }
 
 // Scene generation counter for rating prompt
-let sceneCount = parseInt(localStorage.getItem('spark_scene_count') || '0');
+let sceneCount = parseInt(localStorage.getItem(C.LS.SCENE_CNT) || '0');
 
 function incrementSceneCount() {
   sceneCount++;
-  localStorage.setItem('spark_scene_count', String(sceneCount));
+  localStorage.setItem(C.LS.SCENE_CNT, String(sceneCount));
 }
 
 function rateScene(rating) {
   // Store rating against current scene
   if (currentScene) {
-    const ratings = JSON.parse(localStorage.getItem('spark_ratings') || '{}');
+    const ratings = JSON.parse(localStorage.getItem(C.LS.RATINGS) || '{}');
     ratings[currentScene.id] = rating;
-    localStorage.setItem('spark_ratings', JSON.stringify(ratings));
+    localStorage.setItem(C.LS.RATINGS, JSON.stringify(ratings));
     // If they rated 'not', flag the scene's kinks as lower preference
     if (rating === 'not' && currentScene.kinks) {
       currentScene.kinks.forEach(k => {
@@ -1682,6 +1902,9 @@ let notifsEnabled  = false,   notifInterval  = null;
 let timerInterval  = null,    timerRunning   = false, totalSecs = 300, remainSecs = 300;
 let escalationRevealed = false;
 let isGenerating   = false;
+let previousScene  = null;   // last scene — for variety enforcement
+let previousKinks  = [];     // kinks from last scene — avoid repeating
+let refusalRetries = 0;      // auto-retry count on AI refusal
 let currentMood    = null;            // 'light' | 'medium' | 'hard' | null — set on pre-screen
 let currentNote    = '';              // free-text focus from pre-screen
 let currentAvoid   = '';              // free-text avoid from pre-screen
@@ -1784,8 +2007,8 @@ function setupContinue() {
   }
 
   // Save names
-  localStorage.setItem('spark_name1', n1);
-  localStorage.setItem('spark_name2', n2);
+  localStorage.setItem(C.LS.NAME1, n1);
+  localStorage.setItem(C.LS.NAME2, n2);
 
   if (willingAll()) {
     // Open to anything — set full defaults and go home
@@ -1865,7 +2088,7 @@ function getApiKey() {
   if (window._sparkProxyAuthHandled) return '__proxy__';
   const field = document.getElementById('apiKey');
   if (field?.value.trim()) return field.value.trim();
-  return sessionStorage.getItem('spark_api_key') || localStorage.getItem('spark_api_key') || '';
+  return sessionStorage.getItem(C.LS.API_KEY) || localStorage.getItem(C.LS.API_KEY) || '';
 }
 
 function onApiKeyChange() {
@@ -1875,10 +2098,10 @@ function onApiKeyChange() {
 
   if (key.startsWith('sk-ant-') && key.length > 20) {
     if (remember?.checked) {
-      localStorage.setItem('spark_api_key', key);
+      localStorage.setItem(C.LS.API_KEY, key);
     } else {
-      sessionStorage.setItem('spark_api_key', key);
-      localStorage.removeItem('spark_api_key');
+      sessionStorage.setItem(C.LS.API_KEY, key);
+      localStorage.removeItem(C.LS.API_KEY);
     }
     status.textContent = '✓ Key saved' + (remember?.checked ? ' on this device.' : ' for this session.');
     status.style.color = 'var(--sage)';
@@ -1888,16 +2111,16 @@ function onApiKeyChange() {
     status.textContent = 'Key looks incomplete — should start with sk-ant-…';
     status.style.color = 'var(--amber)';
   } else {
-    sessionStorage.removeItem('spark_api_key');
+    sessionStorage.removeItem(C.LS.API_KEY);
     status.textContent = 'Keys are only sent to api.anthropic.com.';
     status.style.color = 'var(--muted)';
   }
 }
 
 function clearStoredKey() {
-  sessionStorage.removeItem('spark_api_key');
-  localStorage.removeItem('spark_api_key');
-  localStorage.removeItem('spark_proxy_url');
+  sessionStorage.removeItem(C.LS.API_KEY);
+  localStorage.removeItem(C.LS.API_KEY);
+  localStorage.removeItem(C.LS.PROXY_URL);
   window._sparkProxyUrl = null;
   window._sparkProxyAuthHandled = false;
   const field      = document.getElementById('apiKey');
@@ -1913,11 +2136,11 @@ document.getElementById('rememberKey')?.addEventListener('change', () => {
   const key = document.getElementById('apiKey').value.trim();
   if (!key) return;
   if (document.getElementById('rememberKey').checked) {
-    localStorage.setItem('spark_api_key', key);
-    sessionStorage.removeItem('spark_api_key');
+    localStorage.setItem(C.LS.API_KEY, key);
+    sessionStorage.removeItem(C.LS.API_KEY);
   } else {
-    sessionStorage.setItem('spark_api_key', key);
-    localStorage.removeItem('spark_api_key');
+    sessionStorage.setItem(C.LS.API_KEY, key);
+    localStorage.removeItem(C.LS.API_KEY);
   }
 });
 
@@ -1929,8 +2152,8 @@ document.getElementById('rememberKey')?.addEventListener('change', () => {
   const dbgStatus = document.getElementById('debugStatus');
   if (dbgStatus) { dbgStatus.textContent = debugMode ? 'On' : 'Off'; dbgStatus.className = 'toggle-status' + (debugMode ? ' on' : ''); }
   // API key
-  const saved   = sessionStorage.getItem('spark_api_key') || localStorage.getItem('spark_api_key');
-  const isLocal = !!localStorage.getItem('spark_api_key');
+  const saved   = sessionStorage.getItem(C.LS.API_KEY) || localStorage.getItem(C.LS.API_KEY);
+  const isLocal = !!localStorage.getItem(C.LS.API_KEY);
   if (saved) {
     const field = document.getElementById('apiKey');
     if (field) field.value = saved;
@@ -1946,11 +2169,11 @@ document.getElementById('rememberKey')?.addEventListener('change', () => {
   // Proxy URL — if served from Railway (/v1/messages is on same domain), use relative URL.
   // Otherwise restore from localStorage.
   // Clear stale /api/proxy value left over from old Netlify attempts
-  const _raw = localStorage.getItem('spark_proxy_url') || '';
+  const _raw = localStorage.getItem(C.LS.PROXY_URL) || '';
   if (_raw === '/api/proxy' || _raw === '/api/proxy/v1/messages') {
-    localStorage.removeItem('spark_proxy_url');
+    localStorage.removeItem(C.LS.PROXY_URL);
   }
-  const savedProxy = localStorage.getItem('spark_proxy_url') || '';
+  const savedProxy = localStorage.getItem(C.LS.PROXY_URL) || '';
   const proxyField = document.getElementById('proxyUrl');
   if (savedProxy) {
     if (proxyField) proxyField.value = savedProxy;
@@ -2736,8 +2959,8 @@ async function callClaudeStream(systemPrompt, userPrompt, targetEl, onDone) {
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 1000,
+        model: C.MODEL,
+        max_tokens: C.MAX_TOKENS,
         stream: true,
         system: systemPrompt,
         messages: [{ role: 'user', content: userPrompt }],
@@ -3018,6 +3241,7 @@ function _generateFullSceneInner() {
   if (timerSub2)  timerSub2.textContent  = 'Minimum 5 minutes';
 
   isGenerating = true;
+  SparkLog.info('scene:start', { id: currentScene?.id, mood: currentMood, roles: currentRoles });
 
   // Build the one act the couple will do for the full five minutes
   const isLight  = currentMood === 'light';
@@ -3306,10 +3530,17 @@ function addTime(m) { totalSecs += m * 60; remainSecs += m * 60; updateTimerDisp
 
 function onDebugToggle() {
   debugMode = document.getElementById('debugMode')?.checked || false;
-  localStorage.setItem('spark_debug', debugMode ? '1' : '0');
+  localStorage.setItem(C.LS.DEBUG, debugMode ? '1' : '0');
   renderDebugChecklist();
-  const status = document.getElementById('debugStatus');
-  if (status) { status.textContent = debugMode ? 'On' : 'Off'; status.className = 'toggle-status' + (debugMode ? ' on' : ''); }
+  const status   = document.getElementById('debugStatus');
+  const evtPanel = document.getElementById('debugEventPanel');
+  if (status)   { status.textContent = debugMode ? 'On' : 'Off'; status.className = 'toggle-status' + (debugMode ? ' on' : ''); }
+  if (evtPanel) { evtPanel.classList.toggle('visible', debugMode); }
+  if (debugMode) {
+    const logEl = document.getElementById('debugEventLog');
+    if (logEl) logEl.textContent = SparkLog.dump();
+    SparkLog.info('Debug mode enabled');
+  }
 }
 
 function showDebugPrompt(system, prompt) {
@@ -3342,7 +3573,7 @@ const PROPS_BASE = [
 // Load persisted props state
 function loadPropsState() {
   try {
-    const saved = localStorage.getItem('spark_props_state');
+    const saved = localStorage.getItem(C.LS.PROPS);
     if (saved) {
       const state = JSON.parse(saved);
       props = new Set(state.active || ['vibrator','blindfold','massage_oil']);
@@ -3352,7 +3583,7 @@ function loadPropsState() {
 }
 
 function savePropsState() {
-  localStorage.setItem('spark_props_state', JSON.stringify({
+  localStorage.setItem(C.LS.PROPS, JSON.stringify({
     active: [...props],
     custom: [...customProps],
   }));
@@ -3612,9 +3843,9 @@ function onProxyUrlChange() {
   const raw = document.getElementById('proxyUrl')?.value.trim() || '';
   if (raw) {
     // Save the raw value; normaliseProxyUrl fixes it at use time
-    localStorage.setItem('spark_proxy_url', raw);
+    localStorage.setItem(C.LS.PROXY_URL, raw);
   } else {
-    localStorage.removeItem('spark_proxy_url');
+    localStorage.removeItem(C.LS.PROXY_URL);
     window._sparkProxyUrl = null;
   }
 }
@@ -3650,7 +3881,7 @@ function setProxyStatus(state, message) {
 
 async function detectProxy() {
   const field  = document.getElementById('proxyUrl');
-  const stored = localStorage.getItem('spark_proxy_url') || '';
+  const stored = localStorage.getItem(C.LS.PROXY_URL) || '';
 
   // Populate field from storage if empty
   if (field && !field.value && stored) field.value = stored;
@@ -3710,8 +3941,8 @@ async function detectProxy() {
       setProxyStatus('ok', 'Connected — API key set in Railway ✓');
     } else {
       const hasKey = !!(document.getElementById('apiKey')?.value.trim() ||
-                        sessionStorage.getItem('spark_api_key') ||
-                        localStorage.getItem('spark_api_key'));
+                        sessionStorage.getItem(C.LS.API_KEY) ||
+                        localStorage.getItem(C.LS.API_KEY));
       setProxyStatus(hasKey ? 'ok' : 'warn',
         hasKey ? 'Connected — using API key from app ✓'
                : 'Connected — enter your Anthropic API key below');
@@ -3755,8 +3986,8 @@ loadPropsState();
 })();
 
 (function initialRoute() {
-  const n1 = localStorage.getItem('spark_name1');
-  const n2 = localStorage.getItem('spark_name2');
+  const n1 = localStorage.getItem(C.LS.NAME1);
+  const n2 = localStorage.getItem(C.LS.NAME2);
   if (n1) { const f=document.getElementById('name1'); if(f) f.value=n1; }
   if (n2) { const f=document.getElementById('name2'); if(f) f.value=n2; }
   if (n1 && n2) {
@@ -3767,16 +3998,44 @@ loadPropsState();
 
 // Persist names on input
 document.getElementById('name1')?.addEventListener('input', function() {
-  localStorage.setItem('spark_name1', this.value);
+  localStorage.setItem(C.LS.NAME1, this.value);
 });
 document.getElementById('name2')?.addEventListener('input', function() {
-  localStorage.setItem('spark_name2', this.value);
+  localStorage.setItem(C.LS.NAME2, this.value);
 });
 
 // Pre-scene note also updates currentNote live
 document.getElementById('sceneNoteInput')?.addEventListener('input', function() {
   currentNote = this.value.trim();
 });
+
+// ─── Self-test on load ─────────────────────────────────────────────────────
+// Runs after all data constants are defined. Logs failures; silent if all pass.
+setTimeout(() => {
+  try { runSelfTest(); } catch(e) { SparkLog.error('Self-test threw', e.message); }
+}, 0);
+
+// ─── Debug event log panel update hook ────────────────────────────────────
+// Patches SparkLog._push so the debug panel's event log stays live
+const _origPush = SparkLog._push.bind(SparkLog);
+SparkLog._push = function(level, msg, data) {
+  _origPush(level, msg, data);
+  if (debugMode) {
+    const logEl = document.getElementById('debugEventLog');
+    if (logEl) logEl.textContent = SparkLog.dump();
+  }
+};
+
+// ─── Recovery: reset everything ───────────────────────────────────────────
+function resetEverything() {
+  if (!confirm('Clear all data and restart? This removes names, preferences, and settings.')) return;
+  SparkLog.info('User triggered full reset');
+  // Clear all known keys
+  Object.values(C.LS).forEach(k => { localStorage.removeItem(k); sessionStorage.removeItem(k); });
+  // Also clear session-only keys not in C.LS
+  ['spark_fail_count'].forEach(k => sessionStorage.removeItem(k));
+  window.location.reload();
+}
 
 </script>
 </body>
