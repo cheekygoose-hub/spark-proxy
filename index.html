@@ -2439,6 +2439,12 @@ function goSetup() {
   const banner = document.getElementById('returnBanner');
   if (banner) banner.style.display = currentScene ? 'flex' : 'none';
   document.body.classList.remove('header-compact');
+  // Forget tonight's note/avoid — settings is a context break
+  currentNote = ''; currentAvoid = '';
+  const ni = document.getElementById('sceneNoteInput');
+  const ai = document.getElementById('sceneAvoidInput');
+  if (ni) ni.value = '';
+  if (ai) ai.value = '';
   buildShortcutGrid();
   showScreen('screenSetup');
 }
@@ -2495,17 +2501,22 @@ function setupContinue() {
 function goHome() {
   const banner = document.getElementById('returnBannerHome');
   if (banner) banner.style.display = currentScene ? 'flex' : 'none';
-  // Update warning banner visibility
   const connected = window._sparkProxyUrl && !isGenerating;
   const hwarn = document.getElementById('homeWarn');
   if (hwarn) hwarn.classList.toggle('visible', !connected);
   document.body.classList.remove('header-compact');
+  // Forget tonight's note/avoid when returning home — fresh start
+  currentNote = ''; currentAvoid = '';
+  const ni = document.getElementById('sceneNoteInput');
+  const ai = document.getElementById('sceneAvoidInput');
+  if (ni) ni.value = '';
+  if (ai) ai.value = '';
   showScreen('screenHome');
 }
 
 function goPreScene(resetMood) {
-  buildPropsChips(); // refresh chip grid with persisted state
-  updateRoleLabels(); // sync names to role rows
+  buildPropsChips();
+  updateRoleLabels();
   // Restore persisted location
   const savedLoc = localStorage.getItem(C.LS.LOCATION) || 'home';
   currentLocation = savedLoc;
@@ -2514,8 +2525,9 @@ function goPreScene(resetMood) {
   });
   const customInput = document.getElementById('locationCustomInput');
   if (customInput) customInput.style.display = savedLoc === 'custom' ? 'block' : 'none';
-  // If resetMood not requested, keep current intensity
+
   if (resetMood) {
+    // Full reset — coming from home or settings
     currentMood = null;
     ['Light','Medium','Hard'].forEach(l => {
       const el = document.getElementById('intensity'+l);
@@ -2531,10 +2543,14 @@ function goPreScene(resetMood) {
     const gb = document.getElementById('goSceneBtn');
     if (gb) { gb.disabled = true; gb.style.opacity = '.4'; }
   } else {
-    // Keep mood selected — restore visual state of intensity buttons
+    // Returning from "Change mood first" — keep note/avoid, restore their field values
+    const ni = document.getElementById('sceneNoteInput');
+    const ai = document.getElementById('sceneAvoidInput');
+    if (ni && currentNote) ni.value = currentNote;
+    if (ai && currentAvoid) ai.value = currentAvoid;
     const gb = document.getElementById('goSceneBtn');
     if (gb && currentMood) { gb.disabled = false; gb.style.opacity = '1'; }
-    if (currentMood) selectIntensity(currentMood);  // re-highlight the active button
+    if (currentMood) selectIntensity(currentMood);
   }
   document.body.classList.remove('header-compact');
   showScreen('screenPreScene');
@@ -3453,8 +3469,8 @@ function typewriterReveal(el, htmlContent, onDone) {
   if (totalChars === 0) { el.innerHTML = htmlContent; if (onDone) onDone(); return; }
 
   let revealed = 0;
-  const CHARS_PER_TICK = 2;   // characters revealed per tick
-  const TICK_MS        = 18;  // ms between ticks — ~110 chars/sec
+  const CHARS_PER_TICK = 1;   // one character per tick — smoother, more elegant
+  const TICK_MS        = 22;  // ms between ticks — ~45 chars/sec, unhurried
   el.innerHTML = '';
   el.classList.add('scene-stream-writing');
 
@@ -3726,16 +3742,33 @@ function buildSceneDesignPrompt(piA, piB) {
     '- "initiator" A means Partner A gives/leads, B receives. B means the reverse.\n' +
     '- Output valid JSON only. No other text.';
 
+  const rA = currentRoles[piA] || 'either';
+  const rB = currentRoles[piB] || 'either';
+  const roleCtx = (rA === 'dom' && rB === 'sub') ? '\nRole tonight: ' + gN(piA) + ' is dominant, ' + gN(piB) + ' is submissive. Reflect this but DO NOT default to domination category — it can be expressed across many categories.' :
+                  (rA === 'sub' && rB === 'dom') ? '\nRole tonight: ' + gN(piB) + ' is dominant, ' + gN(piA) + ' is submissive. Reflect this but DO NOT default to domination category.' :
+                  '\nNo fixed dom/sub role tonight — either partner can lead.';
+
+  // Build category avoidance — explicitly discourage recently overused categories
+  const recentCatCounts = {};
+  _sceneHistory.slice(0,6).forEach(h => {
+    recentCatCounts[h.category] = (recentCatCounts[h.category] || 0) + 1;
+  });
+  const overusedCats = Object.entries(recentCatCounts)
+    .filter(([,n]) => n >= 2)
+    .map(([c]) => c);
+
   const user =
     'Partner A:\n' + pA + '\n\n' +
     'Partner B:\n' + pB + '\n\n' +
     'Mood tonight: ' + moodDesc + '\n' +
     'Location: ' + loc + '\n' +
     'Props available: ' + propList +
-    noteStr + avoidStr + '\n\n' +
+    roleCtx + noteStr + avoidStr + '\n\n' +
     (intUniq.length ? 'PRIORITY — things they want to try that haven\'t come up yet:\n' + intUniq.join(', ') + '\n\n' : '') +
     (avoidActs.length ? 'Recent acts — do NOT repeat these:\n' + avoidActs.join('\n') + '\n\n' : '') +
     (avoidCats.length ? 'Recent categories to avoid if possible: ' + avoidCats.join(', ') + '\n\n' : '') +
+    (overusedCats.length ? 'OVERUSED categories — avoid these specifically, find something different: ' + overusedCats.join(', ') + '\n\n' : '') +
+    'Variety matters — do not default to the most obvious choice. Consider the full range of what this couple is into.\n\n' +
     'Design the scene now. JSON only.';
 
   return { system, user };
@@ -3911,9 +3944,10 @@ function generateInPlace() {
 }
 
 function confirmLeavePlay() {
-  // Only show confirmation if timer is running or scene is active
-  if (timerRunning || currentScene) {
-    document.getElementById('exitSheet')?.classList.add('open');
+  // Always show confirmation when on the play screen
+  const sheet = document.getElementById('exitSheet');
+  if (sheet) {
+    sheet.classList.add('open');
   } else {
     goSetup();
   }
@@ -4205,8 +4239,8 @@ function _generateFullSceneInner() {
       _finishTextA: null, _finishTextB: null,
     };
 
-    dbStep('sceneSelected', 'ok', '"' + currentScene.title + '" — ' + desc.act.slice(0,40));
-    SparkLog.info('scene:designed', { act: desc.act, cat: desc.category });
+    dbStep('sceneSelected', 'ok', '"' + currentScene.title + '" cat:' + desc.category + ' — ' + desc.act.slice(0,35));
+    SparkLog.info('scene:designed', { act: desc.act, cat: desc.category, intItems: desc.first_time_elements });
 
     // Update hint label with category flavour — makes dead time feel like progress
     const catLabels = {
@@ -4247,17 +4281,18 @@ function _generateFullSceneInner() {
 
     const system2 =
       'You write a single intimate act for a couples app called Spark. The couple will do ONE thing together for 5 minutes — not a sequence of acts.' +
+      '\n\nTONE: Direct instructional format throughout — every section. Short declarative sentences. Active voice. Physical specificity. No narrative prose. No flowery adjectives. No emotional commentary. Write like stage directions: what happens, to whom, how.' +
       '\n\nStructure your response using EXACTLY these section markers, each on its own line with nothing else on that line:' +
       '\nPREP\nSCENE\nFINISH_A\nFINISH_B' +
       '\n\n[PREP] rules: ONE sentence. The single position or prop setup needed. No sexual acts yet.' + prepNote +
       '\n\n[SCENE] rules: EXACTLY 2 sentences. ONE physical act only — what ' + currentA + ' does to ' + currentB + ' for the full five minutes. ' + explicitRule + ftNote + ' No scene progression. No "then". Just the act, described directly.' +
-      '\n\n[FINISH_A] rules: How ' + currentA + ' finishes. TWO sentences. ' + (isLight
+      '\n\n[FINISH_A] rules: How ' + currentA + ' finishes. TWO sentences. Use the same direct instructional register as [SCENE] — no narrative prose, no flowery language, direct commands only. ' + (isLight
         ? 'Sentence 1: how the act ends for ' + currentA + '. Sentence 2: brief tender aftercare.'
-        : 'MANDATORY SEQUENCE: Sentence 1: ' + currentB + ' actively stimulates ' + currentA + ' to orgasm — name the exact motion. Sentence 2: ' + currentA + ' orgasms explicitly. Only ' + currentA + ' finishes here.'
+        : 'MANDATORY SEQUENCE: Sentence 1: ' + currentB + ' actively stimulates ' + currentA + ' to orgasm — name the exact physical motion (verb + body part). Sentence 2: ' + currentA + ' orgasms. Name it explicitly. Only ' + currentA + ' finishes here. No story. No emotion. Just what happens physically.'
       ) + ' No new scene.' +
-      '\n\n[FINISH_B] rules: How ' + currentB + ' finishes. TWO sentences. ' + (isLight
+      '\n\n[FINISH_B] rules: How ' + currentB + ' finishes. TWO sentences. Use the same direct instructional register as [SCENE] — no narrative prose, no flowery language, direct commands only. ' + (isLight
         ? 'Sentence 1: how the act ends for ' + currentB + '. Sentence 2: brief tender aftercare.'
-        : 'MANDATORY SEQUENCE: Sentence 1: ' + currentA + ' actively stimulates ' + currentB + ' to orgasm — name the exact motion. Sentence 2: ' + currentB + ' orgasms explicitly. Only ' + currentB + ' finishes here.'
+        : 'MANDATORY SEQUENCE: Sentence 1: ' + currentA + ' actively stimulates ' + currentB + ' to orgasm — name the exact physical motion (verb + body part). Sentence 2: ' + currentB + ' orgasms. Name it explicitly. Only ' + currentB + ' finishes here. No story. No emotion. Just what happens physically.'
       ) + ' No new scene.' +
       '\n\n' + ctx;
 
@@ -4365,11 +4400,14 @@ function _generateFullSceneInner() {
       const prepWrap  = document.getElementById('stagePrepWrap');
       const prepEl    = document.getElementById('stagePrepText');
       const revealBtn = document.getElementById('revealSceneBtn');
-      if (prepEl) prepEl.innerHTML = formatNarrative(_prep || _scene || text.trim());
       setTimeout(() => {
         if (prepWrap) prepWrap.style.display = 'block';
-        if (revealBtn) revealBtn.disabled = false;
         prepWrap?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        if (prepEl) {
+          typewriterReveal(prepEl, formatNarrative(_prep || _scene || text.trim()), () => {
+            if (revealBtn) revealBtn.disabled = false;
+          });
+        }
       }, 320);
 
       if (timerArea) { timerArea.style.display = 'block'; }
