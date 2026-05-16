@@ -1279,7 +1279,7 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 
     <!-- Generating hint (shown while streaming) -->
     <div id="sceneGeneratingHint" style="display:none;padding:1.6rem;text-align:center;">
-      <div style="font-family:'DM Sans',sans-serif;font-size:.82rem;color:var(--muted);font-style:italic;margin-bottom:.75rem;">Getting your scene ready…</div>
+      <div id="genHintLabel" style="font-family:'DM Sans',sans-serif;font-size:.82rem;color:var(--muted);font-style:italic;margin-bottom:.75rem;">Designing your scene…</div>
       <div style="height:3px;border-radius:99px;background:var(--border);overflow:hidden;max-width:200px;margin:0 auto;">
         <div id="genProgressBar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--sage),var(--blush));border-radius:99px;transition:width .4s ease;"></div>
       </div>
@@ -1326,13 +1326,20 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
       </div>
     </div>
 
-    <!-- Their Turn panel — only after keep going -->
-    <div class="their-turn-panel" id="theirTurnPanel">
+    <!-- Their Turn panels — one per person, revealed separately -->
+    <div class="their-turn-panel" id="theirTurnPanelA" style="display:none;">
       <div class="their-turn-header">
         <span class="their-turn-icon">&#x1F525;</span>
-        <span class="their-turn-label" id="theirTurnLabel">Their turn</span>
+        <span class="their-turn-label" id="theirTurnLabelA"></span>
       </div>
-      <div class="their-turn-body" id="theirTurnText"></div>
+      <div class="their-turn-body" id="theirTurnTextA"></div>
+    </div>
+    <div class="their-turn-panel" id="theirTurnPanelB" style="display:none;">
+      <div class="their-turn-header">
+        <span class="their-turn-icon">&#x1F525;</span>
+        <span class="their-turn-label" id="theirTurnLabelB"></span>
+      </div>
+      <div class="their-turn-body" id="theirTurnTextB"></div>
     </div>
   </div>
 
@@ -1342,7 +1349,10 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
   <!-- Sticky bottom action bar -->
   <div class="play-action-bar" id="playActionBar">
     <button class="btn btn-ink" id="newSceneBtn" onclick="generateInPlace()" style="width:100%;margin-bottom:.45rem;">New scene</button>
-    <button class="btn-their-turn" id="theirTurnBtn" onclick="generateTheirTurn()" disabled>&#x1F525; Their turn</button>
+    <div id="theirTurnBtns" style="display:none;gap:.4rem;flex-direction:column;margin-bottom:.45rem;">
+      <button class="btn-their-turn" id="theirTurnBtnA" onclick="generateTheirTurn(0)" style="width:100%;">&#x1F525; How does <span id="theirTurnNameA"></span> finish?</button>
+      <button class="btn-their-turn" id="theirTurnBtnB" onclick="generateTheirTurn(1)" style="width:100%;">&#x1F525; How does <span id="theirTurnNameB"></span> finish?</button>
+    </div>
     <div style="display:flex;justify-content:space-between;align-items:center;padding:0 .1rem;margin-top:.35rem;">
       <button onclick="goPreScene(true)" style="background:none;border:none;font-size:.75rem;color:var(--muted);cursor:pointer;font-family:inherit;padding:.3rem 0;">↺ Change mood first</button>
       <button id="saveSceneBtn" onclick="saveCurrentScene()" style="background:none;border:none;font-size:.75rem;color:var(--sky);cursor:pointer;font-family:inherit;padding:.3rem 0;">🔖 Save for later</button>
@@ -1411,7 +1421,9 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 const C = {
   // API
   MODEL:        'claude-sonnet-4-6',
+  MODEL_FAST:   'claude-haiku-4-5-20251001',
   MAX_TOKENS:   1000,
+  MAX_TOKENS_DESIGN: 350,
   PROXY_PATH:   '/v1/messages',
   // localStorage keys
   LS: {
@@ -1435,6 +1447,7 @@ const C = {
     KINK_MANUAL:'spark_kink_manual',
     ACTIVE_ARCH:'spark_active_archetypes',
     SHORTCUT_ID:'spark_shortcut_id',
+    SCENE_HIST: 'spark_scene_history',
   },
   // Critical DOM element IDs — if these are missing the app cannot function
   EL: {
@@ -2120,54 +2133,11 @@ function applyArchetype(archetypeId, pi, on) {
   });
 }
 
-function isKinkAvail(itemId) {
-  const r0 = kinkPrefs[0][itemId] ?? 'like';
-  const r1 = kinkPrefs[1][itemId] ?? 'like';
-  if (r0 === 'no' || r1 === 'no') return false;
-  // If both deferred to partner, neither is driving — exclude
-  if (r0 === 'partner' && r1 === 'partner') return false;
-  // partner deference is activated if other partner rates int or above
-  const activeVals = new Set(['fav','like','int']);
-  if (r0 === 'partner') return activeVals.has(r1);
-  if (r1 === 'partner') return activeVals.has(r0);
-  return true;
-}
+// isKinkAvail removed — scene availability is now determined by Call 1 (Haiku)
 
 // ═══════════════════════════════════════════
-//  SCENES (metadata only — AI generates text)
+//  SCENES — removed. AI generates scenes dynamically.
 // ═══════════════════════════════════════════
-
-const SCENES = [
-  { id:'oral_restrained', title:'Hands above your head',       cat:'general',    kinks:['g_blowjob_give','g_cunniling_give','g_blowjob_receive','g_cunniling_receive'], req:[] },
-  { id:'manual_whisper',  title:"Don't stop talking",          cat:'general',    kinks:['g_handjob_give','g_handjob_receive','g_teasing_give'],                         req:[] },
-  { id:'penetrative_slow',title:'As slow as you can stand it', cat:'penetration',kinks:['p_penetration_give','p_penetration_receive','ki_kiss_mouth'],                  req:[] },
-  { id:'fingering_eye',   title:'Keep looking at me',          cat:'general',    kinks:['g_handjob_give','p_fingering_give'],                                           req:[] },
-  { id:'striptease_edge', title:"Look but don't touch",        cat:'general',    kinks:['g_stripping_give','g_edging_give','g_teasing_give'],                           req:[] },
-  { id:'nipple_oral',     title:'Two things at once',          cat:'general',    kinks:['g_cunniling_give','g_handjob_give'],                                           req:[] },
-  { id:'oral_69',         title:'Give and take',               cat:'general',    kinks:['g_blowjob_give','g_blowjob_receive','g_cunniling_give','g_cunniling_receive','pos_69'], req:[] },
-  { id:'bound_kneel',     title:'Bound and kneeling',          cat:'domination', kinks:['d_domsub','r_cuffs','g_blowjob_receive','g_blowjob_give'],                    req:[] },
-  { id:'wand_edging',     title:"You can't move",              cat:'domination', kinks:['d_org_control','d_org_denial','t_wand'],                                       req:['vibrator'] },
-  { id:'blindfold_oral',  title:'No sight, just feeling',      cat:'restrictive',kinks:['r_blindfold','g_cunniling_give','g_blowjob_give'],                             req:['blindfold'] },
-  { id:'hair_oral',       title:'Hands in my hair',            cat:'pain',       kinks:['g_cunniling_give','g_blowjob_give','pa_scratch_give'],                         req:[] },
-  { id:'spanking_lap',    title:'Across your lap',             cat:'pain',       kinks:['pa_spank_give','pa_spank_receive','d_domsub'],                                 req:[] },
-  { id:'choking_sex',     title:'Hand on throat',              cat:'touch',      kinks:['ts_breath','p_penetration_give','p_penetration_receive'],                      req:[] },
-  { id:'restrained_oral', title:'Tied and tasted',             cat:'restrictive',kinks:['r_cuffs','g_cunniling_give','g_blowjob_give','d_domsub'],                     req:['restraints'] },
-  { id:'sensation_ice',   title:'Cold before warm',            cat:'touch',      kinks:['ts_sensation','r_blindfold'],                                                  req:['icewax','blindfold'] },
-  { id:'folded_digital',  title:'Deep and held open',          cat:'penetration',kinks:['p_fingering_give','p_fingering_receive','d_domsub'],                           req:[] },
-  { id:'rimming_prone',   title:'Face down, completely',       cat:'butt',       kinks:['b_rimming_give','b_tease_give'],                                               req:[] },
-  { id:'mirror_kneel',    title:'Watch yourself in the mirror',cat:'positions',  kinks:['pos_mirror','g_cunniling_give','g_blowjob_give'],                              req:['mirror'] },
-  { id:'dom_commands',    title:'Tell me exactly what you want',cat:'domination',kinks:['d_domsub','d_discipline','p_penetration_give','p_penetration_receive'],         req:[] },
-  { id:'public_whisper',  title:'Only you know',               cat:'scenarios',  kinks:['sc_exhib','g_teasing_give'],                                                   req:[] },
-  { id:'lingerie_tease',  title:'Keep it on',                  cat:'clothing',   kinks:['c_lingerie','g_teasing_give'],                                                 req:[] },
-  { id:'foot_oral',       title:'Start at the bottom',         cat:'touch',      kinks:['ts_foot','g_cunniling_give','g_blowjob_give'],                                 req:[] },
-  { id:'stranger_roleplay',title:"We don't know each other",   cat:'scenarios',  kinks:['sc_humil','sc_gangbang','p_penetration_give','p_penetration_receive'],          req:[] },
-];
-
-// Vanilla-mode scene pool — used when no preferences have been set
-const VANILLA_SCENE_IDS = new Set([
-  'oral_restrained','manual_whisper','penetrative_slow',
-  'fingering_eye','striptease_edge','nipple_oral','oral_69',
-]);
 
 function prefsAreSet() {
   return localStorage.getItem(C.LS.PREFS_SET) === '1';
@@ -2185,38 +2155,28 @@ function runSelfTest() {
   const fail = (name, detail) => results.push({ name, ok: false, detail });
   const pass = (name)         => results.push({ name, ok: true  });
 
-  // 1. SCENES kinks all exist in ALL_KINK_ITEMS
-  const kinkIds    = new Set(ALL_KINK_ITEMS.map(i => i.id));
-  const badKinks   = SCENES.flatMap(s =>
-    (s.kinks||[]).filter(k => !kinkIds.has(k)).map(k => s.id+':'+k));
-  badKinks.length  ? fail('SCENES kink refs', badKinks.slice(0,3).join(','))
-                   : pass('SCENES kink refs');
+  // 1. ALL_KINK_ITEMS — all have ids and labels
+  const badItems = ALL_KINK_ITEMS.filter(i => !i.id || !i.label);
+  badItems.length ? fail('kink item ids', badItems.length + ' missing id/label') : pass('kink item ids');
 
-  // 2. VANILLA_SCENE_IDS all exist in SCENES
-  const sceneIds   = new Set(SCENES.map(s => s.id));
-  const badVanilla = [...VANILLA_SCENE_IDS].filter(id => !sceneIds.has(id));
-  badVanilla.length ? fail('VANILLA_SCENE_IDS', badVanilla.join(','))
-                    : pass('VANILLA_SCENE_IDS');
+  // 2. KINK_CATS — all cats have items
+  const emptyCats = KINK_CATS.filter(c => !c.items || c.items.length === 0);
+  emptyCats.length ? fail('empty cats', emptyCats.map(c=>c.id).join(',')) : pass('cat items');
 
-  // 3. SCENES — no duplicate IDs
-  const dupeIds = SCENES.map(s=>s.id).filter((id,i,a)=>a.indexOf(id)!==i);
-  dupeIds.length ? fail('SCENES duplicate IDs', dupeIds.join(','))
-                 : pass('SCENES no dupes');
+  // 3. SURVEY_PATHWAYS covers every non-advanced KINK_CAT
+  const pwCats = new Set(SURVEY_PATHWAYS.flatMap(p => p.cats));
+  const missingPw = KINK_CATS.filter(c => !c.advanced && !pwCats.has(c.id));
+  missingPw.length ? fail('pathway coverage', missingPw.map(c=>c.id).join(',')) : pass('pathway coverage');
 
-  // 4. Split kink items have _give/_receive expansions
-  const splitMissing = KINK_CATS.flatMap(cat =>
-    cat.items.filter(i=>i.split).flatMap(i => [
-      ...(kinkIds.has(i.id+'_give')    ? [] : [i.id+'_give']),
-      ...(kinkIds.has(i.id+'_receive') ? [] : [i.id+'_receive']),
-    ]));
-  splitMissing.length ? fail('Split kink expansion', splitMissing.slice(0,3).join(','))
-                      : pass('Split kink expansion');
-
-  // 5. SURVEY_PATHWAYS covers every non-advanced KINK_CAT
-  const pwCats    = new Set(SURVEY_PATHWAYS.flatMap(p => p.cats));
-  const uncovered = KINK_CATS.filter(c => !c.advanced && !pwCats.has(c.id)).map(c=>c.id);
-  uncovered.length ? fail('Survey pathway coverage', uncovered.join(','))
-                   : pass('Survey pathway coverage');
+  // 4. ARCHETYPES — all fills reference valid item ids or cat ids
+  const allItemIds = new Set(ALL_KINK_ITEMS.map(i => i.id));
+  const allCatIds  = new Set(KINK_CATS.map(c => c.id));
+  const badFills = ARCHETYPES.flatMap(a => (a.fills || []).flatMap(f => {
+    const badIds  = (f.ids  || []).filter(id => !allItemIds.has(id));
+    const badCats = (f.cats || []).filter(c  => !allCatIds.has(c));
+    return [...badIds, ...badCats];
+  }));
+  badFills.length ? fail('archetype fills', badFills.slice(0,3).join(',')) : pass('archetype fills');
 
   const failures = results.filter(r => !r.ok);
   if (failures.length) {
@@ -2226,8 +2186,7 @@ function runSelfTest() {
       const dbg   = document.getElementById('debugText');
       if (panel && dbg) {
         panel.classList.add('visible');
-        dbg.textContent = 'SELF-TEST FAILURES:\n'
-          + failures.map(r => '  ✗ '+r.name+': '+r.detail).join('\n');
+        dbg.textContent = 'SELF-TEST FAILURES:\n' + failures.map(r => '  \u2717 '+r.name+': '+r.detail).join('\n');
       }
     }
   } else {
@@ -2245,14 +2204,13 @@ function incrementSceneCount() {
 }
 
 // Recent scene history — prevents repeating same category too soon
-const recentSceneCats = []; // ring buffer of last 5 scene categories rated 'love' or 'ok'
+const recentSceneCats = []; // ring buffer — still used for passing to Call 1
 const MAX_RECENT_CATS = 5;
 
 function rateScene(rating) {
   if (currentScene) {
-    // Persist raw rating
     const ratings = JSON.parse(localStorage.getItem(C.LS.RATINGS) || '{}');
-    ratings[currentScene.id] = { r: rating, cat: currentScene.cat, ts: Date.now() };
+    ratings[currentScene.id || currentScene._act || 'unknown'] = { r: rating, cat: currentScene.cat, ts: Date.now() };
     localStorage.setItem(C.LS.RATINGS, JSON.stringify(ratings));
 
     // Track recent categories to enforce variety
@@ -2261,30 +2219,25 @@ function rateScene(rating) {
       if (recentSceneCats.length > MAX_RECENT_CATS) recentSceneCats.shift();
     }
 
-    if (rating === 'not' && currentScene.kinks) {
-      // Disliked: nudge kinks down one level only — don't eliminate
+    if (rating === 'not' && currentScene.kinks?.length) {
       currentScene.kinks.forEach(k => {
         [0, 1].forEach(pi => {
           if (kinkPrefs[pi][k] === 'like') kinkPrefs[pi][k] = 'int';
-          // 'int' stays 'int' — one dislike doesn't erase interest
         });
       });
+      persistPrefs();
     }
 
-    if (rating === 'love' && currentScene.kinks) {
-      // Loved: nudge kinks up one level max — but keep modest to preserve variety
-      // Only upgrade items still at 'int' (maybe) → 'like'. 
-      // Already-liked items are NOT upgraded to 'fav' from a single rating.
+    if (rating === 'love' && currentScene.kinks?.length) {
       currentScene.kinks.forEach(k => {
         [0, 1].forEach(pi => {
           if (kinkPrefs[pi][k] === 'int') kinkPrefs[pi][k] = 'like';
-          // 'like' stays 'like' — rating doesn't push to 'fav'
         });
       });
+      persistPrefs();
     }
-    // 'ok' rating: no kink preference change — it was fine but not notable
 
-    SparkLog.info('scene:rated', { rating, scene: currentScene.id, cat: currentScene.cat });
+    SparkLog.info('scene:rated', { rating, cat: currentScene.cat });
   }
 
   const card = document.getElementById('rateCard');
@@ -2364,8 +2317,18 @@ let notifsEnabled  = false,   notifInterval  = null;
 let timerInterval  = null,    timerRunning   = false, totalSecs = 300, remainSecs = 300;
 let escalationRevealed = false;
 let isGenerating   = false;
-let previousScene  = null;   // last scene — for variety enforcement
-let previousKinks  = [];     // kinks from last scene — avoid repeating
+// Scene history — persisted array of {act, category, kinks[]} from recent sessions
+// Used by Call 1 for anti-repeat and int-item exploration tracking
+let _sceneHistory = (function() {
+  try { return JSON.parse(localStorage.getItem(C.LS.SCENE_HIST) || '[]'); } catch { return []; }
+})();
+const MAX_SCENE_HISTORY = 10;
+
+function _pushSceneHistory(entry) {
+  _sceneHistory.unshift(entry);
+  if (_sceneHistory.length > MAX_SCENE_HISTORY) _sceneHistory.length = MAX_SCENE_HISTORY;
+  try { localStorage.setItem(C.LS.SCENE_HIST, JSON.stringify(_sceneHistory)); } catch {}
+}
 let refusalRetries = 0;      // auto-retry count on AI refusal
 let currentMood    = null;            // 'light' | 'medium' | 'hard' | null — set on pre-screen
 let currentNote    = '';              // free-text focus from pre-screen
@@ -2457,36 +2420,8 @@ function applyShortcutArchetype(archetypeId) {
   }
 }
 
-// ─── Scene availability: role-aware kink check ────────────────────
-function sceneAvailForRoles(scene, piA, piB) {
-  if (scene.req?.length) {
-    if (props.has('none')) return false;
-    if (!scene.req.every(r => props.has(r))) return false;
-  }
-  if (!prefsAreSet() && !willingAll()) {
-    if (!VANILLA_SCENE_IDS.has(scene.id)) return false;
-  }
-  if (willingAll()) return true;
-  const activeVals = new Set(['fav','like','int']);
-  return scene.kinks.every(k => {
-    if (k.endsWith('_give')) {
-      const rA = kinkPrefs[piA][k] ?? 'like';
-      const rB = kinkPrefs[piB][k] ?? 'like';
-      if (rA === 'no') return false;
-      if (rA === 'partner') return activeVals.has(rB);
-      return true;
-    }
-    if (k.endsWith('_receive')) {
-      const rA = kinkPrefs[piA][k] ?? 'like';
-      const rB = kinkPrefs[piB][k] ?? 'like';
-      if (rB === 'no') return false;
-      if (rB === 'partner') return activeVals.has(rA);
-      return true;
-    }
-    return isKinkAvail(k);
-  });
-}
-function sceneAvail(scene) { return sceneAvailForRoles(scene, currentPiA, currentPiB); }
+// sceneAvailForRoles removed — scene design now handled by Call 1 (Haiku)
+// sceneAvail removed — no longer needed with AI-generated scenes
 
 // ═══════════════════════════════════════════
 //  SCREENS
@@ -3579,6 +3514,8 @@ function saveCurrentScene() {
     prep:   currentScene._prepText   || '',
     scene:  currentScene._sceneText  || '',
     finish: currentScene._finishText || '',
+    finishA: currentScene._finishTextA || '',
+    finishB: currentScene._finishTextB || '',
     note:   currentNote,
     piA: currentPiA, piB: currentPiB,
     nameA: currentA, nameB: currentB,
@@ -3666,6 +3603,142 @@ function playSavedScene(id) {
   const timerArea = document.getElementById('timerArea');
   if (timerArea) timerArea.style.display = 'block';
   resetTimer(300);
+}
+
+/** Non-streaming JSON call using Haiku — for fast structured scene design (Call 1).
+ *  Returns parsed JSON object or null on failure. */
+async function callClaudeJSON(systemPrompt, userPrompt) {
+  const key = getApiKey();
+  const endpoint = window._sparkProxyUrl;
+  if (!key || !endpoint) return null;
+
+  try {
+    const resp = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(key !== '__proxy__' ? { 'x-api-key': key } : {}),
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model:      C.MODEL_FAST,
+        max_tokens: C.MAX_TOKENS_DESIGN,
+        stream:     false,
+        system:     systemPrompt,
+        messages:   [{ role: 'user', content: userPrompt }],
+      }),
+    });
+    if (!resp.ok) { SparkLog.warn('callClaudeJSON HTTP ' + resp.status); return null; }
+    const data = await resp.json();
+    const text = (data.content || []).map(b => b.text || '').join('').trim();
+    // Strip markdown fences if present
+    const clean = text.replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'').trim();
+    return JSON.parse(clean);
+  } catch(e) {
+    SparkLog.warn('callClaudeJSON failed: ' + e.message);
+    return null;
+  }
+}
+
+/** Build the full preference narrative for Call 1 — includes int items prominently */
+function buildCall1Prefs(pi) {
+  const name = gN(pi);
+  const favs = [], likes = [], wants = [], nos = [], partners = [];
+  ALL_KINK_ITEMS.forEach(item => {
+    if (item.advanced) return;
+    const r = kinkPrefs[pi]?.[item.id];
+    if (!r) return;
+    const lbl = item.label.replace(/ — (Giving|Receiving)$/, t => t === ' — Giving' ? ' (giving)' : ' (receiving)');
+    if      (r === 'fav')     favs.push(lbl);
+    else if (r === 'like')    likes.push(lbl);
+    else if (r === 'int')     wants.push(lbl);
+    else if (r === 'partner') partners.push(lbl);
+    else if (r === 'no')      nos.push(lbl);
+  });
+  const parts = ['Name: ' + name];
+  const g = document.getElementById('gender' + (pi+1))?.value || '';
+  if (g) parts.push('Gender: ' + g);
+  const assets = ASSET_DEFS.filter(a => body[pi]?.[a.id]?.on)
+    .map(a => a.label + ' (call it: "' + body[pi][a.id].name + '")');
+  if (assets.length) parts.push('Body: ' + assets.join(', '));
+  if (favs.length)     parts.push('LOVES: ' + favs.join(', '));
+  if (likes.length)    parts.push('Likes: ' + likes.join(', '));
+  if (wants.length)    parts.push('WANTS TO TRY: ' + wants.join(', '));
+  if (partners.length) parts.push('Open to if partner wants: ' + partners.join(', '));
+  if (nos.length)      parts.push('NEVER (hard no): ' + nos.join(', '));
+  return parts.join('\n');
+}
+
+/** Build prompt pair for Call 1 (Haiku — scene design) */
+function buildSceneDesignPrompt(piA, piB) {
+  const pA = buildCall1Prefs(piA);
+  const pB = buildCall1Prefs(piB);
+
+  // Build int-items-to-explore list — items rated 'int' by either partner
+  // that haven't appeared in recent scene history
+  const recentActs = _sceneHistory.map(h => h.act.toLowerCase());
+  const intItems = ALL_KINK_ITEMS.filter(i => {
+    if (i.advanced) return false;
+    const rA = kinkPrefs[piA]?.[i.id];
+    const rB = kinkPrefs[piB]?.[i.id];
+    const eitherInt = (rA === 'int') || (rB === 'int');
+    const eitherActive = (rA === 'fav' || rA === 'like' || rA === 'int') ||
+                         (rB === 'fav' || rB === 'like' || rB === 'int');
+    if (!eitherInt || !eitherActive) return false;
+    // Check if recently done
+    const lbl = i.label.toLowerCase().replace(/ — (giving|receiving)$/, '');
+    return !recentActs.some(a => a.includes(lbl));
+  }).map(i => i.label.replace(/ — (Giving|Receiving)$/, ''));
+
+  // Deduplicate int items
+  const intUniq = [...new Set(intItems)].slice(0, 12);
+
+  // Recent acts to avoid
+  const avoidActs = _sceneHistory.slice(0, 3).map(h => h.act);
+  const avoidCats = recentSceneCats.slice(-3);
+
+  const mood = currentMood || 'medium';
+  const moodDesc = { light: 'sensual and intimate — no explicit penetration', medium: 'direct and sexual', hard: 'fully explicit and graphic' }[mood] || 'direct and sexual';
+  const loc = currentLocation && currentLocation !== 'home' ? currentLocation : 'at home';
+  const propList = props.has('none') ? 'none' : [...props].filter(p=>p!=='none').map(p=>p.startsWith('custom:')?p.slice(7):p).join(', ') || 'none';
+  const noteStr = currentNote ? '\nCouple\'s specific request tonight: "' + currentNote + '" — incorporate if possible.' : '';
+  const avoidStr = currentAvoid ? '\nCouple wants to skip tonight: "' + currentAvoid + '".' : '';
+
+  const system =
+    'You are a scene designer for Spark, an intimate couples app. ' +
+    'Design ONE act for this couple to do together for 5 minutes. ' +
+    'Return ONLY a JSON object — no markdown fences, no explanation, no preamble. ' +
+    'Schema:\n' +
+    '{\n' +
+    '  "act": "one short plain-English description of the act e.g. \'Alex gives Jamie oral sex while Jamie is blindfolded\'",\n' +
+    '  "category": "one word — general|penetration|butt|domination|restrictive|toys|touch|pain|scenarios|clothing|intimacy|positions",\n' +
+    '  "kinks_involved": ["array of kink item ids from the couple\'s preferences that this act involves"],\n' +
+    '  "requires_props": ["any props needed — empty array if none"],\n' +
+    '  "first_time_elements": ["kink ids rated int by either partner that appear in this scene — empty if none"],\n' +
+    '  "title": "a short evocative scene title (4–6 words, not literal)",\n' +
+    '  "initiator": "A or B"\n' +
+    '}\n\n' +
+    'RULES:\n' +
+    '- NEVER include anything from either partner\'s hard no list.\n' +
+    '- Match the mood intensity exactly.\n' +
+    '- If "WANTS TO TRY" items exist, prioritise including one — this is the primary way the couple explores new things.\n' +
+    '- Respect available props — only require props that are listed as available.\n' +
+    '- "initiator" A means Partner A gives/leads, B receives. B means the reverse.\n' +
+    '- Output valid JSON only. No other text.';
+
+  const user =
+    'Partner A:\n' + pA + '\n\n' +
+    'Partner B:\n' + pB + '\n\n' +
+    'Mood tonight: ' + moodDesc + '\n' +
+    'Location: ' + loc + '\n' +
+    'Props available: ' + propList +
+    noteStr + avoidStr + '\n\n' +
+    (intUniq.length ? 'PRIORITY — things they want to try that haven\'t come up yet:\n' + intUniq.join(', ') + '\n\n' : '') +
+    (avoidActs.length ? 'Recent acts — do NOT repeat these:\n' + avoidActs.join('\n') + '\n\n' : '') +
+    (avoidCats.length ? 'Recent categories to avoid if possible: ' + avoidCats.join(', ') + '\n\n' : '') +
+    'Design the scene now. JSON only.';
+
+  return { system, user };
 }
 
 /** Stream Claude response into targetEl. Resolves when done. */
@@ -4025,275 +4098,288 @@ function generateFullScene() {
 }
 
 function _generateFullSceneInner() {
+  // Randomly assign who initiates (will be confirmed/overridden by Call 1)
   let piA = Math.random() < .5 ? 0 : 1;
   let piB = 1 - piA;
-  let avScenes = SCENES.filter(s => sceneAvailForRoles(s, piA, piB));
-  if (!avScenes.length) { [piA, piB] = [piB, piA]; avScenes = SCENES.filter(s => sceneAvailForRoles(s, piA, piB)); }
-
-  const noOpts = document.getElementById('noOpts');
-  const card   = document.getElementById('sceneCard');
-  if (!avScenes.length) {
-    if (noOpts) noOpts.style.display = 'block';
-    if (card) card.style.display = 'none';
-    psSet('fetch','fail','no scenes');
-    return;
-  }
-  if (noOpts) noOpts.style.display = 'none';
-  if (card) card.style.display = 'block';
-
   currentPiA = piA; currentPiB = piB;
   currentA = gN(piA); currentB = gN(piB);
-  // Build scene pool — avoid same scene, recently used categories, and previous category
-  let scenePool = avScenes;
-  // Collect cats to avoid: previous scene's cat + any loved/ok cats used recently
-  const catsToAvoid = new Set();
-  if (previousScene) catsToAvoid.add(previousScene.cat);
-  recentSceneCats.forEach(c => catsToAvoid.add(c));
 
-  if (catsToAvoid.size > 0) {
-    const freshCat = avScenes.filter(s => s.id !== previousScene?.id && !catsToAvoid.has(s.cat));
-    if (freshCat.length > 0) { scenePool = freshCat; }
-    else {
-      // Relax: only exclude same category (not all recent)
-      const diffCat = avScenes.filter(s => s.id !== previousScene?.id && s.cat !== previousScene?.cat);
-      if (diffCat.length > 0) scenePool = diffCat;
-      else {
-        const diffScene = avScenes.filter(s => s.id !== previousScene?.id);
-        if (diffScene.length > 0) scenePool = diffScene;
-      }
-    }
-  }
-  currentScene = pick(scenePool);
-  if (currentScene) delete currentScene._lastNarrative;
-  escalationRevealed = false;
-  dbStep('sceneSelected', 'ok', currentScene ? '"' + currentScene.title + '"' : 'none');
-
-  // Reset UI — null-guard every getElementById
-  const streamText  = document.getElementById('sceneStreamText');
-  const timerArea   = document.getElementById('timerArea');
-  const escalPanel  = document.getElementById('escalationPanel');
+  const noOpts    = document.getElementById('noOpts');
+  const card      = document.getElementById('sceneCard');
+  const streamText = document.getElementById('sceneStreamText');
+  const timerArea  = document.getElementById('timerArea');
+  const escalPanel = document.getElementById('escalationPanel');
   const newSceneBtn = document.getElementById('newSceneBtn');
   const errorBanner = document.getElementById('sceneErrorBanner');
   const timerLabel  = document.getElementById('timerPhaseLabel');
   const timerSub2   = document.getElementById('timerSub');
+  const _hint  = document.getElementById('sceneGeneratingHint');
+  const _bar   = document.getElementById('genProgressBar');
+  const _label = document.getElementById('genHintLabel');
 
-  if (streamText)  streamText.textContent = '';
+  if (noOpts) noOpts.style.display = 'none';
+  if (card)   card.style.display = 'block';
+  if (streamText) streamText.textContent = '';
+
   // Reset all stage panels
-  const _stageIds = ['stagePrepWrap','stageSceneWrap','stageFinishWrap'];
-  _stageIds.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
-  // Show generating hint with animated bar
-  const _hint = document.getElementById('sceneGeneratingHint');
-  const _bar  = document.getElementById('genProgressBar');
+  ['stagePrepWrap','stageSceneWrap','stageFinishWrap'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.style.display = 'none';
+  });
+
+  // Show generating hint — phase 1
+  if (_label) _label.textContent = 'Designing your scene\u2026';
   if (_hint) _hint.style.display = 'block';
   if (_bar)  {
     _bar.style.transition = 'none'; _bar.style.width = '0%';
     requestAnimationFrame(() => {
-      _bar.style.transition = 'width 12s cubic-bezier(0.1,0,0.3,1)';
-      _bar.style.width = '92%';
+      _bar.style.transition = 'width 3s cubic-bezier(0.4,0,0.6,1)';
+      _bar.style.width = '35%';
     });
   }
   if (timerArea)   timerArea.style.display = 'none';
   if (escalPanel)  escalPanel.style.display = 'none';
   if (errorBanner) errorBanner.classList.remove('visible');
-  if (newSceneBtn) { newSceneBtn.disabled = true; newSceneBtn.textContent = 'Writing…'; }
+  if (newSceneBtn) { newSceneBtn.disabled = true; newSceneBtn.textContent = 'Writing\u2026'; }
 
   resetTimer(300);
   if (timerLabel) timerLabel.textContent = 'Duration';
   if (timerSub2)  timerSub2.textContent  = 'Minimum 5 minutes';
 
   isGenerating = true;
-  SparkLog.info('scene:start', { id: currentScene?.id, mood: currentMood, roles: currentRoles });
+  escalationRevealed = false;
   hideTheirTurnBtn();
+  SparkLog.info('scene:start', { mood: currentMood });
 
-  // Build the one act the couple will do for the full five minutes
-  const isLight  = currentMood === 'light';
-  const isMedium = currentMood === 'medium';
-  const isHard   = currentMood === 'hard';
+  // ── CALL 1: Scene design via Haiku ───────────────────────────────────────
+  const { system: d1sys, user: d1user } = buildSceneDesignPrompt(piA, piB);
+  dbStep('sceneSelected', 'warn', 'Calling Haiku for design\u2026');
 
-  // Pick the primary act from the scene's kink list — one thing, not a list
-  const kinkItems = currentScene.kinks
-    .map(k => ALL_KINK_ITEMS.find(i => i.id === k))
-    .filter(Boolean);
-  // Prefer a kink the couple marked as favourite or like, fall back to first
-  const favKink  = kinkItems.find(i => kinkPrefs[piA]?.[i.id] === 'fav' || kinkPrefs[piB]?.[i.id] === 'fav');
-  const likeKink = kinkItems.find(i => kinkPrefs[piA]?.[i.id] === 'like' || kinkPrefs[piB]?.[i.id] === 'like');
-  const primaryKink = favKink || likeKink || kinkItems[0];
-  const actLabel = primaryKink
-    ? primaryKink.label.replace(/ — Giving$/, '').replace(/ — Receiving$/, '')
-    : 'intimacy';
+  callClaudeJSON(d1sys, d1user).then(descriptor => {
 
-  // Props relevant to this scene
-  const availProps = props.has('none') ? '' :
-    [...props].map(p => p.startsWith('custom:') ? p.slice(7) : p)
-      .filter(p => p !== 'none').join(', ');
+    // ── Validate & fallback ─────────────────────────────────────────────
+    const validCats = new Set(['general','penetration','butt','domination','restrictive',
+      'toys','touch','pain','scenarios','clothing','intimacy','positions','groupings']);
 
-  // What was done last time — enforce variety
-  const avoidRepeat = previousKinks.length > 0
-    ? 'Do NOT repeat or closely resemble the previous scene. Previous act was: ' + previousKinks.slice(0,3).join(', ') + '.'
-    : '';
-
-  const ctx = buildSceneContext(piA, piB);
-  dbStep('contextBuilt', 'ok', ctx.length + ' chars');
-
-  // Explicit level rules
-  const explicitRule = isLight
-    ? 'This is a light/sensual scene. No explicit penetration or graphic language. Focus on touch, sensation, build-up, kissing, and anticipation. Keep language tasteful.'
-    : isMedium
-    ? 'This is a direct sexual scene. Be specific and physical. Name body parts. Describe the act clearly without being gratuitously graphic.'
-    : 'This is fully explicit and hardcore. Be completely graphic. Name every body part and act directly. Nothing held back.';
-
-  // Check if scene involves acts requiring physical preparation
-  const analKinks = ['b_sex','b_toy','b_dp','b_fist'];
-  const needsAnalPrep = currentScene.kinks && currentScene.kinks.some(k => analKinks.some(ak => k.includes(ak)));
-  const prepNote = needsAnalPrep
-    ? '\n\n[PREP] IMPORTANT: This scene involves anal. The PREP section MUST include preparation steps: have ' + currentB + ' communicate readiness, then ' + currentA + ' should use fingers with lubricant to gently prepare ' + currentB + ' before anything else. Make this feel sensual and caring, not clinical.'
-    : '';
-
-  const system =
-    'You write a single intimate act for a couples app called Spark. The couple will do ONE thing together for 5 minutes — not a sequence of acts.' +
-    '\n\nStructure your response using EXACTLY these three section markers, each on its own line with nothing else on that line:' +
-    '\nPREP\nSCENE\nFINISH' +
-    '\n\n[PREP] rules: ONE sentence. The single position or prop needed. No sexual acts yet.' + prepNote +
-    '\n\n[SCENE] rules: EXACTLY 2 sentences. ONE physical act only — what ' + currentA + ' does to ' + currentB + ' for the full five minutes. ' + explicitRule + ' No scene progression. No "then". Just the act, described directly.' +
-    '\n\n[FINISH] rules: TWO sentences. ' + (isLight
-      ? 'Sentence 1: how the act ends naturally. Sentence 2: brief tender aftercare.'
-      : 'MANDATORY SEQUENCE — do not deviate: Sentence 1: ' + currentA + ' actively stimulates ' + currentB + ' to orgasm — name the exact motion (stroking, thrusting, licking, rubbing). Sentence 2: ' + currentB + ' orgasms explicitly. After ' + currentB + ' finishes, do NOT add more — stop there. The scene ends with ' + currentB + '\'s orgasm.'
-    ) + ' No new scene.' +
-    '\n\n' + ctx;
-
-  const prompt =
-    'Write a scene for ' + currentA + ' and ' + currentB + '.' +
-    '\nThe single act: ' + actLabel +
-    '\nScene title (for flavour only, do not reproduce literally): "' + currentScene.title + '"' +
-    (currentNote  ? '\nCouple specifically wants: "' + currentNote + '" — make this the act if possible.' : '') +
-    (currentAvoid ? '\nDo NOT include: "' + currentAvoid + '"' : '') +
-    (availProps   ? '\nProps available if relevant: ' + availProps : '') +
-    (avoidRepeat  ? '\n' + avoidRepeat : '') +
-    '\n' + (function() {
-      const rA = currentRoles[piA] || 'either';
-      const rB = currentRoles[piB] || 'either';
-      // Build role instruction
-      if (rA === 'dom' && rB === 'sub') return currentA + ' is dominant throughout. ' + currentB + ' is submissive throughout.';
-      if (rA === 'sub' && rB === 'dom') return currentB + ' is dominant throughout. ' + currentA + ' is submissive throughout.';
-      if (rA === 'dom') return currentA + ' takes the dominant role. ' + currentB + ' can be responsive.';
-      if (rA === 'sub') return currentA + ' takes a submissive role. ' + currentB + ' leads.';
-      if (rB === 'dom') return currentB + ' takes the dominant role. ' + currentA + ' responds.';
-      if (rB === 'sub') return currentB + ' is submissive. ' + currentA + ' leads.';
-      return currentA + ' initiates. Either can lead naturally.';
-    })() +
-    '\n\nOutput [PREP], [SCENE], [FINISH] sections only. No preamble.';
-
-  // Store current kinks for next time's anti-repeat logic
-  previousScene = currentScene;
-  previousKinks = kinkItems.slice(0,4).map(i => i.label.replace(/ — (Giving|Receiving)$/,''));
-
-  showDebugPrompt(system, prompt);
-  hideSceneError();
-
-  // Stream text directly into the visible streamText element
-  callClaudeStream(system, prompt, streamText, (text) => {
-    isGenerating = false;
-    if (newSceneBtn) { newSceneBtn.disabled = false; newSceneBtn.textContent = 'New scene'; }
-
-    if (!text || !text.trim()) return;
-
-    // Refusal detection — silently retry with a different scene
-    if (isRefusal(text)) {
-      refusalRetries++;
-      if (refusalRetries <= 4) {
-        dbStep('rendered', 'warn', 'refusal #' + refusalRetries + ' — retrying');
-        psSet('stream', 'warn', 'retry ' + refusalRetries);
-        setTimeout(() => { isGenerating = false; generateFullScene(); }, 300);
-        return;
-      } else {
-        refusalRetries = 0;
-        if (streamText) {
-          const card2 = document.getElementById('sceneCard');
-          if (card2) card2.style.display = 'block';
-          streamText.innerHTML =
-            '<div style="font-family:sans-serif;font-size:.85rem;' +
-            'color:var(--muted);line-height:1.7;padding:.5rem 0;">' +
-            'No scene available for this combination right now. ' +
-            'Try adjusting the mood or note.' +
-            '</div>';
-        }
-        if (timerArea) timerArea.style.display = 'none';
-        if (newSceneBtn) { newSceneBtn.disabled = false; newSceneBtn.textContent = 'New scene'; }
-        return;
-      }
+    let desc = descriptor;
+    if (!desc || typeof desc !== 'object') {
+      SparkLog.warn('Call 1 returned null — using vanilla fallback');
+      desc = {
+        act: currentA + ' goes down on ' + currentB,
+        category: 'general',
+        kinks_involved: ['g_cunniling_give','g_blowjob_give'],
+        requires_props: [],
+        first_time_elements: [],
+        title: 'Take your time',
+        initiator: 'A',
+      };
     }
-    refusalRetries = 0;
 
-    // Parse sections for escalation storage
-    // Matches marker in all common AI output formats:
-    // [PREP]  **[PREP]**  ## PREP  PREP:  *PREP*
-    const markerRe = m =>
-      new RegExp('(?:^|\n)[*#\\-\\s]*\\[?' + m + '\\]?[*#\\-\\s]*:?[ \\t]*', 'i');
+    // Validate hard nos
+    const nosA = ALL_KINK_ITEMS.filter(i => kinkPrefs[piA]?.[i.id] === 'no').map(i => i.id);
+    const nosB = ALL_KINK_ITEMS.filter(i => kinkPrefs[piB]?.[i.id] === 'no').map(i => i.id);
+    const allNos = new Set([...nosA, ...nosB]);
+    const violates = (desc.kinks_involved || []).some(k => allNos.has(k));
+    if (violates) {
+      SparkLog.warn('Call 1 violated hard no — requesting retry via fallback');
+      desc.kinks_involved = (desc.kinks_involved || []).filter(k => !allNos.has(k));
+    }
 
-    const getSection = (marker, nextMarker) => {
-      const m = markerRe(marker).exec(text);
-      if (!m) return '';
-      const cs = m.index + m[0].length;
-      if (nextMarker) {
-        const m2 = markerRe(nextMarker).exec(text.slice(cs));
-        if (m2) return text.slice(cs, cs + m2.index).trim();
-      }
-      return text.slice(cs).trim();
+    // Validate category
+    if (!validCats.has(desc.category)) desc.category = 'general';
+
+    // Apply initiator from descriptor
+    if (desc.initiator === 'B') { [piA, piB] = [piB, piA]; }
+    currentPiA = piA; currentPiB = piB;
+    currentA = gN(piA); currentB = gN(piB);
+
+    // Synthesise currentScene object from descriptor
+    currentScene = {
+      id:       '_ai_' + Date.now(),
+      _act:     desc.act,
+      title:    desc.title || 'Your scene',
+      cat:      desc.category || 'general',
+      kinks:    desc.kinks_involved || [],
+      req:      desc.requires_props || [],
+      _firstTime: desc.first_time_elements || [],
+      _prepText: null, _sceneText: null, _finishText: null,
+      _finishTextA: null, _finishTextB: null,
     };
 
-    const prepContent   = getSection('PREP', 'SCENE');
-    const sceneContent_ = getSection('SCENE', 'FINISH');
-    const finishContent = getSection('FINISH', null);
-    // Also try without brackets in case AI used plain words
-    const _prepFallback   = !prepContent   ? getSection('prep',   'scene')   : '';
-    const _sceneFallback  = !sceneContent_ ? getSection('scene',  'finish')  : '';
-    const _finishFallback = !finishContent ? getSection('finish', null)       : '';
+    dbStep('sceneSelected', 'ok', '"' + currentScene.title + '" — ' + desc.act.slice(0,40));
+    SparkLog.info('scene:designed', { act: desc.act, cat: desc.category });
 
-    const _prep   = prepContent   || _prepFallback   || '';
-    const _scene  = sceneContent_ || _sceneFallback  || '';
-    const _finish = finishContent || _finishFallback || '';
-    const markersOk = !!(_prep && _scene && _finish);
-    dbStep('markersFound', markersOk ? 'ok' : (prepContent || sceneContent_ ? 'warn' : 'fail'),
-      (prepContent?'PREP ':'') + (sceneContent_?'SCENE ':'') + (finishContent?'FINISH':''));
-    if (_finish) {
-      currentScene._lastNarrative = _scene + '\n\n' + _finish;
-      currentScene._finishText = _finish;
+    // Update hint label with category flavour — makes dead time feel like progress
+    const catLabels = {
+      general:'an oral scene', penetration:'a penetration scene', butt:'an anal scene',
+      domination:'a dom/sub scene', restrictive:'a bondage scene', toys:'a toy scene',
+      touch:'a sensation scene', pain:'an impact scene', scenarios:'a roleplay scene',
+      clothing:'a clothing scene', intimacy:'an intimacy scene', positions:'a positions scene',
+    };
+    if (_label) _label.textContent = 'Writing ' + (catLabels[desc.category] || 'your scene') + '\u2026';
+    if (_bar) {
+      _bar.style.transition = 'width 12s cubic-bezier(0.1,0,0.3,1)';
+      _bar.style.width = '92%';
     }
 
-    // ── Staged waterfall population ──────────────────────────────────────
-    // Store parsed sections on scene for use by reveal functions
-    currentScene._prepText   = _prep;
-    currentScene._sceneText  = _scene  || text.trim(); // fallback full text
-    currentScene._finishText = _finish;
+    // ── CALL 2: Scene writing via Sonnet ─────────────────────────────────
+    const isLight  = currentMood === 'light';
+    const isMedium = currentMood === 'medium';
 
-    // Hide generating hint
-    const genHint = document.getElementById('sceneGeneratingHint');
-    const genBar  = document.getElementById('genProgressBar');
-    if (genBar)  genBar.style.width = '100%';
-    setTimeout(() => { if (genHint) genHint.style.display = 'none'; }, 300);
+    const explicitRule = isLight
+      ? 'This is a light/sensual scene. No explicit penetration or graphic language. Focus on touch, sensation, build-up, kissing, and anticipation. Keep language tasteful.'
+      : isMedium
+      ? 'This is a direct sexual scene. Be specific and physical. Name body parts. Describe the act clearly without being gratuitously graphic.'
+      : 'This is fully explicit and hardcore. Be completely graphic. Name every body part and act directly. Nothing held back.';
 
-    // Populate and reveal PREP stage only
-    const prepWrap  = document.getElementById('stagePrepWrap');
-    const prepEl    = document.getElementById('stagePrepText');
-    const revealBtn = document.getElementById('revealSceneBtn');
+    // Anal prep detection
+    const analKinks = ['b_sex','b_toy','b_dp','b_fist'];
+    const needsAnalPrep = currentScene.kinks.some(k => analKinks.some(ak => k.includes(ak)));
+    const prepNote = needsAnalPrep
+      ? '\n\n[PREP] IMPORTANT: This scene involves anal. The PREP section MUST include preparation steps: have ' + currentB + ' communicate readiness, then ' + currentA + ' should use fingers with lubricant to gently prepare ' + currentB + ' before anything else. Make this feel sensual and caring, not clinical.'
+      : '';
 
-    if (prepEl) prepEl.innerHTML = formatNarrative(_prep || _scene || text.trim());
+    // First-time framing — derived from descriptor's first_time_elements
+    const ftNote = currentScene._firstTime.length > 0
+      ? '\nNOTE: One or both partners are trying ' + currentScene._firstTime.slice(0,2).join(' and ') + ' for the first time. Write with a gentle, exploratory, encouraging tone for that element.'
+      : '';
 
-    setTimeout(() => {
-      if (prepWrap) prepWrap.style.display = 'block';
-      if (revealBtn) { revealBtn.disabled = false; }
-      prepWrap?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 320);
+    const ctx = buildSceneContext(piA, piB);
 
-    dbStep('rendered', 'ok', 'innerHTML set');
-    // Timer shown immediately at top (stage 1)
-    if (timerArea) { timerArea.style.display = 'block'; dbStep('timerReady', 'ok', 'visible'); }
+    const system2 =
+      'You write a single intimate act for a couples app called Spark. The couple will do ONE thing together for 5 minutes — not a sequence of acts.' +
+      '\n\nStructure your response using EXACTLY these section markers, each on its own line with nothing else on that line:' +
+      '\nPREP\nSCENE\nFINISH_A\nFINISH_B' +
+      '\n\n[PREP] rules: ONE sentence. The single position or prop setup needed. No sexual acts yet.' + prepNote +
+      '\n\n[SCENE] rules: EXACTLY 2 sentences. ONE physical act only — what ' + currentA + ' does to ' + currentB + ' for the full five minutes. ' + explicitRule + ftNote + ' No scene progression. No "then". Just the act, described directly.' +
+      '\n\n[FINISH_A] rules: How ' + currentA + ' finishes. TWO sentences. ' + (isLight
+        ? 'Sentence 1: how the act ends for ' + currentA + '. Sentence 2: brief tender aftercare.'
+        : 'MANDATORY SEQUENCE: Sentence 1: ' + currentB + ' actively stimulates ' + currentA + ' to orgasm — name the exact motion. Sentence 2: ' + currentA + ' orgasms explicitly. Only ' + currentA + ' finishes here.'
+      ) + ' No new scene.' +
+      '\n\n[FINISH_B] rules: How ' + currentB + ' finishes. TWO sentences. ' + (isLight
+        ? 'Sentence 1: how the act ends for ' + currentB + '. Sentence 2: brief tender aftercare.'
+        : 'MANDATORY SEQUENCE: Sentence 1: ' + currentA + ' actively stimulates ' + currentB + ' to orgasm — name the exact motion. Sentence 2: ' + currentB + ' orgasms explicitly. Only ' + currentB + ' finishes here.'
+      ) + ' No new scene.' +
+      '\n\n' + ctx;
 
-    sessionStorage.setItem('spark_fail_count', '0');
-    incrementSceneCount();
-    // Rating card is now shown after revealFinisher() — not here
-  });
+    const availProps = props.has('none') ? '' :
+      [...props].map(p => p.startsWith('custom:') ? p.slice(7) : p)
+        .filter(p => p !== 'none').join(', ');
+
+    const roleInstr = (function() {
+      const rA = currentRoles[piA] || 'either';
+      const rB = currentRoles[piB] || 'either';
+      if (rA === 'dom' && rB === 'sub') return currentA + ' is dominant throughout. ' + currentB + ' is submissive throughout.';
+      if (rA === 'sub' && rB === 'dom') return currentB + ' is dominant throughout. ' + currentA + ' is submissive throughout.';
+      if (rA === 'dom') return currentA + ' takes the dominant role.';
+      if (rA === 'sub') return currentA + ' is submissive. ' + currentB + ' leads.';
+      if (rB === 'dom') return currentB + ' takes the dominant role.';
+      if (rB === 'sub') return currentB + ' is submissive. ' + currentA + ' leads.';
+      return currentA + ' initiates. Either can lead naturally.';
+    })();
+
+    const prompt2 =
+      'Write a scene for ' + currentA + ' and ' + currentB + '.\n' +
+      'The act: ' + desc.act + '\n' +
+      'Scene title (flavour only, do not reproduce literally): "' + currentScene.title + '"\n' +
+      (currentNote  ? 'Couple specifically wants: "' + currentNote + '" — incorporate directly.\n' : '') +
+      (currentAvoid ? 'Do NOT include: "' + currentAvoid + '"\n' : '') +
+      (availProps   ? 'Props available: ' + availProps + '\n' : '') +
+      roleInstr + '\n\n' +
+      'Output [PREP], [SCENE], [FINISH_A], [FINISH_B] sections only. No preamble.';
+
+    dbStep('contextBuilt', 'ok', ctx.length + ' chars');
+
+    callClaudeStream(system2, prompt2, streamText, (text) => {
+      isGenerating = false;
+      if (newSceneBtn) { newSceneBtn.disabled = false; newSceneBtn.textContent = 'New scene'; }
+
+      if (!text || !text.trim()) return;
+
+      // Refusal detection
+      if (isRefusal(text)) {
+        SparkLog.warn('scene:refusal');
+        refusalRetries = (refusalRetries || 0) + 1;
+        if (refusalRetries < C.MAX_REFUSAL_RETRIES) {
+          setTimeout(() => _generateFullSceneInner(), 200);
+        } else {
+          refusalRetries = 0;
+          if (card) {
+            card.style.display = 'block';
+            if (streamText) streamText.innerHTML = '<div style="font-size:.85rem;color:var(--muted);padding:.5rem 0;">No scene available for this combination. Try adjusting the mood or note.</div>';
+          }
+          if (timerArea) timerArea.style.display = 'none';
+          if (newSceneBtn) { newSceneBtn.disabled = false; newSceneBtn.textContent = 'New scene'; }
+        }
+        return;
+      }
+      refusalRetries = 0;
+
+      // Parse sections
+      const markerRe = m => new RegExp('(?:^|\n)[*#\\-\\s]*\\[?' + m + '\\]?[*#\\-\\s]*:?[ \\t]*', 'i');
+      const getSection = (marker, nextMarker) => {
+        const m = markerRe(marker).exec(text);
+        if (!m) return '';
+        const cs = m.index + m[0].length;
+        if (nextMarker) {
+          const m2 = markerRe(nextMarker).exec(text.slice(cs));
+          if (m2) return text.slice(cs, cs + m2.index).trim();
+        }
+        return text.slice(cs).trim();
+      };
+
+      const _prep    = getSection('PREP',     'SCENE')    || getSection('prep',     'scene')    || '';
+      const _scene   = getSection('SCENE',   'FINISH_A')  || getSection('scene',   'finish_a') || '';
+      const _finishA = getSection('FINISH_A','FINISH_B')  || getSection('finish_a','finish_b') || getSection('FINISH', null) || '';
+      const _finishB = getSection('FINISH_B', null)       || getSection('finish_b', null)      || '';
+      const _finish  = _finishB || _finishA || '';
+
+      const markersOk = !!(_prep && _scene && (_finishA || _finishB));
+      dbStep('markersFound', markersOk ? 'ok' : 'warn',
+        (_prep?'PREP ':'') + (_scene?'SCENE ':'') + (_finishA?'FINISH_A ':'') + (_finishB?'FINISH_B':''));
+
+      if (_finish) {
+        currentScene._lastNarrative = _scene + '\n\n' + _finish;
+        currentScene._finishText  = _finish;
+        currentScene._finishTextA = _finishA;
+        currentScene._finishTextB = _finishB;
+      }
+      currentScene._prepText  = _prep;
+      currentScene._sceneText = _scene || text.trim();
+      currentScene._finishText = _finish;
+
+      // Push to scene history for anti-repeat
+      _pushSceneHistory({
+        act:      desc.act,
+        category: desc.category,
+        kinks:    desc.kinks_involved || [],
+        ts:       Date.now(),
+      });
+
+      // Hide generating hint
+      const genHint = document.getElementById('sceneGeneratingHint');
+      const genBar  = document.getElementById('genProgressBar');
+      if (genBar)  genBar.style.width = '100%';
+      setTimeout(() => { if (genHint) genHint.style.display = 'none'; }, 300);
+
+      // Populate and reveal PREP stage
+      const prepWrap  = document.getElementById('stagePrepWrap');
+      const prepEl    = document.getElementById('stagePrepText');
+      const revealBtn = document.getElementById('revealSceneBtn');
+      if (prepEl) prepEl.innerHTML = formatNarrative(_prep || _scene || text.trim());
+      setTimeout(() => {
+        if (prepWrap) prepWrap.style.display = 'block';
+        if (revealBtn) revealBtn.disabled = false;
+        prepWrap?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 320);
+
+      if (timerArea) { timerArea.style.display = 'block'; }
+      incrementSceneCount();
+      SparkLog.info('scene:done', { act: desc.act });
+    }); // end callClaudeStream
+
+  }); // end callClaudeJSON.then
 }
+
 
 
 
@@ -4301,40 +4387,60 @@ function _generateFullSceneInner() {
 //  THEIR TURN
 // ═══════════════════════════════════════════
 function showTheirTurnBtn() {
-  const btn = document.getElementById('theirTurnBtn');
-  if (btn) { btn.disabled = false; btn.classList.add('visible'); }
+  const wrap = document.getElementById('theirTurnBtns');
+  const nameA = document.getElementById('theirTurnNameA');
+  const nameB = document.getElementById('theirTurnNameB');
+  if (nameA) nameA.textContent = gN(currentPiA);
+  if (nameB) nameB.textContent = gN(currentPiB);
+  if (wrap) {
+    wrap.style.display = 'flex';
+    // Re-enable both buttons
+    ['theirTurnBtnA','theirTurnBtnB'].forEach(id => {
+      const b = document.getElementById(id);
+      if (b) b.disabled = false;
+    });
+  }
 }
 
 function hideTheirTurnBtn() {
-  const btn   = document.getElementById('theirTurnBtn');
-  const panel = document.getElementById('theirTurnPanel');
-  if (btn)   { btn.disabled = true; btn.classList.remove('visible'); }
-  if (panel) { panel.classList.remove('visible'); }
+  const wrap = document.getElementById('theirTurnBtns');
+  if (wrap) wrap.style.display = 'none';
+  ['theirTurnPanelA','theirTurnPanelB'].forEach(id => {
+    const p = document.getElementById(id);
+    if (p) { p.style.display = 'none'; p.classList.remove('visible'); }
+  });
 }
 
-function generateTheirTurn() {
-  const btn   = document.getElementById('theirTurnBtn');
-  const panel = document.getElementById('theirTurnPanel');
-  const label = document.getElementById('theirTurnLabel');
-  const body  = document.getElementById('theirTurnText');
+function generateTheirTurn(finisherPi) {
+  // finisherPi: 0 = piA finishes (currentPiA receives), 1 = piB finishes (currentPiB receives)
+  // The person finishing (receiver) is the one named in the button
+  const receiverPi = finisherPi === 0 ? currentPiA : currentPiB;
+  const giverPi    = finisherPi === 0 ? currentPiB : currentPiA;
+  const receiver   = gN(receiverPi);
+  const giver      = gN(giverPi);
+
+  const suffix     = finisherPi === 0 ? 'A' : 'B';
+  const panel      = document.getElementById('theirTurnPanel' + suffix);
+  const label      = document.getElementById('theirTurnLabel' + suffix);
+  const body       = document.getElementById('theirTurnText' + suffix);
+  const btn        = document.getElementById('theirTurnBtn' + suffix);
+
   if (!panel || !body || isGenerating) return;
 
-  // "Their turn" = the receiver (currentPiB) who hasn't finished
-  const receiver = gN(currentPiB);
-  const giver    = gN(currentPiA);
-
-  if (label) label.textContent = receiver + '\u2019s turn';
+  if (label) label.textContent = 'How ' + receiver + ' finishes';
   body.innerHTML = '<span class="their-turn-generating">Writing\u2026</span>';
+  panel.style.display = 'block';
   panel.classList.add('visible');
   panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  if (btn) { btn.disabled = true; btn.textContent = 'Writing\u2026'; }
+  if (btn) { btn.disabled = true; btn.innerHTML = '&#x1F525; Writing\u2026'; }
 
   isGenerating = true;
   psReset();
   SparkLog.info('theirTurn:start', { receiver });
 
   const ctx = buildSceneContext(currentPiA, currentPiB);
-  const prev = currentScene?._lastNarrative || currentScene?._scene || currentScene?.title || 'the scene';
+  const prev = currentScene?._lastNarrative || currentScene?._sceneText || currentScene?.title || 'the scene';
+
   const explicit = currentMood === 'light'
     ? 'Sensual and intimate. No graphic language required.'
     : currentMood === 'hard'
@@ -4345,27 +4451,28 @@ function generateTheirTurn() {
     'You write a very short intimate scene finisher for a couples app called Spark. ' +
     'Exactly 2 sentences. ' + explicit + ' ' +
     'CRITICAL RULES: ' +
-    'This is "their turn" — ' + receiver + ' now gets to climax. ' +
-    giver + ' performs a specific continuous physical act (stroking, thrusting, licking, rubbing) on ' + receiver + '. ' +
-    'Sentence 1: what ' + giver + ' does with their hand/mouth/body — the exact motion — and how ' + receiver + ' responds/sounds. ' +
+    giver + ' performs a specific continuous physical act (stroking, thrusting, licking, rubbing) to bring ' + receiver + ' to orgasm. ' +
+    'Sentence 1: what ' + giver + ' does with their hand/mouth/body — the exact motion — and how ' + receiver + ' responds. ' +
     'Sentence 2: ' + receiver + ' orgasms. Be explicit about the orgasm. ' +
-    'Do NOT write a static position. Do NOT write about ' + giver + ' finishing — only ' + receiver + '. ' +
+    'Do NOT write a static position. Do NOT write about anyone else finishing — only ' + receiver + '. ' +
     'No preamble, no section markers. Output only the scene text.\n\n' + ctx;
 
   const prompt =
     'The couple just did: "' + prev.slice(0, 200) + '"\n\n' +
-    'Now it is ' + receiver + '\'s turn to receive pleasure and orgasm.\n' +
-    giver + ' brings ' + receiver + ' to orgasm using a specific physical motion. ' +
-    'Sentence 1: ' + giver + ' [specific continuous motion — stroking/licking/thrusting] ' + receiver + '\'s [body part] and ' + receiver + ' [responds — moans/arches/grips/etc]. ' +
-    'Sentence 2: ' + receiver + ' orgasms. Describe it explicitly.\n' +
-    'Start sentence 1 with ' + giver + '\'s name. Output 2 sentences only.';
+    giver + ' now brings ' + receiver + ' to orgasm.\n' +
+    'Sentence 1: ' + giver + ' [specific continuous motion] ' + receiver + '\u2019s [body part] and ' + receiver + ' [responds]. ' +
+    'Sentence 2: ' + receiver + ' orgasms — describe it explicitly.\n' +
+    'Start with ' + giver + '\u2019s name. 2 sentences only.';
 
   callClaudeStream(system, prompt, body, function(text) {
     isGenerating = false;
-    if (btn) { btn.disabled = false; btn.textContent = '\uD83D\uDD25 Their turn again'; }
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '&#x1F525; Again for ' + receiver + '?';
+    }
     if (text && text.trim()) {
-      body.innerHTML = formatNarrative(text.trim());
-      SparkLog.info('theirTurn:done', { chars: text.length });
+      typewriterReveal(body, formatNarrative(text.trim()), null);
+      SparkLog.info('theirTurn:done', { receiver, chars: text.length });
     } else {
       body.innerHTML = '<span class="their-turn-generating">Try again.</span>';
     }
@@ -4728,7 +4835,7 @@ function isRefusal(text) {
   if (!text) return false;
   const t = text.toLowerCase();
   // If response contains scene markers it's always real content
-  if (text.includes('[PREP]') || text.includes('[SCENE]') || text.includes('[FINISH]')) return false;
+  if (text.includes('[PREP]') || text.includes('[SCENE]') || text.includes('[FINISH_A]') || text.includes('[FINISH]')) return false;
   const refusalPhrases = [
     "i can't", "i cannot", "i'm not able", "i am not able",
     "i won't", "i will not", "i'm unable", "i am unable",
