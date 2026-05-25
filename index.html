@@ -82,9 +82,9 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
   cursor:pointer;font-family:'DM Sans',sans-serif;padding:.15rem .4rem;
   font-weight:600;letter-spacing:.04em}
 
-/* TIMER STICKY */
-.timer-sticky-wrap{position:sticky;bottom:0;background:var(--bg);
-  border-top:1px solid var(--border);padding:.75rem 0 .5rem;margin-top:.5rem;z-index:20}
+/* TIMER STRIP */
+.timer-sticky-wrap{background:var(--bg);border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);padding:.5rem 1.2rem;margin:0;}
 
 /* PHASE ORIENTATION */
 .phase-hint{font-size:.75rem;color:var(--muted);text-align:center;
@@ -310,14 +310,14 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 
 /* Timer */
 .timer-area{background:var(--bg);border-top:1px solid var(--border);padding:1.4rem 1.6rem;text-align:center}
-.timer-inner{text-align:center;background:var(--bg)}
-.timer-tag{font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.25rem}
-.timer-num{font-family:'DM Serif Display',serif;font-size:3.4rem;font-weight:400;
-  letter-spacing:-.02em;line-height:1;color:var(--ink);margin-bottom:.3rem;transition:color .3s}
+.timer-inner{display:flex;align-items:center;gap:.75rem;background:var(--bg)}
+.timer-tag{font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);white-space:nowrap;}
+.timer-num{font-family:'DM Serif Display',serif;font-size:1.35rem;font-weight:400;
+  letter-spacing:-.01em;line-height:1;color:var(--ink);transition:color .3s;min-width:3.5rem;}
 .timer-num.warn{color:var(--blush)}
 .timer-num.done{color:var(--sage)}
-.timer-hint{font-size:.72rem;color:var(--muted);margin-bottom:1.1rem}
-.timer-btns{display:flex;gap:.45rem;justify-content:center;flex-wrap:wrap}
+.timer-hint{display:none;}
+.timer-btns{display:flex;gap:.35rem;margin-left:auto;flex-wrap:nowrap;}
 .t-btn{padding:.5rem 1.1rem;border-radius:50px;border:1.5px solid var(--border);background:var(--card);
   color:var(--ink2);font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:500;
   cursor:pointer;transition:all .15s;box-shadow:var(--sh)}
@@ -542,9 +542,8 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 .debug-text{font-family:monospace;font-size:.68rem;color:#a8e6cf;line-height:1.5;
   white-space:pre-wrap;word-break:break-word;max-height:300px;overflow-y:auto}
 
-/* PLAY ACTION BAR — always visible at bottom */
+/* PLAY ACTION BAR */
 .play-action-bar{
-  position:sticky;bottom:0;z-index:20;
   background:var(--bg);
   border-top:1px solid var(--border);
   padding:.75rem .1rem .5rem;
@@ -552,13 +551,19 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 }
 /* STAGED WATERFALL REVEAL */
 .btn-stage-reveal{
-  width:100%;padding:.75rem 1rem;border-radius:var(--r);
-  border:1.5px solid var(--border2);background:var(--bg);
-  font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;
-  color:var(--ink2);cursor:pointer;transition:all .18s;display:block;
+  width:100%;padding:.55rem 1rem;border-radius:var(--r);
+  border:1px solid var(--border2);background:transparent;
+  font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:500;
+  color:var(--ink2);cursor:pointer;transition:all .18s;display:block;text-align:left;
 }
-.btn-stage-reveal:hover{background:var(--ink);color:#fff;border-color:var(--ink);}
-#stagePrepWrap,#stageSceneWrap,#stageFinishWrap{
+.btn-stage-reveal:hover{border-color:var(--ink);color:var(--ink);}
+/* quiet text link for Try something else */
+.play-text-link{background:none;border:none;font-family:'DM Sans',sans-serif;
+  font-size:.75rem;color:var(--muted);cursor:pointer;padding:.3rem 0;
+  transition:color .15s;display:inline-block;}
+.play-text-link:hover{color:var(--ink2);}
+.play-text-link:disabled{opacity:.4;cursor:not-allowed;}
+#stagePrepWrap,#stageSceneWrap{
   animation:stageReveal .35s cubic-bezier(.16,1,.3,1);
 }
 @keyframes stageReveal{
@@ -567,23 +572,30 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 }
 
 /* THEIR TURN */
-.their-turn-panel{margin-top:.75rem;border-radius:var(--r);overflow:hidden;
-  border:1.5px solid var(--blush-mid);background:var(--blush-bg);display:none;}
+.their-turn-panel{margin-top:1.2rem;display:none;}
 .their-turn-panel.visible{display:block;}
-.their-turn-header{display:flex;align-items:center;gap:.5rem;
-  padding:.7rem 1.2rem;border-bottom:1px solid var(--blush-mid);}
-.their-turn-icon{font-size:1.1rem;}
-.their-turn-label{font-size:.7rem;font-weight:700;letter-spacing:.1em;
+.their-turn-header{padding:.2rem 1.6rem .5rem;}
+.their-turn-icon{display:none;}
+.their-turn-label{font-size:.58rem;font-weight:700;letter-spacing:.13em;
   text-transform:uppercase;color:var(--blush);}
-.their-turn-body{padding:1rem 1.4rem 1.2rem;font-family:'Fraunces',Georgia,serif;font-size:clamp(1.05rem,3.2vw,1.18rem);font-weight:300;font-style:normal;line-height:1.9;color:var(--ink);letter-spacing:.005em;}
+.their-turn-body{padding:.25rem 1.6rem 1.2rem;font-family:'Fraunces',Georgia,serif;font-size:clamp(1.05rem,3.2vw,1.18rem);font-weight:300;font-style:normal;line-height:1.9;color:var(--ink);letter-spacing:.005em;}
 .their-turn-generating{color:var(--muted);font-family:'DM Sans',sans-serif;
   font-size:.82rem;font-style:italic;}
+/* finish-btn: quiet ghost pill shown inside scene card */
+.finish-btn{display:none;width:100%;padding:.55rem 1rem;border-radius:var(--r);
+  border:1px solid var(--border2);background:transparent;
+  font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:500;
+  color:var(--ink2);cursor:pointer;transition:all .15s;text-align:left;}
+.finish-btn:hover{border-color:var(--blush-mid);color:var(--blush);}
+.finish-btn.visible{display:block;}
+.finish-btn:disabled{opacity:.4;cursor:not-allowed;}
+/* legacy — keep for any remaining references */
 .btn-their-turn{width:100%;padding:.8rem;border-radius:var(--r);
-  border:1.5px solid var(--blush-mid);background:var(--blush-bg);
-  font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;
-  color:var(--blush);cursor:pointer;transition:all .15s;margin-top:.5rem;display:none;}
+  border:1px solid var(--border2);background:transparent;
+  font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:500;
+  color:var(--ink2);cursor:pointer;transition:all .15s;margin-top:.35rem;display:none;}
 .btn-their-turn.visible{display:block;}
-.btn-their-turn:disabled{opacity:.5;cursor:not-allowed;}
+.btn-their-turn:disabled{opacity:.4;cursor:not-allowed;}
 
 /* ══════════ SURVEY v2 — Macro-to-Micro ══════════ */
 
@@ -1304,15 +1316,24 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 <!-- ════════ PLAY ════════ -->
 <div class="screen" id="screenPlay">
 
-  <!-- Phone holder banner — shown when scene is revealed -->
-  <div id="phoneHolderBanner" style="display:none;background:var(--sky-bg);border:1px solid var(--sky);border-radius:var(--rs);padding:.6rem 1rem;margin-bottom:.75rem;font-size:.78rem;color:var(--sky);font-weight:500;text-align:center;transition:opacity .6s;"></div>
+  <!-- Phone holder banner -->
+  <div id="phoneHolderBanner" style="display:none;background:var(--sky-bg);border:1px solid var(--sky);border-radius:var(--rs);padding:.5rem 1rem;margin-bottom:.6rem;font-size:.75rem;color:var(--sky);font-weight:500;text-align:center;transition:opacity .6s;"></div>
 
-  <!-- Pipeline status bar -->
+  <!-- Pipeline status bar (debug only) -->
   <div class="pipeline-bar" id="pipelineBar">
     <span class="ps-item"><span class="ps-dot ps-dot-pending" id="ps-proxy-dot"></span><span class="ps-text-pending" id="ps-proxy-text">proxy…</span></span>
     <span class="ps-item"><span class="ps-dot ps-dot-pending" id="ps-key-dot"></span><span class="ps-text-pending" id="ps-key-text">key…</span></span>
     <span class="ps-item"><span class="ps-dot ps-dot-pending" id="ps-fetch-dot"></span><span class="ps-text-pending" id="ps-fetch-text">fetch…</span></span>
     <span class="ps-item"><span class="ps-dot ps-dot-pending" id="ps-stream-dot"></span><span class="ps-text-pending" id="ps-stream-text">stream…</span></span>
+  </div>
+
+  <!-- Compact timer strip — shown above scene once ready -->
+  <div class="timer-sticky-wrap" id="timerArea" style="display:none;">
+    <div class="timer-inner">
+      <div class="timer-tag" id="timerPhaseLabel">Timer</div>
+      <div class="timer-num" id="timerDisplay">05:00</div>
+      <div class="timer-btns" id="timerBtns"></div>
+    </div>
   </div>
 
   <div class="no-opts" id="noOpts">No matching scenes found. Adjust your preferences in Settings.</div>
@@ -1325,7 +1346,7 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
       <button onclick="retryScene()">Try again</button>
     </div>
 
-    <!-- Generating hint (shown while streaming) -->
+    <!-- Generating hint -->
     <div id="sceneGeneratingHint" style="display:none;padding:1.6rem;text-align:center;">
       <div id="genHintLabel" style="font-family:'DM Sans',sans-serif;font-size:.82rem;color:var(--muted);font-style:italic;margin-bottom:.75rem;">Designing your scene…</div>
       <div style="height:3px;border-radius:99px;background:var(--border);overflow:hidden;max-width:200px;margin:0 auto;">
@@ -1333,57 +1354,43 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
       </div>
     </div>
 
-    <!-- STAGE 1: PREP — shown first -->
+    <!-- STAGE 1: PREP -->
     <div id="stagePrepWrap" style="display:none;">
       <div style="padding:1.4rem 1.6rem 1rem;">
-        <div style="font-size:.6rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--sage);margin-bottom:.85rem;" id="stagePrepLabel">Before you start the timer</div>
+        <div style="font-size:.58rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--sage);margin-bottom:.85rem;" id="stagePrepLabel">Before you start</div>
         <div id="stagePrepText" style="font-family:'Fraunces',Georgia,serif;font-size:clamp(.95rem,2.8vw,1.05rem);font-weight:300;line-height:1.85;color:var(--ink2);letter-spacing:.005em;"></div>
       </div>
       <div style="padding:.2rem 1.2rem 1.2rem;">
-        <button class="btn btn-ink" id="revealSceneBtn" onclick="revealScene()" style="width:100%;">We're ready →</button>
+        <button class="btn-stage-reveal" id="revealSceneBtn" onclick="revealScene()">We’re ready →</button>
       </div>
     </div>
 
-    <!-- STAGE 2: SCENE — revealed on tap -->
+    <!-- STAGE 2: SCENE -->
     <div id="stageSceneWrap" style="display:none;">
       <div style="padding:1.2rem 1.6rem 1rem;border-top:1px solid var(--border);">
-        <div id="stageSceneTitle" style="font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.75rem;"></div> style="font-family:'Fraunces',Georgia,serif;font-size:clamp(1.05rem,3.2vw,1.18rem);font-weight:300;font-style:normal;line-height:1.9;color:var(--ink);letter-spacing:.005em;"></div>
+        <div id="stageSceneTitle" style="font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.75rem;"></div>
+        <div id="stageSceneText" style="font-family:'Fraunces',Georgia,serif;font-size:clamp(1.05rem,3.2vw,1.18rem);font-weight:300;line-height:1.9;color:var(--ink);letter-spacing:.005em;"></div>
       </div>
 
-      <!-- Timer sits between scene and finisher -->
-      <div class="timer-sticky-wrap" id="timerArea" style="display:none;margin:.4rem 0 0;">
-        <div class="timer-inner" style="padding:.85rem 1.2rem;">
-          <div class="timer-tag" id="timerPhaseLabel">Duration</div>
-          <div class="timer-num" id="timerDisplay">05:00</div>
-          <div class="timer-hint" id="timerSub">Minimum 5 minutes</div>
-          <div class="timer-btns" id="timerBtns"></div>
+      <!-- Finish buttons — shown after scene typewriters in -->
+      <div id="finishBtns" style="display:none;padding:.5rem 1.2rem 1.2rem;border-top:1px solid var(--border);margin-top:.5rem;">
+        <div style="font-size:.58rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);margin-bottom:.6rem;" id="stageFinishLabel">How do you finish?</div>
+        <div style="display:flex;flex-direction:column;gap:.4rem;">
+          <button class="finish-btn visible" id="finishBtnA" onclick="generateTheirTurn(0)">Tell us how <span id="finishNameA"></span> finishes →</button>
+          <button class="finish-btn visible" id="finishBtnB" onclick="generateTheirTurn(1)">Tell us how <span id="finishNameB"></span> finishes →</button>
         </div>
       </div>
-
-      <div style="padding:.75rem 1.2rem 1.2rem;">
-        <button class="btn-stage-reveal" id="keepGoingBtn" onclick="revealFinisher()" style="width:100%;">How do we finish? →</button>
-      </div>
     </div>
 
-    <!-- STAGE 3: FINISHER — revealed on keep going -->
-    <div id="stageFinishWrap" style="display:none;">
-      <div style="padding:1.2rem 1.6rem 1rem;border-top:1px solid var(--border);">
-        <div style="font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--blush);margin-bottom:.6rem;" id="stageFinishLabel">Finish</div>
-        <div id="stageFinishText" style="font-family:'Fraunces',Georgia,serif;font-size:clamp(1.05rem,3.2vw,1.18rem);font-weight:300;font-style:normal;line-height:1.9;color:var(--ink);letter-spacing:.005em;color:var(--ink2);"></div>
-      </div>
-    </div>
-
-    <!-- Their Turn panels — one per person, revealed separately -->
-    <div class="their-turn-panel" id="theirTurnPanelA" style="display:none;">
+    <!-- Their Turn panels — one per person -->
+    <div class="their-turn-panel" id="theirTurnPanelA">
       <div class="their-turn-header">
-        <span class="their-turn-icon">&#x1F525;</span>
         <span class="their-turn-label" id="theirTurnLabelA"></span>
       </div>
       <div class="their-turn-body" id="theirTurnTextA"></div>
     </div>
-    <div class="their-turn-panel" id="theirTurnPanelB" style="display:none;">
+    <div class="their-turn-panel" id="theirTurnPanelB">
       <div class="their-turn-header">
-        <span class="their-turn-icon">&#x1F525;</span>
         <span class="their-turn-label" id="theirTurnLabelB"></span>
       </div>
       <div class="their-turn-body" id="theirTurnTextB"></div>
@@ -1393,46 +1400,39 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
   <!-- Hidden stream sink -->
   <div id="sceneStreamText" style="display:none;"></div>
 
-  <!-- Sticky bottom action bar -->
+  <!-- Action bar — not sticky -->
   <div class="play-action-bar" id="playActionBar">
-    <button class="btn btn-ink" id="newSceneBtn" onclick="generateInPlace()" style="width:100%;margin-bottom:.45rem;">Try something else</button>
-    <div id="theirTurnBtns" style="display:none;gap:.4rem;flex-direction:column;margin-bottom:.45rem;">
-      <button class="btn-their-turn" id="theirTurnBtnA" onclick="generateTheirTurn(0)" style="width:100%;">Finish <span id="theirTurnNameA"></span> →</button>
-      <button class="btn-their-turn" id="theirTurnBtnB" onclick="generateTheirTurn(1)" style="width:100%;">Finish <span id="theirTurnNameB"></span> →</button>
+    <div style="text-align:center;margin-bottom:.5rem;">
+      <button class="play-text-link" id="newSceneBtn" onclick="generateInPlace()">Try something else</button>
     </div>
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:0 .1rem;margin-top:.35rem;">
-      <button onclick="goPreScene(true)" style="background:none;border:none;font-size:.75rem;color:var(--muted);cursor:pointer;font-family:inherit;padding:.3rem 0;">← Adjust the mood</button>
-      <button id="saveSceneBtn" onclick="saveCurrentScene()" style="background:none;border:none;font-size:.75rem;color:var(--sky);cursor:pointer;font-family:inherit;padding:.3rem 0;">Save this one</button>
-      <button onclick="confirmLeavePlay()" style="background:none;border:none;font-size:.75rem;color:var(--muted);cursor:pointer;font-family:inherit;padding:.3rem 0;">⚙ Back to settings</button>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:0 .1rem;">
+      <button onclick="goPreScene(true)" style="background:none;border:none;font-size:.72rem;color:var(--muted);cursor:pointer;font-family:inherit;padding:.3rem 0;">← Adjust mood</button>
+      <button id="saveSceneBtn" onclick="saveCurrentScene()" style="background:none;border:none;font-size:.72rem;color:var(--sky);cursor:pointer;font-family:inherit;padding:.3rem 0;">♡ Save</button>
+      <button onclick="confirmLeavePlay()" style="background:none;border:none;font-size:.72rem;color:var(--muted);cursor:pointer;font-family:inherit;padding:.3rem 0;">⚙ Settings</button>
     </div>
   </div>
 
-  <!-- Debug panel — shows full prompt when debug mode on -->
+  <!-- Debug panels -->
   <div class="debug-panel" id="debugPanel">
     <div class="debug-panel-label">Debug — Full AI prompt</div>
     <div class="debug-text" id="debugText"></div>
   </div>
-
-  <!-- Debug event log — last 20 SparkLog entries -->
   <div class="debug-panel" id="debugEventPanel" style="margin-top:.5rem;">
     <div class="debug-panel-label">Event log</div>
     <div class="debug-text" id="debugEventLog" style="color:#8ec6e6;font-size:.63rem;"></div>
   </div>
-
-
-  <!-- Debug checklist — pipeline status -->
   <div class="debug-checklist" id="debugChecklist">
     <div class="debug-checklist-title">Pipeline Status</div>
     <div id="debugCheckItems"></div>
   </div>
 
-  <!-- Post-scene quick rate (shown after 3rd+ scene) -->
+  <!-- Post-scene quick rate -->
   <div class="rate-card" id="rateCard">
     <div class="rate-card-title">How did that feel?</div>
-    <div class="rate-card-sub">Helps Spark choose better scenes — won't repeat the same thing</div>
+    <div class="rate-card-sub">Helps Spark choose better scenes — won’t repeat the same thing</div>
     <div class="rate-btns">
-      <button class="rate-btn" onclick="rateScene('love')">❤️ That was us</button>
-      <button class="rate-btn" onclick="rateScene('ok')">👍 Enjoyed it</button>
+      <button class="rate-btn" onclick="rateScene('love')">&#x2764;&#xFE0F; That was us</button>
+      <button class="rate-btn" onclick="rateScene('ok')">&#x1F44D; Enjoyed it</button>
       <button class="rate-btn" onclick="rateScene('not')">Not tonight</button>
     </div>
   </div>
@@ -2034,7 +2034,7 @@ const ARCHETYPES = [
     id: 'tender',
     icon: '🌿',
     title: 'Tender',
-    sub: 'Slow, sensual, lots of touch',
+    sub: 'Unhurried, close, every touch deliberate',
     fills: [
       { cats: ['intimacy'], interest: 'fav',  exp: 'comfortable' },
       { cats: ['clothing'], interest: 'like', exp: 'comfortable' },
@@ -2047,8 +2047,8 @@ const ARCHETYPES = [
   {
     id: 'passionate',
     icon: '🔥',
-    title: 'Passionate',
-    sub: 'Direct, hungry, physical',
+    title: 'Consumed',
+    sub: 'Urgent wanting, hands everywhere, nothing held back',
     fills: [
       { cats: ['intimacy','general','penetration','positions'], interest: 'fav', exp: 'comfortable' },
       { cats: ['clothing','toys','touch'], interest: 'like', exp: 'tried' },
@@ -2061,7 +2061,7 @@ const ARCHETYPES = [
     id: 'playful',
     icon: '🎭',
     title: 'Playful',
-    sub: 'Teasing, roleplay, surprises',
+    sub: 'Flirty, teasing, a little unpredictable',
     fills: [
       { cats: ['scenarios','clothing'], interest: 'fav', exp: 'tried' },
       { cats: ['general','toys'], interest: 'like', exp: 'comfortable' },
@@ -2072,8 +2072,8 @@ const ARCHETYPES = [
   {
     id: 'power',
     icon: '⛓',
-    title: 'Power Exchange',
-    sub: 'Dom/sub dynamics',
+    title: 'Surrender',
+    sub: 'One leads, one lets go — trust is the whole point',
     fills: [
       { cats: ['domination','restrictive'], interest: 'fav', exp: 'tried' },
       { ids:  ['r_cuffs','r_blindfold','r_rope','d_domsub','d_discipline','d_begging'], interest: 'fav', exp: 'comfortable' },
@@ -2084,8 +2084,8 @@ const ARCHETYPES = [
   {
     id: 'anal',
     icon: '🍑',
-    title: 'Backdoor Curious',
-    sub: 'Anal-inclusive',
+    title: 'Curious Together',
+    sub: 'Exploring something new, taking your time',
     fills: [
       { cats: ['butt'], interest: 'like', exp: 'tried' },
       { ids:  ['b_tease_give','b_tease_receive','b_toy_give','b_toy_receive'], interest: 'fav', exp: 'tried' },
@@ -2096,8 +2096,8 @@ const ARCHETYPES = [
   {
     id: 'voyeur',
     icon: '👀',
-    title: 'Voyeur / Exhibitionist',
-    sub: 'Being seen, watching',
+    title: 'Eye Contact',
+    sub: 'The charge of being watched, the thrill of watching',
     fills: [
       { ids:  ['sc_exhib','sc_voyeur'], interest: 'fav', exp: 'tried' },
       { cats: ['scenarios'], interest: 'like', exp: 'tried' },
@@ -2109,7 +2109,7 @@ const ARCHETYPES = [
     id: 'toybox',
     icon: '🎮',
     title: 'Toy-Forward',
-    sub: 'Props and gear central',
+    sub: 'Vibrators, props, extra sensation — the more the better',
     fills: [
       { cats: ['toys'], interest: 'fav', exp: 'comfortable' },
       { ids:  ['t_dildo','t_vibe','t_wand','t_plug'], interest: 'fav', exp: 'comfortable' },
@@ -2120,8 +2120,8 @@ const ARCHETYPES = [
   {
     id: 'adventurous',
     icon: '🌶',
-    title: 'Adventurous',
-    sub: 'Everything except hard nos',
+    title: 'All In',
+    sub: 'Open to most things, up for whatever feels good',
     fills: [
       { cats: ['intimacy','clothing','general','penetration','positions','toys','touch','butt','restrictive','domination','scenarios','pain'], interest: 'like', exp: 'tried' },
     ],
@@ -3813,13 +3813,17 @@ function playSavedScene(id) {
   currentA = s.nameA; currentB = s.nameB;
   currentMood = s.mood;
   currentLocation = s.location || 'home';
-  // Synthesise a minimal currentScene
+  // Synthesise a minimal currentScene — restore all finish variants
   currentScene = { id: s.sceneId, title: s.sceneTitle, kinks: [], cat: '',
-    _prepText: s.prep, _sceneText: s.scene, _finishText: s.finish };
+    _prepText: s.prep, _sceneText: s.scene,
+    _finishText:  s.finish  || '',
+    _finishTextA: s.finishA || '',
+    _finishTextB: s.finishB || '',
+  };
   showScreen('screenPlay');
   document.body.classList.add('header-compact');
   // Reset and display stages
-  ['stagePrepWrap','stageSceneWrap','stageFinishWrap'].forEach(id2 => {
+  ['stagePrepWrap','stageSceneWrap'].forEach(id2 => {
     const el = document.getElementById(id2); if (el) el.style.display = 'none';
   });
   const genHint = document.getElementById('sceneGeneratingHint');
@@ -4140,18 +4144,21 @@ function formatNarrative(text) {
 //  PLAY
 // ═══════════════════════════════════════════
 function generateInPlace() {
+  // Abort any in-flight stream before regenerating
+  if (streamController) { try { streamController.abort(); } catch {} streamController = null; }
+  isGenerating = false;
   escalationRevealed = false;
   refusalRetries = 0;
 
   // Reset all stage panels so the waterfall works on every generation
-  ['stagePrepWrap','stageSceneWrap','stageFinishWrap'].forEach(id => {
+  ['stagePrepWrap','stageSceneWrap'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.display = 'none';
   });
   const rb = document.getElementById('revealSceneBtn');
   if (rb) { rb.style.display = 'block'; rb.disabled = true; }
-  const kb = document.getElementById('keepGoingBtn');
-  if (kb) kb.style.display = 'block';
+  const fb = document.getElementById('finishBtns');
+  if (fb) fb.style.display = 'none';
   hideTheirTurnBtn();
 
   const card = document.getElementById('sceneCard');
@@ -4184,19 +4191,33 @@ function revealScene() {
   if (!sceneWrap || !sceneEl) return;
 
   const sceneText = currentScene?._sceneText || '';
-  if (sceneTitle) sceneTitle.textContent = currentScene?.title || '';
+  if (sceneTitle) {
+    const vc = VOICE_CONFIG[currentVoice] || VOICE_CONFIG.vivid;
+    sceneTitle.textContent = (vc.headings.scene ? vc.headings.scene.toUpperCase() : (currentScene?.title || '').toUpperCase());
+  }
   const formattedHtml = formatNarrative(sceneText);
 
   sceneWrap.style.display = 'block';
   if (revealBtn) revealBtn.style.display = 'none';
-  const keepBtn = document.getElementById('keepGoingBtn');
-  if (keepBtn) { keepBtn.style.display = 'none'; } // hide until typewriter done
 
   setTimeout(() => sceneWrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
 
   typewriterReveal(sceneEl, formattedHtml, () => {
-    // Show "Time to climax" button only after text fully revealed
-    if (keepBtn) keepBtn.style.display = 'block';
+    // Show finish buttons after text fully revealed
+    const fb = document.getElementById('finishBtns');
+    if (fb) {
+      const nameA = document.getElementById('finishNameA');
+      const nameB = document.getElementById('finishNameB');
+      if (nameA) nameA.textContent = gN(currentPiA);
+      if (nameB) nameB.textContent = gN(currentPiB);
+      fb.style.display = 'block';
+      fb.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    // Show rating card after 3rd+ scene
+    setTimeout(() => {
+      const rateCard = document.getElementById('rateCard');
+      if (rateCard && sceneCount >= 3) rateCard.classList.add('visible');
+    }, 800);
   });
 
   // Show who should hold the phone
@@ -4205,39 +4226,13 @@ function revealScene() {
 }
 
 function revealFinisher() {
-  // Stage 3: reveal the finish section + unlock Their Turn
-  const finishWrap = document.getElementById('stageFinishWrap');
-  const finishEl   = document.getElementById('stageFinishText');
-  const keepBtn    = document.getElementById('keepGoingBtn');
-  if (!finishWrap || !finishEl) return;
-
-  const finishText = currentScene?._finishText || currentScene?._lastNarrative || '';
-  const formattedHtml = finishText
-    ? formatNarrative(finishText)
-    : '<em style="color:var(--muted);font-size:.82rem;">Finish however feels right.</em>';
-
-  finishWrap.style.display = 'block';
-  if (keepBtn) keepBtn.style.display = 'none';
-
-  setTimeout(() => finishWrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
-
-  typewriterReveal(finishEl, formattedHtml, () => {
-    // Unlock Their Turn only after finisher text is fully revealed
-    showTheirTurnBtn();
-    // Show rating card
-    setTimeout(() => {
-      const rateCard = document.getElementById('rateCard');
-      if (rateCard) rateCard.classList.add('visible');
-    }, 800);
-  });
-
-  SparkLog.info('scene:finisher-revealed');
+  // Superseded — finish buttons now appear directly after scene text
 }
 
 function goPlay() {
   const st = document.getElementById('sceneStreamText');
   if (st) st.textContent = '';
-  ['stagePrepWrap','stageSceneWrap','stageFinishWrap'].forEach(id => {
+  ['stagePrepWrap','stageSceneWrap'].forEach(id => {
     const el = document.getElementById(id); if (el) el.style.display = 'none';
   });
   const _rb = document.getElementById('revealSceneBtn');
@@ -4246,6 +4241,8 @@ function goPlay() {
     const el = document.getElementById(id);
     if (el) el.style.display = 'none';
   });
+  const fb = document.getElementById('finishBtns');
+  if (fb) fb.style.display = 'none';
   showScreen('screenPlay');
   document.body.classList.add('header-compact');
   _applyVoiceHeadings();
@@ -4363,7 +4360,6 @@ function _generateFullSceneInner() {
   const newSceneBtn = document.getElementById('newSceneBtn');
   const errorBanner = document.getElementById('sceneErrorBanner');
   const timerLabel  = document.getElementById('timerPhaseLabel');
-  const timerSub2   = document.getElementById('timerSub');
   const _hint  = document.getElementById('sceneGeneratingHint');
   const _bar   = document.getElementById('genProgressBar');
   const _label = document.getElementById('genHintLabel');
@@ -4373,9 +4369,11 @@ function _generateFullSceneInner() {
   if (streamText) streamText.textContent = '';
 
   // Reset all stage panels
-  ['stagePrepWrap','stageSceneWrap','stageFinishWrap'].forEach(id => {
+  ['stagePrepWrap','stageSceneWrap'].forEach(id => {
     const el = document.getElementById(id); if (el) el.style.display = 'none';
   });
+  const _fb = document.getElementById('finishBtns');
+  if (_fb) _fb.style.display = 'none';
 
   // Show generating hint — phase 1
   if (_label) _label.textContent = 'Designing your scene\u2026';
@@ -4391,10 +4389,8 @@ function _generateFullSceneInner() {
   if (escalPanel)  escalPanel.style.display = 'none';
   if (errorBanner) errorBanner.classList.remove('visible');
   if (newSceneBtn) { newSceneBtn.disabled = true; newSceneBtn.textContent = 'Writing\u2026'; }
-
   resetTimer(300);
-  if (timerLabel) timerLabel.textContent = 'Duration';
-  if (timerSub2)  timerSub2.textContent  = 'Minimum 5 minutes';
+  if (timerLabel) timerLabel.textContent = 'Timer';
 
   isGenerating = true;
   escalationRevealed = false;
@@ -4645,24 +4641,14 @@ function _generateFullSceneInner() {
 //  THEIR TURN
 // ═══════════════════════════════════════════
 function showTheirTurnBtn() {
-  const wrap = document.getElementById('theirTurnBtns');
-  const nameA = document.getElementById('theirTurnNameA');
-  const nameB = document.getElementById('theirTurnNameB');
-  if (nameA) nameA.textContent = gN(currentPiA);
-  if (nameB) nameB.textContent = gN(currentPiB);
-  if (wrap) {
-    wrap.style.display = 'flex';
-    // Re-enable both buttons
-    ['theirTurnBtnA','theirTurnBtnB'].forEach(id => {
-      const b = document.getElementById(id);
-      if (b) b.disabled = false;
-    });
-  }
+  // Names are populated in revealScene; finishBtns shown after typewriter
+  // This is now a no-op — finish buttons are managed by revealScene
 }
 
 function hideTheirTurnBtn() {
-  const wrap = document.getElementById('theirTurnBtns');
-  if (wrap) wrap.style.display = 'none';
+  // Hide finish buttons and their-turn panels on reset
+  const fb = document.getElementById('finishBtns');
+  if (fb) fb.style.display = 'none';
   ['theirTurnPanelA','theirTurnPanelB'].forEach(id => {
     const p = document.getElementById(id);
     if (p) { p.style.display = 'none'; p.classList.remove('visible'); }
@@ -4670,30 +4656,28 @@ function hideTheirTurnBtn() {
 }
 
 function generateTheirTurn(finisherPi) {
-  // finisherPi: 0 = piA finishes (currentPiA receives), 1 = piB finishes (currentPiB receives)
-  // The person finishing (receiver) is the one named in the button
+  // finisherPi: 0 = person A finishes, 1 = person B finishes
   const receiverPi = finisherPi === 0 ? currentPiA : currentPiB;
   const giverPi    = finisherPi === 0 ? currentPiB : currentPiA;
   const receiver   = gN(receiverPi);
   const giver      = gN(giverPi);
 
-  const suffix     = finisherPi === 0 ? 'A' : 'B';
-  const panel      = document.getElementById('theirTurnPanel' + suffix);
-  const label      = document.getElementById('theirTurnLabel' + suffix);
-  const body       = document.getElementById('theirTurnText' + suffix);
-  const btn        = document.getElementById('theirTurnBtn' + suffix);
+  const suffix  = finisherPi === 0 ? 'A' : 'B';
+  const panel   = document.getElementById('theirTurnPanel' + suffix);
+  const label   = document.getElementById('theirTurnLabel' + suffix);
+  const body    = document.getElementById('theirTurnText' + suffix);
+  const btn     = document.getElementById('finishBtn' + suffix);
 
-  if (!panel || !body || isGenerating) return;
+  if (!panel || !body) return;
+  if (btn && btn.disabled) return; // prevent double-tap
 
   if (label) label.textContent = 'How ' + receiver + ' finishes';
   body.innerHTML = '<span class="their-turn-generating">Writing\u2026</span>';
   panel.style.display = 'block';
   panel.classList.add('visible');
-  panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  if (btn) { btn.disabled = true; btn.innerHTML = '&#x1F525; Writing\u2026'; }
+  if (btn) { btn.disabled = true; btn.innerHTML = 'Writing\u2026'; }
+  setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 80);
 
-  isGenerating = true;
-  psReset();
   SparkLog.info('theirTurn:start', { receiver });
 
   const ctx = buildSceneContext(currentPiA, currentPiB);
@@ -4728,10 +4712,9 @@ function generateTheirTurn(finisherPi) {
 
   const _turnBudget = (VOICE_CONFIG[currentVoice] || VOICE_CONFIG.vivid).maxTokens;
   callClaudeStream(system, prompt, body, function(text) {
-    isGenerating = false;
     if (btn) {
       btn.disabled = false;
-      btn.innerHTML = 'Finish ' + receiver + ' again →';
+      btn.innerHTML = 'Tell us how ' + receiver + ' finishes again \u2192';
     }
     if (text && text.trim()) {
       typewriterReveal(body, formatNarrative(text.trim()), null);
@@ -4790,17 +4773,16 @@ function updateTimerDisplay() {
 
 function onTimerDone() {
   clearInterval(timerInterval); timerInterval = null; timerRunning = false;
-  document.getElementById('timerDisplay').textContent = 'Time';
-  document.getElementById('timerDisplay').className = 'timer-num done';
-  document.getElementById('timerSub').textContent = 'Timer complete';
+  const td = document.getElementById('timerDisplay');
+  if (td) { td.textContent = 'Done'; td.className = 'timer-num done'; }
   setTimerBtns('done');
 }
 
 function keepGoing() {
   revealEscalation();
   resetTimer(600);
-  document.getElementById('timerPhaseLabel').textContent = 'Extended';
-  document.getElementById('timerSub').textContent = 'Take your time';
+  const lbl = document.getElementById('timerPhaseLabel');
+  if (lbl) lbl.textContent = 'Extended';
   startTimer();
 }
 
@@ -4809,7 +4791,6 @@ function skipAhead() {
   revealEscalation();
   document.getElementById('timerDisplay').textContent = 'Skipped';
   document.getElementById('timerDisplay').className = 'timer-num done';
-  document.getElementById('timerSub').textContent = 'Escalation unlocked';
   setTimerBtns('done');
 }
 
