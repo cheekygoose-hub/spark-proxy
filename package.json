@@ -1,10 +1,14 @@
 {
   "name": "spark-proxy",
-  "version": "1.0.0",
-  "description": "Anthropic API proxy for Spark couples app",
+  "version": "2.0.0",
+  "description": "Anthropic API proxy + room state store for Spark couples app",
   "main": "proxy.js",
   "scripts": {
-    "start": "node proxy.js"
+    "start": "node proxy.js",
+    "install-deps": "npm install better-sqlite3"
+  },
+  "dependencies": {
+    "better-sqlite3": "^9.4.3"
   },
   "engines": {
     "node": ">=18"

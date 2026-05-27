@@ -8,6 +8,14 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
+  --t-xs:   .62rem;  /* labels, badges, timestamps */
+  --t-sm:   .72rem;  /* secondary labels, hints, small buttons */
+  --t-base: .82rem;  /* body text, input text, default UI */
+  --t-md:   .88rem;  /* card titles, section headers */
+  --t-lg:   .95rem;  /* path card titles */
+  /* Legacy: --t-stage is the play-screen uppercase stage labels */
+  --t-stage: .58rem;
+
   --bg:#F7F5F2;--card:#FFF;--border:#E8E4DF;--border2:#D4CEC7;
   --ink:#1A1714;--ink2:#4A4540;--muted:#9A948E;--faint:#C8C2BB;
   --sage:#6B8C6E;--sage-bg:#EDF2ED;--sage-mid:#B8CEB9;
@@ -30,6 +38,52 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 .wordmark .dot{color:var(--blush)}
 .tagline{font-size:.8rem;color:var(--muted);margin-top:.35rem;font-weight:300}
 
+/* WELCOME / PAIRING SCREENS */
+.welcome-hero{text-align:center;padding:1.2rem 0 1.5rem}
+.welcome-hero-title{font-family:'DM Serif Display',serif;font-size:2rem;font-weight:400;color:var(--ink);margin-bottom:.5rem}
+.welcome-hero-sub{font-size:.88rem;color:var(--muted);line-height:1.6;max-width:340px;margin:0 auto}
+.welcome-path-card{background:var(--card);border:1.5px solid var(--border);border-radius:var(--r);padding:1.1rem 1.2rem;cursor:pointer;text-align:left;width:100%;font-family:'DM Sans',sans-serif;transition:border-color .15s,box-shadow .15s;margin-bottom:.55rem;display:block}
+.welcome-path-card:hover{border-color:var(--sage);box-shadow:var(--sh)}
+.welcome-path-icon{font-size:1.4rem;margin-bottom:.35rem;display:block}
+.welcome-path-title{font-size:.95rem;font-weight:600;color:var(--ink);display:block;margin-bottom:.15rem}
+.welcome-path-sub{font-size:.75rem;color:var(--muted);line-height:1.5;display:block}
+.welcome-path-badge{display:inline-block;font-size:.6rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;background:var(--sage-bg);color:var(--sage);border-radius:50px;padding:.15rem .5rem;margin-left:.4rem;vertical-align:middle}
+.how-it-works{background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);padding:.9rem 1rem;margin-bottom:.85rem}
+.how-it-works-title{font-size:.72rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:.55rem}
+.how-it-works-step{display:flex;gap:.6rem;align-items:flex-start;margin-bottom:.4rem;font-size:.78rem;color:var(--ink2);line-height:1.5}
+.how-it-works-num{width:18px;height:18px;border-radius:50%;background:var(--sage-bg);color:var(--sage);font-size:.65rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.1rem}
+.pair-code-display{font-family:'DM Serif Display',serif;font-size:2.4rem;letter-spacing:.18em;text-align:center;color:var(--ink);background:var(--card);border:1.5px solid var(--border);border-radius:var(--r);padding:1rem 1.5rem;margin:1rem 0;cursor:pointer;user-select:all}
+.pair-code-hint{text-align:center;font-size:.72rem;color:var(--muted);margin-bottom:1rem}
+.pair-status{text-align:center;font-size:var(--t-base);color:var(--muted);padding:.5rem 0;min-height:2rem}
+.pair-status.ok{color:var(--sage);font-weight:600}
+.pair-status.err{color:var(--blush)}
+.room-sync-bar{display:none;background:var(--sage-bg);border:1px solid var(--sage-mid);border-radius:var(--rs);padding:.45rem .85rem;margin-bottom:.75rem;font-size:.72rem;color:var(--sage);align-items:center;gap:.5rem}
+.room-sync-bar.visible{display:flex}
+.room-sync-dot{width:7px;height:7px;border-radius:50%;background:var(--sage);flex-shrink:0}
+.room-sync-dot.pulse{animation:syncPulse 2s infinite}
+@keyframes syncPulse{0%,100%{opacity:1}50%{opacity:.35}}
+.export-code-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--rs);padding:.75rem 1rem;margin:.5rem 0}
+.export-code-label{font-size:.65rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem}
+.export-code-value{font-family:monospace;font-size:.75rem;word-break:break-all;color:var(--ink2);line-height:1.6;cursor:pointer;user-select:all}
+
+
+/* TENSION TEASE — prep screen */
+.tension-tease-wrap{background:var(--sky-bg);border:1px solid var(--sky);border-radius:var(--r);padding:.85rem 1rem;margin-bottom:1rem}
+.tension-tease-label{font-size:.58rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--sage);margin-bottom:.35rem}
+.tension-tease-text{font-size:var(--t-base);font-family:'DM Serif Display',serif;font-size:.95rem;font-weight:400;line-height:1.65;color:var(--ink2)}
+.tension-tease-sub{font-size:.7rem;color:var(--muted);margin-top:.35rem;font-style:italic}
+/* WELCOME SCREEN ADDITIONS */
+.welcome-path-card-recommended{border-color:var(--sage);background:var(--sage-bg);box-shadow:var(--sh)}
+.welcome-path-card-recommended:hover{border-color:var(--sage);box-shadow:var(--shm)}
+.welcome-path-steps{display:flex;flex-direction:column;gap:.3rem;margin-top:.6rem;border-top:1px solid rgba(107,140,110,.2);padding-top:.55rem}
+.welcome-path-step{display:flex;gap:.45rem;font-size:var(--t-sm);color:var(--ink2);line-height:1.5}
+.welcome-path-step-num{width:16px;height:16px;border-radius:50%;background:var(--sage);color:#fff;font-size:.6rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.15rem}
+
+.settings-section-divider{font-size:var(--t-xs);font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:1.5rem;margin-bottom:.1rem;padding-bottom:.35rem;border-bottom:1px solid var(--border)}
+.more-options-toggle{display:flex;align-items:center;justify-content:space-between;padding:.5rem 0;cursor:pointer;border-top:1px solid var(--border);margin-top:.75rem;user-select:none}
+.qr-wrap{text-align:center;margin:1rem 0 .5rem}
+.qr-wrap canvas,.qr-wrap img{border-radius:var(--rs);border:1px solid var(--border);display:inline-block;max-width:180px}
+.qr-hint{font-size:.7rem;color:var(--muted);text-align:center;margin-bottom:.75rem;line-height:1.5}
 /* EXIT CONFIRMATION SHEET */
 .exit-sheet-overlay{position:fixed;inset:0;background:rgba(26,23,20,.35);z-index:200;
   display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
@@ -285,7 +339,6 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 .scene-pill{display:inline-block;font-size:.65rem;font-weight:700;letter-spacing:.08em;
   text-transform:uppercase;padding:.25rem .6rem;border-radius:50px;margin-bottom:1rem}
 .pill-spark{background:var(--blush-bg);color:var(--blush)}
-.pill-ambush{background:var(--sky-bg);color:var(--sky)}
 .scene-body{padding:1.6rem}
 .scene-title{font-size:.75rem;font-weight:600;color:var(--muted);margin-bottom:.55rem;letter-spacing:.04em}
 .scene-stream-writing{opacity:.7;}
@@ -411,12 +464,13 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 .home-btn-icon{font-size:2rem;margin-bottom:.6rem;display:block}
 .home-btn-title{font-family:'DM Serif Display',serif;font-size:1.5rem;font-weight:400;display:block;margin-bottom:.3rem}
 .home-btn-sub{font-size:.75rem;font-weight:400;display:block;opacity:.7;line-height:1.4}
-.home-btn-tease{background:var(--ink);color:#fff}
-.home-btn-tease:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(26,23,20,.25)}
+
 .home-btn-scene{background:var(--blush);color:#fff}
 .home-btn-scene:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(196,121,106,.35)}
+.home-btn-moments{background:var(--card);border:1.5px solid var(--border);color:var(--ink)}
+.home-btn-moments:hover{transform:translateY(-2px);box-shadow:var(--sh);border-color:var(--sage)}
 .home-settings-link{text-align:center;margin-top:.5rem}
-.home-settings-link button{background:none;border:none;color:var(--muted);font-size:.78rem;
+.home-settings-link button{background:none;border:none;color:var(--muted);font-size:var(--t-base);
   font-family:'DM Sans',sans-serif;cursor:pointer;padding:.5rem}
 .home-settings-link button:hover{color:var(--ink2)}
 
@@ -572,7 +626,7 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 }
 
 /* THEIR TURN */
-.their-turn-panel{margin-top:1.2rem;display:none;}
+.their-turn-panel{margin-top:.85rem;display:none;background:var(--card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh);}
 .their-turn-panel.visible{display:block;}
 .their-turn-header{padding:.2rem 1.6rem .5rem;}
 .their-turn-icon{display:none;}
@@ -748,7 +802,7 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 .notif-section{background:var(--sky-bg);border:1px solid var(--sky);border-radius:var(--rs);
   padding:1rem 1.2rem;margin-bottom:.75rem}
 .notif-header{display:flex;align-items:center;justify-content:space-between;gap:.75rem}
-.notif-title{font-size:.88rem;font-weight:600;color:var(--sky)}
+.notif-title{font-size:var(--t-md);font-weight:600;color:var(--ink)}
 .notif-sub{font-size:.72rem;color:var(--muted);margin-top:.1rem}
 
 /* Ambush modal */
@@ -761,13 +815,7 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 .modal-handle{width:36px;height:4px;background:var(--faint);border-radius:99px;margin:0 auto 1.4rem}
 .modal-title{font-family:'DM Serif Display',serif;font-size:1.4rem;font-weight:400;color:var(--ink);margin-bottom:.3rem}
 .modal-sub{font-size:.8rem;color:var(--muted);margin-bottom:1.2rem}
-.ambush-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);
   padding:1.1rem 1.2rem;margin-bottom:.6rem;cursor:pointer;transition:all .18s}
-.ambush-card:hover{border-color:var(--amber-mid);background:var(--amber-bg)}
-.ambush-card-title{font-size:.88rem;font-weight:600;color:var(--ink);margin-bottom:.25rem}
-.ambush-card-text{font-family:'DM Serif Display',serif;font-size:.95rem;line-height:1.55;color:var(--ink2)}
-.ambush-card-text .n-name{color:var(--blush);font-style:italic}
-.ambush-card-text .n-body{color:var(--amber);font-style:italic}
 
 /* Ref table */
 
@@ -879,6 +927,8 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 .discovery-card-title{font-size:.9rem;font-weight:600;color:var(--ink);margin-bottom:.15rem;}
 .discovery-card-sub{font-size:.75rem;color:var(--muted);}
 </style>
+  <!-- QR code generation for pairing screen -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" crossorigin="anonymous"></script>
 </head>
 <body>
 <div class="container">
@@ -889,95 +939,109 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 </header>
 
 <!-- ════════ SETUP ════════ -->
+<!-- ════════ WELCOME SCREEN ════════ -->
+<div class="screen" id="screenWelcome">
+  <div class="welcome-hero">
+    <div class="welcome-hero-title">Spark ✦</div>
+    <div class="welcome-hero-sub">A private space to discover and explore intimacy together.</div>
+  </div>
+
+  <div style="font-size:.8rem;font-weight:600;color:var(--ink);margin-bottom:.75rem;">How are you using it?</div>
+
+  <!-- Two-device card — recommended, visually elevated -->
+  <button class="welcome-path-card welcome-path-card-recommended" onclick="chooseWelcomePath('paired')">
+    <div style="display:flex;align-items:flex-start;gap:.75rem;">
+      <span class="welcome-path-icon" style="margin-top:.1rem;">💑</span>
+      <div>
+        <span class="welcome-path-title">Two phones <span class="welcome-path-badge">Recommended</span></span>
+        <span class="welcome-path-sub" style="margin-top:.2rem;">Each partner sets up on their own device. Preferences stay private — Spark blends what you both enjoy without either of you seeing the other's ratings.</span>
+        <div class="welcome-path-steps">
+          <div class="welcome-path-step"><span class="welcome-path-step-num">1</span>Each of you fills in your name and preferences on your own phone.</div>
+          <div class="welcome-path-step"><span class="welcome-path-step-num">2</span>One of you creates a space and shares a 10-character code.</div>
+          <div class="welcome-path-step"><span class="welcome-path-step-num">3</span>Spark generates scenes from what you both enjoy — privately.</div>
+        </div>
+      </div>
+    </div>
+  </button>
+
+  <!-- One-device card -->
+  <button class="welcome-path-card" onclick="chooseWelcomePath('solo')" style="margin-top:.55rem;">
+    <div style="display:flex;align-items:flex-start;gap:.75rem;">
+      <span class="welcome-path-icon" style="margin-top:.1rem;">📱</span>
+      <div>
+        <span class="welcome-path-title">One phone</span>
+        <span class="welcome-path-sub" style="margin-top:.2rem;">Set up both partners on a single phone — names, preferences, everything in one place. You can connect a second device later.</span>
+      </div>
+    </div>
+  </button>
+</div>
+
+<!-- ════════ PAIRING SCREEN ════════ -->
+<div class="screen" id="screenPairing">
+  <div style="margin-bottom:1.2rem;">
+    <button class="btn-ghost" onclick="goBack('screenWelcome')" style="font-size:.78rem;">← Back</button>
+  </div>
+  <div style="font-family:'DM Serif Display',serif;font-size:1.5rem;font-weight:400;color:var(--ink);margin-bottom:.3rem;" id="pairingTitle">Connect your devices</div>
+  <div style="font-size:.82rem;color:var(--muted);margin-bottom:1.2rem;" id="pairingSub">Create a space and share the code, or join your partner's space.</div>
+
+  <!-- Create path: show generated code -->
+  <div id="pairingCreate" style="display:none;">
+    <div class="pair-code-display" id="pairCodeDisplay" onclick="copyRoomCode()" title="Tap to copy">
+      <span id="pairCodeValue" style="opacity:.35;font-size:1.4rem;letter-spacing:.1em;">Generating…</span>
+    </div>
+    <div class="pair-code-hint">Tap the code to copy · Share with your partner</div>
+    <!-- QR code — renders after code is ready -->
+    <div class="qr-wrap" id="qrCodeWrap" style="display:none;">
+      <div id="qrCodeCanvas"></div>
+    </div>
+    <div class="qr-hint" id="qrHint" style="display:none;">Your partner can scan this instead of typing the code</div>
+    <div class="pair-status" id="pairCreateStatus"></div>
+    <div style="font-size:.68rem;color:var(--muted);text-align:center;margin-bottom:.5rem;" id="pairExpiryHint"></div>
+    <button class="btn btn-outline" onclick="copyRoomCode()" style="width:100%;margin-top:.5rem;">📋 Copy code</button>
+    <div style="text-align:center;margin-top:.75rem;display:flex;flex-direction:column;gap:.4rem;">
+      <button class="btn-ghost" onclick="skipPairingForNow()" style="font-size:.75rem;color:var(--muted);">Use one device for now →</button>
+      <button class="btn-ghost" onclick="goBack('screenWelcome')" style="font-size:.72rem;color:var(--muted);">← Back to start</button>
+    </div>
+  </div>
+
+  <!-- Join path: enter code -->
+  <div id="pairingJoin" style="display:none;">
+    <div class="field" style="margin-bottom:.75rem;">
+      <label style="font-size:.72rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);">Your partner's code</label>
+      <input id="joinCodeInput" type="text" placeholder="e.g. K7M2PQ3HN" maxlength="10"
+        style="font-family:monospace;font-size:1.4rem;letter-spacing:.2em;text-transform:uppercase;text-align:center;"
+        oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'')">
+    </div>
+    <button class="btn btn-ink" onclick="joinRoom()" style="width:100%;">Join →</button>
+    <div class="pair-status" id="pairJoinStatus"></div>
+  </div>
+</div>
+
 <div class="screen active" id="screenSetup">
   <div class="return-banner" id="returnBanner">
     <span>⏱ A scene is in progress</span>
     <button onclick="showScreen('screenPlay');window.scrollTo(0,0)">Return to scene</button>
   </div>
 
-  <!-- Notifications -->
-  <div class="notif-section" id="notifSection">
-    <div class="notif-header">
-      <div><div class="notif-title">📳 Tease notifications</div><div class="notif-sub">Random prompts during the day</div></div>
-      <button class="btn btn-outline" id="notifToggleBtn" onclick="toggleNotifications()" style="width:auto;padding:.45rem 1rem;font-size:.78rem;">Enable</button>
-    </div>
-    <div id="notifConfig" style="display:none;margin-top:1rem;">
-      <div class="label">Notification intensity</div>
-      <div class="int-pills" id="notifIntensityPills">
-        <div class="int-pill active" data-level="light" onclick="setNotifIntensity('light',this)"><div class="int-pill-icon">🌸</div><span class="int-pill-name">Light</span><span class="int-pill-hint">Subtle</span></div>
-        <div class="int-pill" data-level="moderate" onclick="setNotifIntensity('moderate',this)"><div class="int-pill-icon">🔥</div><span class="int-pill-name">Moderate</span><span class="int-pill-hint">Suggestive</span></div>
-        <div class="int-pill" data-level="explicit" onclick="setNotifIntensity('explicit',this)"><div class="int-pill-icon">⚡</div><span class="int-pill-name">Explicit</span><span class="int-pill-hint">Graphic</span></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- AI Setup — collapsible -->
-  <div class="ai-setup-collapsed" onclick="toggleAiPanel()">
-    <div class="ai-setup-collapsed-left">
-      <span class="ai-setup-status-dot" id="proxyDot"></span>
-      <div>
-        <span class="ai-setup-collapsed-text">AI Connection</span>
-        <span class="ai-setup-collapsed-sub" id="proxyText">Not connected — tap to configure</span>
-      </div>
-    </div>
-    <span class="ai-setup-chevron" id="aiChevron">▾</span>
-  </div>
-  <div class="ai-setup-panel" id="aiSetupPanel">
-    <div class="card" style="margin-bottom:.5rem;">
-      <div class="field" style="margin-bottom:.85rem;">
-        <label for="proxyUrl" style="font-size:.7rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);">Proxy URL</label>
-        <input id="proxyUrl" type="url"
-          placeholder="https://your-proxy.up.railway.app/v1/messages"
-          style="font-size:.82rem;font-family:monospace;"
-          autocomplete="off" spellcheck="false"
-          oninput="onProxyUrlChange()" onblur="detectProxy()">
-        <div style="font-size:.68rem;color:var(--muted);margin-top:.35rem;line-height:1.5;">
-          Deploy <code style="background:var(--border);padding:.1rem .25rem;border-radius:3px;">proxy.js</code> on Railway, paste URL here.
-          <a href="https://railway.app" target="_blank" style="color:var(--sky);">Open Railway →</a>
-        </div>
-      </div>
-      <div class="field" style="margin-bottom:.5rem;">
-        <label for="apiKey" style="font-size:.7rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);">Anthropic API Key</label>
-        <input id="apiKey" type="password" placeholder="sk-ant-…"
-          style="font-family:monospace;font-size:.82rem;letter-spacing:.04em;"
-          autocomplete="off" spellcheck="false"
-          oninput="onApiKeyChange()">
-        <div style="font-size:.68rem;color:var(--muted);margin-top:.35rem;line-height:1.5;">
-          <a href="https://console.anthropic.com/settings/keys" target="_blank" style="color:var(--sky);">console.anthropic.com</a> → API Keys.
-          Or set <code style="background:var(--border);padding:.1rem .25rem;border-radius:3px;">ANTHROPIC_API_KEY</code> in Railway Variables.
-        </div>
-      </div>
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-top:.75rem;">
-        <div style="display:flex;align-items:center;gap:.5rem;">
-          <input type="checkbox" id="rememberKey" style="width:15px;height:15px;cursor:pointer;accent-color:var(--sage);">
-          <label for="rememberKey" style="font-size:.72rem;color:var(--muted);cursor:pointer;">Remember on this device</label>
-        </div>
-        <button onclick="clearStoredKey()" style="background:none;border:none;font-size:.7rem;color:var(--blush);cursor:pointer;padding:.2rem .4rem;font-family:inherit;">Clear</button>
-      </div>
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:.75rem;">
-        <div id="apiKeyStatus" style="font-size:.7rem;color:var(--muted);"></div>
-        <button onclick="detectProxy()" id="retryProxyBtn" style="display:none;background:none;border:none;font-size:.68rem;color:var(--sky);cursor:pointer;font-family:inherit;padding:.1rem .3rem;">Retry</button>
-      </div>
-    </div>
-  </div>
-
+  <!-- Your vibe — first thing people see -->
   <div class="card" id="shortcutCard">
     <div style="font-size:.88rem;font-weight:600;color:var(--ink);margin-bottom:.2rem;">Your vibe</div>
     <div style="font-size:.75rem;color:var(--muted);margin-bottom:.85rem;line-height:1.5;">One tap to pre-fill preferences. You can still set full details afterwards.</div>
     <div id="shortcutGrid" style="display:flex;flex-direction:column;gap:.35rem;"></div>
     <div id="shortcutAppliedMsg" style="display:none;margin-top:.65rem;font-size:.72rem;color:var(--sage);font-weight:600;text-align:center;"></div>
     <div style="text-align:center;margin-top:.6rem;">
-      <button onclick="onWillingToggle()" style="background:none;border:none;font-size:.72rem;color:var(--sky);cursor:pointer;font-family:inherit;">Fine-tune our tastes →</button>
+      <button onclick="onWillingToggle()" style="background:none;border:none;font-size:.72rem;color:var(--sky);cursor:pointer;font-family:inherit;" id="fineTuneBtn">Fine-tune our tastes →</button>
     </div>
   </div>
 
-  <!-- Partner 1 -->
-  <div class="label">Partner 1</div>
-  <div class="card" style="padding:1rem 1.2rem;">
+  <!-- Your details (primary — always shown) -->
+  <div class="label" id="myDetailsLabel">Your details</div>
+  <div class="card" style="padding:1rem 1.2rem;" id="myDetailsCard">
     <div class="names-grid" style="margin-bottom:.75rem;">
-      <div class="field"><label>Name</label><input id="name1" type="text" placeholder="Name…" maxlength="20"></div>
-      <div class="field"><label>They are</label>
+      <div class="field"><label>Your name</label><input id="name1" type="text" placeholder="Name…" maxlength="20"></div>
+      <div class="field"><label>You are</label>
         <select id="gender1" onchange="onGenderChange(0)">
+          <option value="" disabled selected>Select…</option>
           <option value="male">Male</option>
           <option value="female">Female</option>
           <option value="other">Other / Custom</option>
@@ -985,33 +1049,59 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
       </div>
     </div>
     <div class="asset-section" id="assets0">
-      <div class="label" style="margin-bottom:.5rem;">Body — tick what applies &amp; name it</div>
+      <div class="label" style="margin-bottom:.5rem;">What would you like to highlight?</div>
       <div class="asset-grid" id="assetGrid0"></div>
     </div>
   </div>
 
-  <!-- Partner 2 -->
-  <div class="label">Partner 2</div>
-  <div class="card" style="padding:1rem 1.2rem;">
-    <div class="names-grid" style="margin-bottom:.75rem;">
-      <div class="field"><label>Name</label><input id="name2" type="text" placeholder="Name…" maxlength="20"></div>
-      <div class="field"><label>They are</label>
-        <select id="gender2" onchange="onGenderChange(1)">
-          <option value="female">Female</option>
-          <option value="male">Male</option>
-          <option value="other">Other / Custom</option>
-        </select>
+  <!-- Partner details — only shown in solo mode or when paired -->
+  <div id="partnerDetailsSection" style="display:none;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:.85rem;margin-bottom:.3rem;">
+      <div class="label" style="margin:0;" id="partnerDetailsLabel">Your partner</div>
+      <span id="partnerPairedBadge" style="display:none;font-size:.65rem;background:var(--sage-bg);color:var(--sage);border-radius:50px;padding:.15rem .5rem;font-weight:600;">Linked device ✓</span>
+    </div>
+    <div id="partnerLinkedMsg" style="display:none;background:var(--sage-bg);border:1px solid var(--sage-mid);border-radius:var(--rs);padding:.6rem .85rem;font-size:.78rem;color:var(--sage);margin-bottom:.5rem;">
+      Your partner manages their own details on their device. Their preferences stay private.
+    </div>
+    <div class="card" style="padding:1rem 1.2rem;" id="partnerManualCard">
+      <div class="names-grid" style="margin-bottom:.75rem;">
+        <div class="field"><label>Their name</label><input id="name2" type="text" placeholder="Name…" maxlength="20"></div>
+        <div class="field"><label>They are</label>
+          <select id="gender2" onchange="onGenderChange(1)">
+            <option value="" disabled selected>Select…</option>
+            <option value="female">Female</option>
+            <option value="male">Male</option>
+            <option value="other">Other / Custom</option>
+          </select>
+        </div>
+      </div>
+      <div class="asset-section" id="assets1">
+        <div class="label" style="margin-bottom:.5rem;">What would you like to highlight?</div>
+        <div class="asset-grid" id="assetGrid1"></div>
       </div>
     </div>
-    <div class="asset-section" id="assets1">
-      <div class="label" style="margin-bottom:.5rem;">Body — tick what applies &amp; name it</div>
-      <div class="asset-grid" id="assetGrid1"></div>
+    <!-- Prefs export code for easy transfer to partner's device -->
+    <div id="prefsExportSection" style="margin-top:.6rem;">
+      <div class="export-code-wrap">
+        <div class="export-code-label">Share partner preferences</div>
+        <div style="font-size:.72rem;color:var(--muted);margin-bottom:.4rem;">Your partner can paste this on their device to copy their preferences across.</div>
+        <div class="export-code-value" id="prefsExportCode" onclick="copyPrefsExportCode()" style="min-height:1.5rem;"><span style="color:var(--muted);font-style:italic;font-family:'DM Sans',sans-serif;font-size:.75rem;">Tap to generate…</span></div>
+        <button onclick="copyPrefsExportCode()" style="margin-top:.5rem;background:none;border:none;font-size:.7rem;color:var(--sky);cursor:pointer;font-family:'DM Sans',sans-serif;padding:.1rem 0;">📋 Copy to clipboard</button>
+      </div>
+      <div style="margin-top:.5rem;">
+        <div class="label" style="margin-bottom:.3rem;font-size:.65rem;">Or paste a code from your partner's device</div>
+        <div style="display:flex;gap:.4rem;">
+          <input id="prefsImportInput" type="text" placeholder="Paste code here…" style="flex:1;font-size:.75rem;font-family:monospace;">
+          <button onclick="importPrefsCode()" style="background:var(--sage);border:none;border-radius:var(--rs);color:#fff;font-size:.75rem;font-weight:600;padding:.4rem .75rem;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;">Import</button>
+        </div>
+      </div>
     </div>
   </div>
 
 
   <!-- Voice mode default -->
-  <div class="card" style="margin-top:.75rem;">
+  <div class="settings-section-divider">Preferences</div>
+  <div class="card" style="margin-top:.5rem;">
     <div style="font-size:.88rem;font-weight:600;color:var(--ink);margin-bottom:.2rem;">Scene voice</div>
     <div style="font-size:.75rem;color:var(--muted);margin-bottom:.75rem;">How your scenes read — saved as your default.</div>
     <div style="display:flex;gap:.35rem;">
@@ -1034,7 +1124,8 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
   </div>
 
   <!-- Dev/Test toggle -->
-  <div class="card" style="margin-top:.75rem;">
+  <div class="settings-section-divider" style="margin-top:1.2rem;">Developer</div>
+  <div class="card" style="margin-top:.5rem;opacity:.7;">
     <div class="toggle-row">
       <div class="toggle-text">
         <strong>Debug mode</strong>
@@ -1050,14 +1141,120 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
     </div>
   </div>
 
-  <div class="btn-stack" style="margin-top:1rem;">
-    <button class="btn btn-ink" id="setupContinueBtn" onclick="setupContinue()">Let's go →</button>
+  <!-- Fresh start / reset -->
+  <div class="card" style="margin-top:.5rem;opacity:.7;">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;">
+      <div>
+        <div style="font-size:.85rem;font-weight:600;color:var(--ink);margin-bottom:.15rem;">Fresh start</div>
+        <div style="font-size:.72rem;color:var(--muted);line-height:1.5;">Clear all data and restart as a new user. Names, preferences, pairing, and settings will all be removed.</div>
+      </div>
+      <button onclick="resetEverything()" style="flex-shrink:0;background:none;border:1.5px solid var(--blush);border-radius:var(--rs);color:var(--blush);font-family:'DM Sans',sans-serif;font-size:.75rem;font-weight:600;padding:.4rem .85rem;cursor:pointer;white-space:nowrap;">Reset</button>
+    </div>
   </div>
-  <div style="text-align:center;margin-top:1.5rem;">
-    <button class="btn-ghost" onclick="resetEverything()"
-      style="font-size:.72rem;color:var(--muted);opacity:.6;">
-      ↺ Reset everything
-    </button>
+
+  <!-- Notifications -->
+  <div class="settings-section-divider" style="margin-top:1.2rem;">Features</div>
+  <div class="notif-section" id="notifSection" style="margin-top:.5rem;">
+    <div class="notif-header">
+      <div>
+        <div class="notif-title">🌅 Daily tension tease</div>
+        <div class="notif-sub">A personalised suggestion to build anticipation through the day</div>
+      </div>
+      <button class="btn btn-outline" id="notifToggleBtn" onclick="toggleNotifications()" style="width:auto;padding:.45rem 1rem;font-size:.78rem;">Enable</button>
+    </div>
+    <div id="notifConfig" style="display:none;margin-top:1rem;">
+      <div class="label">Tease intensity</div>
+      <div class="int-pills" id="notifIntensityPills">
+        <div class="int-pill active" data-level="light" onclick="setNotifIntensity('light',this)"><div class="int-pill-icon">🌸</div><span class="int-pill-name">Gentle</span><span class="int-pill-hint">Subtle</span></div>
+        <div class="int-pill" data-level="moderate" onclick="setNotifIntensity('moderate',this)"><div class="int-pill-icon">🔥</div><span class="int-pill-name">Charged</span><span class="int-pill-hint">Suggestive</span></div>
+        <div class="int-pill" data-level="explicit" onclick="setNotifIntensity('explicit',this)"><div class="int-pill-icon">⚡</div><span class="int-pill-name">Explicit</span><span class="int-pill-hint">Graphic</span></div>
+      </div>
+      <div style="font-size:.7rem;color:var(--muted);margin-top:.6rem;line-height:1.5;">Sends once daily between 8 am and 8 pm — a specific thing to do or say to your partner before tonight.</div>
+    </div>
+  </div>
+
+  <!-- AI Setup -->
+  <div class="settings-section-divider" style="margin-top:1.2rem;">Connection</div>
+  <div class="ai-setup-collapsed" onclick="toggleAiPanel()" style="margin-top:.75rem;">
+    <div class="ai-setup-collapsed-left">
+      <span class="ai-setup-status-dot" id="proxyDot"></span>
+      <div>
+        <span class="ai-setup-collapsed-text">AI Connection</span>
+        <span class="ai-setup-collapsed-sub" id="proxyText">Not connected — tap to configure</span>
+      </div>
+    </div>
+    <span class="ai-setup-chevron" id="aiChevron">▾</span>
+  </div>
+  <div class="ai-setup-panel" id="aiSetupPanel">
+    <div class="card" style="margin-bottom:.5rem;">
+      <div class="field" style="margin-bottom:.85rem;">
+        <label for="proxyUrl" style="font-size:.7rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);">Proxy URL</label>
+        <input id="proxyUrl" type="url"
+          placeholder="https://your-app.fly.dev/v1/messages"
+          style="font-size:.82rem;font-family:monospace;"
+          autocomplete="off" spellcheck="false"
+          oninput="onProxyUrlChange()" onblur="detectProxy()">
+        <div style="font-size:.68rem;color:var(--muted);margin-top:.35rem;line-height:1.5;">
+          Deploy <code style="background:var(--border);padding:.1rem .25rem;border-radius:3px;">proxy.js</code> on Fly.io or Railway, paste the URL here.
+          <a href="https://fly.io" target="_blank" style="color:var(--sky);">Fly.io →</a>
+        </div>
+      </div>
+      <div class="field" style="margin-bottom:.5rem;">
+        <label for="apiKey" style="font-size:.7rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);">Anthropic API Key</label>
+        <input id="apiKey" type="password" placeholder="sk-ant-…"
+          style="font-family:monospace;font-size:.82rem;letter-spacing:.04em;"
+          autocomplete="off" spellcheck="false"
+          oninput="onApiKeyChange()">
+        <div style="font-size:.68rem;color:var(--muted);margin-top:.35rem;line-height:1.5;">
+          <a href="https://console.anthropic.com/settings/keys" target="_blank" style="color:var(--sky);">console.anthropic.com</a> → API Keys.
+          Or set <code style="background:var(--border);padding:.1rem .25rem;border-radius:3px;">ANTHROPIC_API_KEY</code> in your deployment's environment variables.
+        </div>
+      </div>
+      <div class="field" style="margin-bottom:.5rem;">
+        <label for="proxySecret" style="font-size:.7rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);">Proxy Secret <span style="font-weight:400;text-transform:none;letter-spacing:0;">(optional)</span></label>
+        <input id="proxySecret" type="password" placeholder="Set if PROXY_SECRET is configured on your server"
+          style="font-family:monospace;font-size:.82rem;"
+          autocomplete="off" spellcheck="false"
+          oninput="onProxySecretChange()">
+        <div style="font-size:.68rem;color:var(--muted);margin-top:.3rem;line-height:1.5;">Matches the <code style="background:var(--border);padding:.1rem .25rem;border-radius:3px;">PROXY_SECRET</code> env var on your server. Leave blank if not set.</div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-top:.75rem;">
+        <div style="display:flex;align-items:center;gap:.5rem;">
+          <input type="checkbox" id="rememberKey" style="width:15px;height:15px;cursor:pointer;accent-color:var(--sage);">
+          <label for="rememberKey" style="font-size:.72rem;color:var(--muted);cursor:pointer;">Remember on this device</label>
+        </div>
+        <button onclick="clearStoredKey()" style="background:none;border:none;font-size:.7rem;color:var(--blush);cursor:pointer;padding:.2rem .4rem;font-family:inherit;">Clear</button>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:.75rem;">
+        <div id="apiKeyStatus" style="font-size:.7rem;color:var(--muted);"></div>
+        <button onclick="detectProxy()" id="retryProxyBtn" style="display:none;background:none;border:none;font-size:.68rem;color:var(--sky);cursor:pointer;font-family:inherit;padding:.1rem .3rem;">Retry</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mode / pairing management section -->
+  <div id="pairingMgmtSection" style="margin-top:1.2rem;">
+    <div style="font-size:.88rem;font-weight:600;color:var(--ink);margin-bottom:.5rem;">How you're using Spark</div>
+    <div id="modeSwitchStatus" style="font-size:.78rem;color:var(--muted);margin-bottom:.65rem;min-height:1.2rem;"></div>
+    <div id="pairingMgmtUnpaired" style="display:none;">
+      <div style="font-size:.75rem;color:var(--muted);margin-bottom:.5rem;">Connect your partner's device to share scenes and teases.</div>
+      <div style="display:flex;gap:.4rem;">
+        <button class="btn btn-outline" onclick="startCreateRoom()" style="flex:1;font-size:.78rem;">Create a space</button>
+        <button class="btn btn-outline" onclick="startJoinRoom()" style="flex:1;font-size:.78rem;">Join partner's space</button>
+      </div>
+    </div>
+    <div id="pairingMgmtPaired" style="display:none;">
+      <div style="background:var(--sage-bg);border:1px solid var(--sage-mid);border-radius:var(--rs);padding:.65rem .85rem;font-size:.78rem;color:var(--sage);display:flex;align-items:center;gap:.6rem;margin-bottom:.5rem;">
+        <span>📱</span>
+        <span>Paired · Room <strong id="pairingMgmtCode"></strong></span>
+        <button onclick="leaveRoom()" style="margin-left:auto;background:none;border:none;font-size:.7rem;color:var(--blush);cursor:pointer;font-family:'DM Sans',sans-serif;padding:.1rem .3rem;">Leave</button>
+      </div>
+      <div style="font-size:.72rem;color:var(--muted);">Your partner's preferences stay private on their device.</div>
+    </div>
+  </div>
+
+  <div class="btn-stack" style="margin-top:1rem;">
+    <button class="btn btn-ink" id="setupContinueBtn" onclick="setupContinue()">Save &amp; continue →</button>
   </div>
 </div>
 <div class="screen" id="screenHome">
@@ -1065,9 +1262,14 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
     <span>⏱ A scene is in progress</span>
     <button onclick="showScreen('screenPlay');window.scrollTo(0,0)">Return to scene</button>
   </div>
+  <!-- Room sync status bar -->
+  <div class="room-sync-bar" id="roomSyncBar">
+    <div class="room-sync-dot" id="roomSyncDot"></div>
+    <span id="roomSyncText">Connected with your partner</span>
+    <button onclick="manualSyncRoom()" style="margin-left:auto;background:none;border:none;font-size:.7rem;color:var(--sage);cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;padding:.1rem .3rem;">Refresh</button>
+  </div>
   <div class="vanilla-notice" id="vanillaNotice">
-    <strong>No preferences set</strong> — scenes are using vanilla acts only (kissing, touching, slow sex).
-    <button class="vanilla-notice-link" onclick="goSetup()">Set your preferences</button> to unlock everything.
+    Right now scenes keep things gentle and classic. <button class="vanilla-notice-link" onclick="goSetup()">Tell us what you're into</button> to open things up.
   </div>
   <div class="home-warn" id="homeWarn">
     <span class="home-warn-icon">⚠</span>
@@ -1075,25 +1277,32 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
     <button onclick="goSetup();toggleAiPanel(true)">Fix</button>
   </div>
   <div class="home-screen">
-    <button class="home-btn home-btn-tease" onclick="openAmbushModal()">
-      <span class="home-btn-icon">⚡</span>
-      <span class="home-btn-title">Tease Them</span>
-      <span class="home-btn-sub">A quick interruption — right now</span>
-    </button>
-    <button class="home-btn home-btn-scene" onclick="showScreen('screenPreScene');window.scrollTo(0,0)">
-      <span class="home-btn-icon">🔥</span>
-      <span class="home-btn-title">We're in the Mood</span>
+    <button class="home-btn home-btn-scene" id="homeMoodBtn" onclick="goPreScene(true);window.scrollTo(0,0)">
+      <span class="home-btn-icon">✨</span>
+      <span class="home-btn-title" id="homeMoodBtnTitle">We're in the Mood</span>
       <span class="home-btn-sub">Generate a scene for tonight</span>
+    </button>
+    <button class="home-btn home-btn-moments" onclick="openSavedScenesModal()">
+      <span class="home-btn-icon">🌙</span>
+      <span class="home-btn-title">Our Moments</span>
+      <span class="home-btn-sub">Scenes you've saved together</span>
     </button>
   </div>
   <div class="home-settings-link">
     <button onclick="goSetup()">⚙ Settings &amp; preferences</button>
-    <button onclick="openSavedScenesModal()" style="margin-left:1rem;">🔖 Saved scenes</button>
+    <span id="homePairedStatus" style="font-size:.72rem;color:var(--sage);display:none;margin-left:1rem;">💑 Paired · <button onclick="goSetup();setTimeout(()=>document.getElementById('pairingMgmtSection')?.scrollIntoView({behavior:'smooth'}),200)" style="background:none;border:none;font-size:.72rem;color:var(--sage);cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:underline;padding:0;">manage</button></span>
+    <button id="homePairBtn" onclick="openPairingFromHome()" style="background:none;border:none;font-size:.72rem;color:var(--sky);cursor:pointer;font-family:'DM Sans',sans-serif;padding:.2rem 0;display:none;margin-left:1rem;">🔗 Connect devices</button>
   </div>
 </div>
 
 <!-- ════════ SCENE PRE-SCREEN ════════ -->
 <div class="screen" id="screenPreScene">
+  <!-- Connection flag — only visible when AI is not working -->
+  <div id="preSceneConnWarn" style="display:none;background:var(--amber-bg);border:1px solid var(--amber-mid);border-radius:var(--rs);padding:.65rem 1rem;margin-bottom:.85rem;align-items:center;gap:.6rem;font-size:.78rem;color:var(--amber);">
+    <span style="font-size:1rem;flex-shrink:0;">⚠</span>
+    <span style="flex:1;">AI not connected — scenes won't generate until this is fixed.</span>
+    <button onclick="goSetup();toggleAiPanel(true)" style="background:var(--amber);border:none;border-radius:6px;color:#fff;font-family:'DM Sans',sans-serif;font-size:.7rem;font-weight:600;padding:.25rem .6rem;cursor:pointer;white-space:nowrap;flex-shrink:0;">Fix →</button>
+  </div>
   <div class="prescreen-hero">
     <h2>Set the mood</h2>
     <p>How are you feeling tonight?</p>
@@ -1122,6 +1331,7 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
       <span class="intensity-btn-sub">Fully explicit, nothing held back.</span>
     </div>
   </button>
+  <div style="font-size:.7rem;color:var(--muted);text-align:center;margin-top:-.2rem;margin-bottom:.6rem;">Tap one to continue</div>
 
   <!-- Voice mode selector -->
   <div style="margin-bottom:.85rem;" id="voicePillSection">
@@ -1164,7 +1374,7 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 
   <!-- Location -->
   <div style="margin-top:.6rem;">
-    <div class="focus-input-label" style="margin-bottom:.35rem;">Where are you?</div>
+    <div style="font-size:.72rem;font-weight:600;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.35rem;">Where are you?</div>
     <div style="display:flex;gap:.35rem;flex-wrap:wrap;" id="locationPills">
       <button class="loc-pill active" data-loc="home" onclick="setLocation('home',this)">🏠 Home</button>
       <button class="loc-pill" data-loc="hotel" onclick="setLocation('hotel',this)">🏨 Hotel</button>
@@ -1179,14 +1389,15 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
   </div>
 
   <!-- Options — collapsible -->
-  <details style="margin-top:.75rem;">
-    <summary style="font-size:.72rem;font-weight:600;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;cursor:pointer;list-style:none;display:flex;align-items:center;gap:.4rem;padding:.4rem 0;">
-      <span>▸</span> More options
-    </summary>
+  <div class="more-options-toggle" onclick="toggleMoreOptions()" id="moreOptionsToggle">
+    <span style="font-size:.72rem;font-weight:600;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;">More options</span>
+    <span class="ai-setup-chevron" id="moreOptionsChevron">▾</span>
+  </div>
+  <div class="ai-setup-panel" id="moreOptionsPanel">
     <div style="margin-top:.65rem;display:flex;flex-direction:column;gap:.65rem;">
 
       <!-- Role selection -->
-      <div class="role-section" style="margin-top:0;">
+      <div class="role-section" id="roleSectionWrap" style="margin-top:0;">
         <span class="role-section-label">Who's in charge?</span>
         <div class="role-pair">
           <div class="role-row">
@@ -1237,16 +1448,14 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
         <div class="scene-photo-check" id="photoCheck" style="font-size:.85rem;color:var(--sage);font-weight:600;"></div>
       </div>
 
-    </div>
-  </details>
-
+  </div><!-- /moreOptionsPanel -->
   <div class="prescreen-go">
     <button class="btn btn-ink" id="goSceneBtn" onclick="goPlay()" disabled
       style="opacity:.4;transition:opacity .2s;">
       Let's begin →
     </button>
     <div style="text-align:center;margin-top:.5rem;">
-      <button class="btn-ghost" onclick="showScreen('screenHome')">← Change our minds</button>
+      <button class="btn-ghost" onclick="goHome()">← Change our minds</button>
     </div>
   </div>
 </div>
@@ -1288,11 +1497,7 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 
   <!-- Shared discovery reveal (between partners) -->
   <div id="surveyDiscovery" style="display:none;text-align:center;padding:1.5rem 0;">
-    <div style="font-size:2rem;margin-bottom:.75rem;">✨</div>
-    <h3 style="font-family:'DM Serif Display',serif;font-size:1.6rem;font-weight:400;color:var(--ink);margin-bottom:.4rem;">You're both into…</h3>
-    <p style="font-size:.82rem;color:var(--muted);margin-bottom:1.2rem;">Things you share that you might not have known.</p>
     <div id="discoveryRevealCards" style="display:flex;flex-direction:column;gap:.5rem;margin-bottom:1.2rem;"></div>
-    <button class="btn btn-ink" onclick="finishSurvey()">See what you both want →</button>
   </div>
 
   <div class="btn-stack" id="surveyNavBtns" style="margin-top:1rem;">
@@ -1305,11 +1510,17 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 
 <!-- ════════ RESULTS ════════ -->
 <div class="screen" id="screenResults">
-  <div class="results-hero"><h2>Shared interests</h2><p>Only things you both said yes to or are interested in.</p></div>
+  <div class="results-hero">
+    <h2 id="resultsHeading">Shared interests</h2>
+    <p id="resultsSub">Only things you both said yes to or are interested in.</p>
+  </div>
   <div id="resultsContent"></div>
   <div class="btn-stack" style="margin-top:1.2rem;">
-    <button class="btn btn-ink" onclick="showScreen('screenPreScene');window.scrollTo(0,0)">Let's begin →</button>
-    <div style="text-align:center;margin-top:.4rem;"><button class="btn-ghost" onclick="goSetup()">← Settings</button></div>
+    <button class="btn btn-ink" onclick="goPreScene(true);window.scrollTo(0,0)">Let's begin →</button>
+    <div style="text-align:center;margin-top:.4rem;display:flex;justify-content:center;gap:1.2rem;">
+      <button class="btn-ghost" onclick="showSurveyScreen()">← Revise preferences</button>
+      <button class="btn-ghost" onclick="goSetup()">Settings</button>
+    </div>
   </div>
 </div>
 
@@ -1317,7 +1528,7 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 <div class="screen" id="screenPlay">
 
   <!-- Phone holder banner -->
-  <div id="phoneHolderBanner" style="display:none;background:var(--sky-bg);border:1px solid var(--sky);border-radius:var(--rs);padding:.5rem 1rem;margin-bottom:.6rem;font-size:.75rem;color:var(--sky);font-weight:500;text-align:center;transition:opacity .6s;"></div>
+  <!-- phoneHolderBanner removed — read-aloud dynamic retired -->
 
   <!-- Pipeline status bar (debug only) -->
   <div class="pipeline-bar" id="pipelineBar">
@@ -1336,7 +1547,7 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
     </div>
   </div>
 
-  <div class="no-opts" id="noOpts">No matching scenes found. Adjust your preferences in Settings.</div>
+  <div class="no-opts" id="noOpts">Nothing quite fit just now — try adjusting the mood or your preferences.</div>
 
   <div class="scene-card" id="sceneCard">
     <!-- Error banner -->
@@ -1354,6 +1565,15 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
       </div>
     </div>
 
+    <!-- TENSION TEASE — shown before scene prep, one per user -->
+    <div id="tensionTeaseWrap" style="display:none;padding:1.4rem 1.6rem 0;">
+      <div class="tension-tease-wrap">
+        <div class="tension-tease-label">Build tension first</div>
+        <div class="tension-tease-text" id="tensionTeaseText"></div>
+        <div class="tension-tease-sub" id="tensionTeaseSub"></div>
+      </div>
+    </div>
+
     <!-- STAGE 1: PREP -->
     <div id="stagePrepWrap" style="display:none;">
       <div style="padding:1.4rem 1.6rem 1rem;">
@@ -1368,13 +1588,13 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
     <!-- STAGE 2: SCENE -->
     <div id="stageSceneWrap" style="display:none;">
       <div style="padding:1.2rem 1.6rem 1rem;border-top:1px solid var(--border);">
-        <div id="stageSceneTitle" style="font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.75rem;"></div>
+        <div id="stageSceneTitle" style="font-size:.58rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:.75rem;"></div>
         <div id="stageSceneText" style="font-family:'Fraunces',Georgia,serif;font-size:clamp(1.05rem,3.2vw,1.18rem);font-weight:300;line-height:1.9;color:var(--ink);letter-spacing:.005em;"></div>
       </div>
 
       <!-- Finish buttons — shown after scene typewriters in -->
       <div id="finishBtns" style="display:none;padding:.5rem 1.2rem 1.2rem;border-top:1px solid var(--border);margin-top:.5rem;">
-        <div style="font-size:.58rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);margin-bottom:.6rem;" id="stageFinishLabel">How do you finish?</div>
+        <div style="font-size:.58rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:.6rem;" id="stageFinishLabel">Ready to finish?</div>
         <div style="display:flex;flex-direction:column;gap:.4rem;">
           <button class="finish-btn visible" id="finishBtnA" onclick="generateTheirTurn(0)">Tell us how <span id="finishNameA"></span> finishes →</button>
           <button class="finish-btn visible" id="finishBtnB" onclick="generateTheirTurn(1)">Tell us how <span id="finishNameB"></span> finishes →</button>
@@ -1402,13 +1622,23 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 
   <!-- Action bar — not sticky -->
   <div class="play-action-bar" id="playActionBar">
-    <div style="text-align:center;margin-bottom:.5rem;">
-      <button class="play-text-link" id="newSceneBtn" onclick="generateInPlace()">Try something else</button>
+    <div style="text-align:center;margin-bottom:.6rem;">
+      <button class="btn btn-outline" id="newSceneBtn" onclick="generateInPlace()" style="width:100%;">Try something else</button>
     </div>
     <div style="display:flex;justify-content:space-between;align-items:center;padding:0 .1rem;">
       <button onclick="goPreScene(true)" style="background:none;border:none;font-size:.72rem;color:var(--muted);cursor:pointer;font-family:inherit;padding:.3rem 0;">← Adjust mood</button>
       <button id="saveSceneBtn" onclick="saveCurrentScene()" style="background:none;border:none;font-size:.72rem;color:var(--sky);cursor:pointer;font-family:inherit;padding:.3rem 0;">♡ Save</button>
-      <button onclick="confirmLeavePlay()" style="background:none;border:none;font-size:.72rem;color:var(--muted);cursor:pointer;font-family:inherit;padding:.3rem 0;">⚙ Settings</button>
+      <button onclick="confirmLeavePlay()" style="background:none;border:none;font-size:.72rem;color:var(--muted);cursor:pointer;font-family:inherit;padding:.3rem 0;">⚙ Pause</button>
+    </div>
+    <!-- Inline private note input — shown after save -->
+    <div id="saveNoteInline" style="display:none;margin-top:.5rem;background:var(--sage-bg);border:1px solid var(--sage-mid);border-radius:var(--rs);padding:.6rem .75rem;">
+      <div style="font-size:.68rem;color:var(--muted);margin-bottom:.35rem;">Add a private note to this moment?</div>
+      <div style="display:flex;gap:.4rem;align-items:center;">
+        <input id="saveNoteInput" type="text" placeholder="Just for you…" maxlength="120"
+          style="flex:1;font-size:.78rem;padding:.3rem .5rem;border:1px solid var(--border);border-radius:6px;background:var(--card);font-family:'DM Sans',sans-serif;color:var(--ink);">
+        <button onclick="commitSaveNote()" style="background:var(--sage);border:none;border-radius:var(--rs);color:#fff;font-size:.72rem;font-weight:600;padding:.3rem .65rem;cursor:pointer;font-family:'DM Sans',sans-serif;">Save note</button>
+        <button onclick="document.getElementById('saveNoteInline').style.display='none'" style="background:none;border:none;font-size:.72rem;color:var(--muted);cursor:pointer;padding:.2rem;font-family:'DM Sans',sans-serif;">Skip</button>
+      </div>
     </div>
   </div>
 
@@ -1465,6 +1695,29 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 // ═══════════════════════════════════════════
 //  CONSTANTS — single source of truth
 // ═══════════════════════════════════════════
+// Safe localStorage — falls back to in-memory if storage is blocked (private mode etc.)
+const _lsMem = {};
+const _lsFallback = {
+  getItem:    k   => _lsMem[k] !== undefined ? _lsMem[k] : null,
+  setItem:    (k,v) => { _lsMem[k] = String(v); },
+  removeItem: k   => { delete _lsMem[k]; },
+  key:        i   => Object.keys(_lsMem)[i] || null,
+  get length()    { return Object.keys(_lsMem).length; },
+};
+const _ls = (() => {
+  try { localStorage.setItem('_spark_ls_test','1'); localStorage.removeItem('_spark_ls_test'); return localStorage; }
+  catch(e) {
+    console.warn('[Spark] localStorage unavailable — using in-memory fallback');
+    return _lsFallback;
+  }
+})();
+// Patch the global localStorage reference so all existing calls are guarded automatically
+try {
+  if (_ls === _lsFallback) {
+    Object.defineProperty(window, 'localStorage', { get: () => _lsFallback, configurable: true });
+  }
+} catch(e) { /* defineProperty blocked — calls will still use _ls directly */ }
+
 const C = {
   // API
   MODEL:        'claude-sonnet-4-6',
@@ -1476,9 +1729,10 @@ const C = {
   LS: {
     NAME1:      'spark_name1',
     NAME2:      'spark_name2',
-    API_KEY:    'spark_api_key',
-    PROXY_URL:  'spark_proxy_url',
-    PREFS_SET:  'spark_prefs_set',
+    API_KEY:      'spark_api_key',
+    PROXY_URL:    'spark_proxy_url',
+    PROXY_SECRET: 'spark_proxy_secret',
+    PREFS_SET:    'spark_prefs_set',
     SCENE_CNT:  'spark_scene_count',
     RATINGS:    'spark_ratings',
     DEBUG:      'spark_debug',
@@ -1486,9 +1740,6 @@ const C = {
     REMEMBER:   'spark_remember_key',
     SAVED_SCENES:'spark_saved_scenes',
     LOCATION:   'spark_location',
-    EXPERIENCE: 'spark_experience',
-    ARCHETYPES: 'spark_archetypes',
-    SURVEY_STEP:'spark_survey_step',
     KINK_PREFS0:'spark_kink_prefs_0',
     KINK_PREFS1:'spark_kink_prefs_1',
     KINK_MANUAL:'spark_kink_manual',
@@ -1497,6 +1748,11 @@ const C = {
     SCENE_HIST: 'spark_scene_history',
     VOICE:      'spark_voice',
     VOICE_SEEN: 'spark_voice_seen',
+    // Pairing / room
+    ROOM_CODE:  'spark_room_code',
+    MY_ROLE:    'spark_my_role',      // 'A' | 'B' | null (unpaired)
+    SOLO_MODE:  'spark_solo_mode',    // '0' = two-device, '1' = one-device, null = new user
+    ROOM_TS:    'spark_room_ts',      // last known room updatedAt
   },
   // Critical DOM element IDs — if these are missing the app cannot function
   EL: {
@@ -1618,6 +1874,15 @@ function toggleAiPanel(forceOpen) {
   const chevron = document.getElementById('aiChevron');
   const isOpen  = panel.classList.contains('open');
   const open    = forceOpen !== undefined ? forceOpen : !isOpen;
+  panel.classList.toggle('open', open);
+  if (chevron) chevron.classList.toggle('open', open);
+}
+
+function toggleMoreOptions() {
+  const panel   = document.getElementById('moreOptionsPanel');
+  const chevron = document.getElementById('moreOptionsChevron');
+  if (!panel) return;
+  const open = !panel.classList.contains('open');
   panel.classList.toggle('open', open);
   if (chevron) chevron.classList.toggle('open', open);
 }
@@ -1745,6 +2010,7 @@ function updateAssetName(pi, aid, val) {
 
 function onGenderChange(pi) {
   const gender = document.getElementById('gender' + (pi + 1)).value;
+  if (!gender) return; // no selection yet — leave body state unchanged
   const section = document.getElementById('assets' + pi);
   body[pi] = {};
   ASSET_DEFS.forEach(a => {
@@ -1760,14 +2026,11 @@ function onGenderChange(pi) {
 /** Get named asset for partner pi — returns null if not applicable */
 function getAsset(pi, aid) {
   if (body[pi]?.[aid]?.on) return body[pi][aid].name;
-  const g = document.getElementById('gender' + (pi + 1))?.value || (pi === 0 ? 'male' : 'female');
+  const g = document.getElementById('gender' + (pi + 1))?.value || '';
+  if (!g) return aid === 'ass' ? 'ass' : aid === 'mouth' ? 'mouth' : null; // minimal safe fallback
   const fallbacks = { cock: g==='male'?'cock':null, pussy: g==='female'?'pussy':null,
     breasts: g==='female'?'breasts':null, ass:'ass', chest:'chest', mouth:'mouth', thighs:'thighs' };
   return fallbacks[aid] ?? null;
-}
-
-function genital(pi) {
-  return getAsset(pi,'cock') || getAsset(pi,'pussy') || 'genitals';
 }
 
 // ═══════════════════════════════════════════
@@ -2245,7 +2508,7 @@ function runSelfTest() {
 }
 
 // Scene generation counter for rating prompt
-let sceneCount = parseInt(localStorage.getItem(C.LS.SCENE_CNT) || '0');
+var sceneCount = parseInt(localStorage.getItem(C.LS.SCENE_CNT) || '0');
 
 function incrementSceneCount() {
   sceneCount++;
@@ -2297,58 +2560,9 @@ function rateScene(rating) {
   }
 }
 
-// ═══════════════════════════════════════════
-//  AMBUSH PROMPTS (static fallback)
-// ═══════════════════════════════════════════
-
+// n/b helpers used in narrative rendering
 const n = name => `<span class="n-name">${esc(name)}</span>`;
 const b = txt  => `<span class="n-body">${esc(txt)}</span>`;
-
-// Minimal fallback teases — only used when AI is unavailable
-const AMBUSH_FALLBACK = {
-  light:[
-    { title:'The look',        text:(A,B)=>`${A}, find ${B} and hold eye contact for five full seconds. Look away first. Say nothing.` },
-    { title:'The slow pass',   text:(A,B)=>`${A}, walk past ${B} and drag one hand slowly across the back of their neck. Keep walking.` },
-    { title:'The countdown',   text:(A,B)=>`${A}, send ${B} a single number right now. Every hour, send one lower. No explanation.` },
-    { title:'The hand',        text:(A,B)=>`${A}, sit next to ${B} and rest your hand on their inner thigh. Thirty seconds. Remove it and carry on.` },
-    { title:'The mirror hold', text:(A,B)=>`${A}, pull ${B} in front of a mirror and hold them from behind for thirty seconds — both of you watching.` },
-  ],
-  medium:[
-    { title:'The wall-pin',      text:(A,B)=>`${A}, back ${B} against a wall. Hold both wrists. Say nothing for fifteen seconds. Release and leave.` },
-    { title:'The whisper plant', text:(A,B)=>`${A}, walk past ${B} and whisper what you plan to do to them tonight — one sentence. Keep walking.` },
-    { title:'The neck grip',     text:(A,B)=>`${A}, place one hand firmly around the back of ${B}'s neck. Pull them until your mouths almost touch. Hold five seconds. Release.` },
-    { title:'The hair pull',     text:(A,B)=>`${A}, slide your fingers into ${B}'s hair and pull slowly until their chin lifts. Look at them. Release. Walk away.` },
-    { title:'The belt pull',     text:(A,B)=>`${A}, grab ${B}'s waistband and pull them flush against you for thirty seconds. Release and walk away.` },
-  ],
-  hard:[
-    { title:'The 30-second sprint', text:(A,B)=>`${A}, find ${B}. Use your hand on them hard for thirty seconds — then stop. Walk away without a word.` },
-    { title:'The freeze edge',      text:(A,B)=>`${A}, tell ${B} to freeze. Work them with your hand at full speed for thirty seconds — stop at the peak. Leave.` },
-    { title:'The ear drop',         text:(A,B)=>`${A}, describe in detail what your mouth is going to do to them tonight. Take your time. Then walk away.` },
-    { title:'The drive-by',         text:(A,B)=>`${A}, deliver ten deliberate strikes to ${B}'s backside. No words. Exit the room immediately.` },
-    { title:'The deep intake',      text:(A,B)=>`${A}, drop to your knees and take them into your mouth for thirty seconds — full intensity, total silence. Stand up and leave.` },
-  ],
-};
-
-const NOTIF_TEASES = {
-  light:[
-    (A,B)=>`${A} is thinking about you.`,
-    (A,B)=>`Something's planned for later, ${B}.`,
-    (A,B)=>`${A} hasn't stopped thinking about you today.`,
-    (A,B)=>`Don't forget what's waiting for you tonight.`,
-  ],
-  medium:[
-    (A,B)=>`${A} wants to pin you against a wall tonight, ${B}.`,
-    (A,B)=>`${A} keeps thinking about the sound you make.`,
-    (A,B)=>`${B}, ${A} wants their hands in your hair tonight.`,
-    (A,B)=>`You've been on ${A}'s mind in a very specific way today.`,
-  ],
-  hard:[
-    (A,B)=>`${A} is going to take their time going down on you tonight, ${B}.`,
-    (A,B)=>`${B}, ${A} wants you on your knees tonight. Hold that.`,
-    (A,B)=>`${A} wants to make you finish with their mouth. Just that thought, for now.`,
-    (A,B)=>`Tonight ${A} isn't stopping until you beg them to, ${B}.`,
-  ],
-};
 
 const PROPS_DEF = [
   {id:'vibrator',label:'Vibrator / Wand'},{id:'restraints',label:'Restraints'},
@@ -2362,7 +2576,7 @@ const PROPS_DEF = [
 let props          = new Set(['vibrator','blindfold','massage_oil']);
 let surveyIdx      = 0;
 let currentScene   = null, currentA = '', currentB = '', currentPiA = 0, currentPiB = 1;
-let ambushIntensity= 'light', notifIntensity = 'light';
+let notifIntensity = 'light';
 let notifsEnabled  = false,   notifInterval  = null;
 let timerInterval  = null,    timerRunning   = false, totalSecs = 300, remainSecs = 300;
 let escalationRevealed = false;
@@ -2381,7 +2595,7 @@ function _pushSceneHistory(entry) {
 }
 let refusalRetries = 0;      // auto-retry count on AI refusal
 let currentMood    = null;            // 'light' | 'medium' | 'hard' | null — set on pre-screen
-let currentVoice   = localStorage.getItem('spark_voice') || 'vivid'; // 'direct' | 'vivid' | 'immersive'
+var currentVoice   = localStorage.getItem('spark_voice') || 'vivid'; // 'direct' | 'vivid' | 'immersive'
 let currentNote    = '';              // free-text focus from pre-screen
 let currentAvoid   = '';              // free-text avoid from pre-screen
 let currentRoles   = ['either','either']; // 'dom'|'sub'|'either' per partner
@@ -2406,12 +2620,11 @@ function willingAll() {
 }
 
 function onWillingToggle() {
-  // Route to new survey instead
+  // Names are never required to start the survey — gN() falls back to "Partner 1/2"
   const n1 = document.getElementById('name1')?.value.trim();
   const n2 = document.getElementById('name2')?.value.trim();
-  if (!n1 || !n2) { setupContinue(); return; }
-  localStorage.setItem(C.LS.NAME1, n1);
-  localStorage.setItem(C.LS.NAME2, n2);
+  if (n1) localStorage.setItem(C.LS.NAME1, n1);
+  if (n2) localStorage.setItem(C.LS.NAME2, n2);
   surveyIdx = 0;
   showSurveyScreen(0);
 }
@@ -2450,7 +2663,9 @@ let _currentShortcutId = null;
 function applyShortcutArchetype(archetypeId) {
   // Toggle: if already active, deselect it; otherwise select it
   const wasActive = activeArchetypes[0].has(archetypeId);
-  [0, 1].forEach(pi => {
+  // In paired mode, only update own prefs (pi=0). In solo mode update both.
+  const pis = (isPaired()) ? [0] : [0, 1];
+  pis.forEach(pi => {
     if (!kinkPrefs[pi] || Object.keys(kinkPrefs[pi]).length === 0) kinkPrefs[pi] = mkDefaultKinkPrefs();
     applyArchetype(archetypeId, pi, !wasActive);
   });
@@ -2480,9 +2695,29 @@ function applyShortcutArchetype(archetypeId) {
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
+  // X2: Header context — suppress tagline on welcome (app name already in hero)
+  const header = document.querySelector('header');
+  if (header) {
+    header.style.display = id === 'screenWelcome' ? 'none' : '';
+  }
   window.scrollTo(0, 0);
 }
+/** Named back navigation — use instead of showScreen() for back buttons */
+function goBack(screenId) { showScreen(screenId); }
 function goSetup() {
+  // SV1: If we're mid-survey, warn before discarding
+  if (document.getElementById('screenSurvey')?.classList.contains('active')) {
+    showConfirmSheet(
+      'Leave the survey?',
+      'Your progress on this step will be lost.',
+      'Leave',
+      () => _goSetupInner()
+    );
+    return;
+  }
+  _goSetupInner();
+}
+function _goSetupInner() {
   isGenerating = false;
   if (streamController) { try { streamController.abort(); } catch {} streamController = null; }
   const btn = document.getElementById('newSceneBtn');
@@ -2490,13 +2725,13 @@ function goSetup() {
   const banner = document.getElementById('returnBanner');
   if (banner) banner.style.display = currentScene ? 'flex' : 'none';
   document.body.classList.remove('header-compact');
-  // Forget tonight's note/avoid — settings is a context break
   currentNote = ''; currentAvoid = '';
   const ni = document.getElementById('sceneNoteInput');
   const ai = document.getElementById('sceneAvoidInput');
   if (ni) ni.value = '';
   if (ai) ai.value = '';
   buildShortcutGrid();
+  showSetupForSoloOrPaired();
   showScreen('screenSetup');
 }
 
@@ -2522,28 +2757,26 @@ function setupContinue() {
   const n1 = f1?.value.trim();
   const n2 = f2?.value.trim();
 
-  if (!n1 || !n2) {
-    // Highlight empty fields with a friendly prompt
-    [f1, f2].forEach(f => {
-      if (f && !f.value.trim()) {
-        f.style.borderColor = 'var(--blush)';
-        f.placeholder = 'Enter a name to continue…';
-        f.focus();
-        f.addEventListener('input', () => { f.style.borderColor = ''; f.placeholder = 'Name…'; }, { once:true });
-      }
-    });
+  // Only own name (name1) is required — partner name is optional everywhere.
+  // gN() falls back to "Partner 1" / "Partner 2" if blank.
+  if (!n1) {
+    if (f1) {
+      f1.style.borderColor = 'var(--blush)';
+      f1.placeholder = 'Enter your name to continue…';
+      f1.focus();
+      f1.addEventListener('input', () => { f1.style.borderColor = ''; f1.placeholder = 'Name…'; }, { once:true });
+    }
     return;
   }
 
-  // Save names
+  // Save whatever names are set
   localStorage.setItem(C.LS.NAME1, n1);
-  localStorage.setItem(C.LS.NAME2, n2);
+  if (n2) localStorage.setItem(C.LS.NAME2, n2);
+  else if (!localStorage.getItem(C.LS.NAME2)) localStorage.setItem(C.LS.NAME2, 'Partner');
 
   if (prefsAreSet()) {
-    // Already have prefs (via shortcut or previous survey) — go home
     goHome();
   } else {
-    // Wants to set preferences — go to new survey
     surveyIdx = 0;
     showSurveyScreen(0);
   }
@@ -2554,20 +2787,26 @@ function goHome() {
   if (banner) banner.style.display = currentScene ? 'flex' : 'none';
   const connected = window._sparkProxyUrl && !isGenerating;
   const hwarn = document.getElementById('homeWarn');
+  const vnotice = document.getElementById('vanillaNotice');
   if (hwarn) hwarn.classList.toggle('visible', !connected);
+  // H5: vanillaNotice only shows when AI is connected (otherwise homeWarn takes priority)
+  if (vnotice) vnotice.classList.toggle('visible', !connected ? false : vnotice.classList.contains('visible'));
   document.body.classList.remove('header-compact');
-  // Forget tonight's note/avoid when returning home — fresh start
   currentNote = ''; currentAvoid = '';
   const ni = document.getElementById('sceneNoteInput');
   const ai = document.getElementById('sceneAvoidInput');
   if (ni) ni.value = '';
   if (ai) ai.value = '';
+  updateHomePairedUI();
   showScreen('screenHome');
 }
 
 function goPreScene(resetMood) {
   buildPropsChips();
   updateRoleLabels();
+  // In paired mode, hide the role-swap section — piA is pinned to the local user
+  const roleWrap = document.getElementById('roleSectionWrap');
+  if (roleWrap) roleWrap.style.display = isPaired() ? 'none' : '';
   // Restore persisted location
   const savedLoc = localStorage.getItem(C.LS.LOCATION) || 'home';
   currentLocation = savedLoc;
@@ -2640,6 +2879,28 @@ function getApiKey() {
   const field = document.getElementById('apiKey');
   if (field?.value.trim()) return field.value.trim();
   return sessionStorage.getItem(C.LS.API_KEY) || localStorage.getItem(C.LS.API_KEY) || '';
+}
+
+function getProxySecret() {
+  return localStorage.getItem(C.LS.PROXY_SECRET) || '';
+}
+
+// Central header builder — always includes token if set
+function _sparkHeaders(extra) {
+  const key    = getApiKey();
+  const secret = getProxySecret();
+  return Object.assign({
+    'Content-Type':      'application/json',
+    ...(key !== '__proxy__' ? { 'x-api-key': key } : {}),
+    ...(secret ? { 'x-spark-token': secret } : {}),
+    'anthropic-version': '2023-06-01',
+  }, extra || {});
+}
+
+function onProxySecretChange() {
+  const val = document.getElementById('proxySecret')?.value || '';
+  if (val.trim()) localStorage.setItem(C.LS.PROXY_SECRET, val.trim());
+  else localStorage.removeItem(C.LS.PROXY_SECRET);
 }
 
 function onApiKeyChange() {
@@ -2727,8 +2988,11 @@ document.getElementById('rememberKey')?.addEventListener('change', () => {
   if (_raw === '/api/proxy' || _raw === '/api/proxy/v1/messages') {
     localStorage.removeItem(C.LS.PROXY_URL);
   }
-  const savedProxy = localStorage.getItem(C.LS.PROXY_URL) || '';
-  const proxyField = document.getElementById('proxyUrl');
+  const savedProxy  = localStorage.getItem(C.LS.PROXY_URL)    || '';
+  const savedSecret = localStorage.getItem(C.LS.PROXY_SECRET) || '';
+  const proxyField  = document.getElementById('proxyUrl');
+  const secretField = document.getElementById('proxySecret');
+  if (savedSecret && secretField) secretField.value = savedSecret;
   if (savedProxy) {
     if (proxyField) proxyField.value = savedProxy;
     window._sparkProxyUrl = normaliseProxyUrl(savedProxy);
@@ -2740,7 +3004,7 @@ document.getElementById('rememberKey')?.addEventListener('change', () => {
       proxyField.value = window.location.origin + '/v1/messages';
       proxyField.placeholder = 'Auto-detected';
     }
-    setProxyStatus('ok', 'Connected — Railway proxy auto-detected ✓');
+    setProxyStatus('ok', 'Connected — proxy auto-detected ✓');
     psSet('proxy', 'ok', window.location.hostname.slice(0, 20));
   }
 })();
@@ -2751,174 +3015,130 @@ document.getElementById('rememberKey')?.addEventListener('change', () => {
 function setNotifIntensity(level, el) {
   notifIntensity = level;
   document.querySelectorAll('#notifIntensityPills .int-pill').forEach(p => p.classList.remove('active'));
-  el.classList.add('active');
+  if (el) el.classList.add('active');
+  localStorage.setItem('spark_notif_intensity', level);
 }
 
 async function toggleNotifications() {
   if (notifsEnabled) { disableNotifications(); return; }
-  if (!('Notification' in window)) { alert('Notifications not supported in this browser.'); return; }
+  if (!('Notification' in window)) { showToast('Notifications not supported on this browser.'); return; }
   const perm = await Notification.requestPermission();
-  if (perm !== 'granted') { alert('Notification permission denied.'); return; }
+  if (perm !== 'granted') { showToast('Permission denied — check your browser settings.'); return; }
   notifsEnabled = true;
+  localStorage.setItem('spark_notifs_enabled', '1');
   document.getElementById('notifConfig').style.display = 'block';
   document.getElementById('notifToggleBtn').textContent = 'Disable';
-  clearInterval(notifInterval);
-  notifInterval = setInterval(() => {
-    // Re-check permission in case it was revoked
-    if (Notification.permission !== 'granted') { disableNotifications(); return; }
-    const hour = new Date().getHours();
-    if (hour < 8 || hour >= 22) return;
-    if (Math.random() < 0.3) {
-      const A = gN(0), B = gN(1);
-      new Notification('Spark ✦', { body: pick(NOTIF_TEASES[notifIntensity])(A, B) });
-    }
-  }, 30 * 60 * 1000);
+  scheduleNotifCheck();
 }
 
 function disableNotifications() {
   notifsEnabled = false;
+  localStorage.setItem('spark_notifs_enabled', '0');
   clearInterval(notifInterval); notifInterval = null;
   document.getElementById('notifConfig').style.display = 'none';
   document.getElementById('notifToggleBtn').textContent = 'Enable';
 }
 
-// ═══════════════════════════════════════════
-//  AMBUSH MODAL
-// ═══════════════════════════════════════════
-function setAmbushIntensity(level, el) {
-  ambushIntensity = level;
-  document.querySelectorAll('#ambushIntensityPills .int-pill').forEach(p => p.classList.remove('active'));
-  if (el) el.classList.add('active');
-  renderAmbushList();
+// ─── Daily tension tease notification engine ─────────────────────
+// Fires once per day between 08:00–20:00. Uses AI to generate a
+// personalised suggestion; falls back to static copy if unavailable.
+
+const NOTIF_FALLBACK = {
+  light: [
+    (A,B) => A + ', make eye contact with ' + B + ' for five seconds today — no explanation.',
+    (A,B) => A + ', send ' + B + ' a voice message just saying their name. Nothing else.',
+    (A,B) => A + ', find a quiet moment to hold ' + B + ' from behind for thirty seconds.',
+  ],
+  moderate: [
+    (A,B) => A + ', whisper to ' + B + ' exactly what you want tonight — just one sentence.',
+    (A,B) => A + ', send ' + B + ' a single word that describes what you\'re thinking about.',
+    (A,B) => A + ', press ' + B + ' against a wall briefly when no one\'s watching. Say nothing.',
+  ],
+  explicit: [
+    (A,B) => A + ', text ' + B + ' a specific physical thing you\'re going to do to them tonight.',
+    (A,B) => A + ', find ' + B + ' and use your hand on them through their clothes for thirty seconds.',
+    (A,B) => A + ', describe out loud — just to ' + B + ' — exactly how you want them positioned tonight.',
+  ],
+};
+
+function scheduleNotifCheck() {
+  clearInterval(notifInterval);
+  notifInterval = setInterval(_checkSendDailyTease, 60 * 60 * 1000); // check hourly
+  _checkSendDailyTease(); // also check immediately on enable
 }
 
-function openAmbushModal() {
-  // Sync intensity pill to match the main mood if set
-  if (currentMood) {
-    const moodToIntensity = { light:'light', medium:'medium', hard:'hard' };
-    const mapped = moodToIntensity[currentMood] || 'light';
-    ambushIntensity = mapped;
-    document.querySelectorAll('#ambushIntensityPills .int-pill').forEach(p => {
-      const active = p.dataset.level === mapped;
-      p.classList.toggle('active', active);
-    });
-  }
-  document.getElementById('ambushModal').classList.add('open');
-  renderAmbushList();
-}
+async function _checkSendDailyTease() {
+  if (!notifsEnabled) return;
+  if (Notification.permission !== 'granted') { disableNotifications(); return; }
+  const hour = new Date().getHours();
+  if (hour < 8 || hour >= 20) return; // only 08:00–20:00
 
-function closeAmbushModal(e) {
-  if (!e || e.target === document.getElementById('ambushModal'))
-    document.getElementById('ambushModal').classList.remove('open');
-}
-
-let ambushGenerating = false;
-
-function renderAmbushList() {
-  if (ambushGenerating) return;
-  const list = document.getElementById('ambushList');
-  if (!list) return;
-  list.innerHTML = '';
+  // Send at most once per calendar day
+  const today = new Date().toDateString();
+  const lastSent = localStorage.getItem('spark_notif_last_sent');
+  if (lastSent === today) return;
+  localStorage.setItem('spark_notif_last_sent', today);
 
   const A = gN(0), B = gN(1);
-  const key = getApiKey();
-  const shuffleBtn = document.querySelector('#ambushModal .btn-outline');
-
-  if (!key) {
-    // Fallback — show static teases
-    const fb = AMBUSH_FALLBACK[ambushIntensity] || AMBUSH_FALLBACK.light;
-    const shown = shuffle(fb).slice(0, 3);
-    const notice = document.createElement('div');
-    notice.style.cssText = 'font-size:.7rem;color:var(--muted);margin-bottom:.6rem;padding:.4rem .75rem;background:var(--bg);border-radius:var(--rs);border:1px solid var(--border);';
-    notice.textContent = 'AI not connected — showing preset teases';
-    list.appendChild(notice);
-    shown.forEach(a => {
-      const card = document.createElement('div'); card.className = 'ambush-card';
-      const titleEl = document.createElement('div'); titleEl.className = 'ambush-card-title'; titleEl.textContent = a.title;
-      const textEl  = document.createElement('div'); textEl.className  = 'ambush-card-text';  textEl.textContent = a.text(A, B);
-      card.appendChild(titleEl); card.appendChild(textEl); list.appendChild(card);
-    });
-    return;
-  }
-
-  // Loading state
-  ambushGenerating = true;
-  if (shuffleBtn) { shuffleBtn.disabled = true; shuffleBtn.textContent = 'Writing…'; }
-
-  // Show skeleton cards
-  for (let i = 0; i < 3; i++) {
-    const card = document.createElement('div');
-    card.className = 'ambush-card';
-    card.style.minHeight = '60px';
-    card.innerHTML = '<div class="ambush-card-title" style="color:var(--muted);">Writing…</div>' +
-      '<div class="ambush-card-text scene-stream-writing" style="min-height:1.5rem;"></div>';
-    list.appendChild(card);
-  }
-
-  // Build context for Haiku
-  const intensityMap = {
-    light:  'Subtle and non-sexual — a physical gesture, meaningful look, or suggestive touch. No explicit acts.',
-    medium: 'Suggestive and charged — physical contact with clear sexual intent. Not graphic.',
-    hard:   'Explicitly sexual — direct acts using body parts. Graphic and specific.',
-  };
-  const intensityDesc = intensityMap[ambushIntensity] || intensityMap.light;
-
-  // Build preference snapshot — what this couple is into
-  const prefSnap = buildCall1Prefs(0); // use piA as the doer
-  const loc = currentLocation && currentLocation !== 'home' ? currentLocation : 'at home';
-
-  // Body assets for specificity
-  const bA = ASSET_DEFS.filter(a => body[0]?.[a.id]?.on).map(a => body[0][a.id].name);
-  const bB = ASSET_DEFS.filter(a => body[1]?.[a.id]?.on).map(a => body[1][a.id].name);
-
-  const system =
-    'You write quick tease instructions for a couples app called Spark. ' +
-    'These are things one partner does to the other RIGHT NOW — short, sharp, physical interruptions that build tension. ' +
-    'Format: Direct instructions to ' + A + '. Second person. Each tease has a title (3-5 words) and instruction (1-2 sentences). ' +
-    'Intensity: ' + intensityDesc + ' ' +
-    'IMPORTANT: ' + (VOICE_CONFIG[currentVoice] || VOICE_CONFIG.vivid).teaseTone + ' ' +
-    'Use their real names (' + A + ' and ' + B + '). Use body part names when appropriate. ' +
-    'Location: ' + loc + ' — all teases must be physically possible here. ' +
-    'Their preferences — what they\'re into:\n' + prefSnap + '\n' +
-    (bB.length ? '\n' + B + '\'s body parts to reference: ' + bB.join(', ') : '') +
-    '\n\nReturn ONLY a JSON array of exactly 3 objects: [{"title":"…","instruction":"…"},{"title":"…","instruction":"…"},{"title":"…","instruction":"…"}]. No other text.';
-
-  const user = 'Generate 3 tease instructions for ' + A + ' to use on ' + B + ' right now. Intensity: ' + ambushIntensity + '. Location: ' + loc + '. JSON array only.';
-
-  callClaudeJSON(system, user).then(result => {
-    ambushGenerating = false;
-    if (shuffleBtn) { shuffleBtn.disabled = false; shuffleBtn.textContent = '↻ Shuffle'; }
-    list.innerHTML = '';
-
-    // Validate result
-    let teases = [];
-    if (Array.isArray(result) && result.length >= 1) {
-      teases = result.slice(0, 3).filter(t => t && t.title && t.instruction);
-    }
-
-    // Fallback if AI returned nothing usable
-    if (teases.length === 0) {
-      const fb = shuffle(AMBUSH_FALLBACK[ambushIntensity] || AMBUSH_FALLBACK.light).slice(0, 3);
-      teases = fb.map(a => ({ title: a.title, instruction: a.text(A, B) }));
-    }
-
-    teases.forEach(t => {
-      const card = document.createElement('div');
-      card.className = 'ambush-card';
-      const titleEl = document.createElement('div');
-      titleEl.className = 'ambush-card-title';
-      titleEl.textContent = t.title;
-      const textEl = document.createElement('div');
-      textEl.className = 'ambush-card-text';
-      card.appendChild(titleEl);
-      card.appendChild(textEl);
-      list.appendChild(card);
-      // Typewriter reveal for each card
-      typewriterReveal(textEl, formatNarrative(t.instruction), null);
-    });
-  });
+  const body = await _buildDailyTeaseText(A, B);
+  new Notification('Spark ✦', { body, icon: '' });
+  SparkLog.info('notif:sent', { intensity: notifIntensity });
 }
 
+async function _buildDailyTeaseText(A, B) {
+  // Try AI first, fall back to static
+  try {
+    const key = getApiKey();
+    const endpoint = window._sparkProxyUrl;
+    if (!key || !endpoint) throw new Error('no api');
+
+    const intensityMap = {
+      light:    'Subtle and non-sexual — a physical gesture, meaningful look, or loaded comment. Nothing explicit.',
+      moderate: 'Suggestive with clear physical intent. Charged but not graphic.',
+      explicit: 'Explicitly sexual — direct and specific about what will happen tonight.',
+    };
+    const myPrefs = buildCall1Prefs(0);
+    const system =
+      'You write a single daily tension-building suggestion for a couples app called Spark. ' +
+      'One sentence. Addressed directly to ' + A + '. Second person. ' +
+      'It is something ' + A + ' does to or says to ' + B + ' during the day to build anticipation. ' +
+      'Intensity: ' + (intensityMap[notifIntensity] || intensityMap.light) + ' ' +
+      'Their preferences: ' + myPrefs + ' ' +
+      'Return ONLY the sentence — no quotes, no preamble.';
+    const user = 'Daily tease for ' + A + ' to use on ' + B + '. ' + notifIntensity + ' intensity. One sentence only.';
+
+    const result = await callClaudeJSON(system, user);
+    // callClaudeJSON returns parsed JSON; for a bare string the model wraps it
+    if (typeof result === 'string' && result.trim().length > 10) return result.trim();
+    if (result && result.tease) return result.tease;
+    if (result && result.suggestion) return result.suggestion;
+    throw new Error('bad result');
+  } catch(e) {
+    SparkLog.warn('notif:aiFailed', e.message);
+    const opts = NOTIF_FALLBACK[notifIntensity] || NOTIF_FALLBACK.light;
+    return opts[Math.floor(Math.random() * opts.length)](A, B);
+  }
+}
+
+// ─── Restore notif state on load ─────────────────────────────────
+(function restoreNotifState() {
+  const enabled   = localStorage.getItem('spark_notifs_enabled') === '1';
+  const intensity = localStorage.getItem('spark_notif_intensity') || 'light';
+  notifIntensity  = intensity;
+  document.querySelectorAll('#notifIntensityPills .int-pill').forEach(p => {
+    p.classList.toggle('active', p.dataset.level === intensity);
+  });
+  if (enabled && 'Notification' in window && Notification.permission === 'granted') {
+    notifsEnabled = true;
+    const cfg = document.getElementById('notifConfig');
+    const btn = document.getElementById('notifToggleBtn');
+    if (cfg) cfg.style.display = 'block';
+    if (btn) btn.textContent = 'Disable';
+    scheduleNotifCheck();
+  }
+})();
+
+// ═══════════════════════════════════════════
 // ═══════════════════════════════════════════
 //  SURVEY — New Multi-Step System
 // ═══════════════════════════════════════════
@@ -2934,15 +3154,6 @@ const SURVEY_PATHWAYS = [
 ];
 
 // Deep-dive shows only categories where at least one item has interest ≠ 'no'
-function getActiveCatsForDeepDive(pi) {
-  return KINK_CATS.filter(cat => !cat.advanced && cat.items.some(item => {
-    const ids = item.split ? [item.id+'_give', item.id+'_receive'] : [item.id];
-    return ids.some(id => {
-      const v = kinkPrefs[pi][id];
-      return v && v !== 'no';
-    });
-  }));
-}
 
 function showSurveyScreen(pi) {
   surveyIdx = pi;
@@ -2970,8 +3181,8 @@ function renderSurveyStep() {
   const backBtn = document.getElementById('surveyBackBtn');
 
   if (surveySubStep === 'archetypes') {
-    if (bar)   bar.style.width = surveyIdx === 0 ? '5%' : '52%';
-    if (label) label.textContent = (surveyIdx === 0 ? 'Partner 1 of 2' : 'Partner 2 of 2') + ' \u00b7 Step 1 of 2';
+    if (bar)   bar.style.width = isPaired() ? '25%' : (surveyIdx === 0 ? '20%' : '60%');
+    if (label) label.textContent = (isPaired() ? 'Your preferences' : (surveyIdx === 0 ? 'Partner 1 of 2' : 'Partner 2 of 2')) + ' \u00b7 Step 1 of 2';
     if (title) title.textContent = gN(surveyIdx) + ', what\u2019s your vibe?';
     if (sub)   sub.textContent   = 'Pick one or more. Pre-fills your preferences \u2014 you can still refine.';
     if (nextBtn) { nextBtn.textContent = 'What are we into? \u2192'; nextBtn.style.display = 'block'; }
@@ -2981,24 +3192,24 @@ function renderSurveyStep() {
     document.getElementById('surveyStepArchetypes').style.display = 'block';
 
   } else if (surveySubStep === 'waterfall') {
-    if (bar)   bar.style.width = surveyIdx === 0 ? '40%' : '90%';
-    if (label) label.textContent = (surveyIdx === 0 ? 'Partner 1 of 2' : 'Partner 2 of 2') + ' \u00b7 Step 2 of 2';
+    if (bar)   bar.style.width = isPaired() ? '65%' : (surveyIdx === 0 ? '45%' : '85%');
+    if (label) label.textContent = (isPaired() ? 'Your preferences' : (surveyIdx === 0 ? 'Partner 1 of 2' : 'Partner 2 of 2')) + ' \u00b7 Step 2 of 2';
     if (title) title.textContent = 'What are you into?';
     if (sub)   sub.textContent   = 'Your vibe has pre-filled these. Only change what doesn\u2019t fit.';
     if (nextBtn) {
-      nextBtn.textContent = surveyIdx === 0
-        ? 'Done \u2014 ' + 'over to ' + gN(1) + ' \u2192'
-        : 'See what you both want \u2192';
+      nextBtn.textContent = (isPaired() || surveyIdx === 1)
+        ? 'All done \u2192'
+        : 'Done \u2014 over to ' + gN(1) + ' \u2192';
       nextBtn.style.display = 'block';
     }
-    if (backBtn) { backBtn.textContent = '\u2190 Change our vibe'; backBtn.style.display = 'inline'; }
+    if (backBtn) { backBtn.textContent = isPaired() ? '\u2190 Change my vibe' : '\u2190 Change our vibe'; backBtn.style.display = 'inline'; }
     if (navBtns) navBtns.style.display = 'block';
     buildWaterfall();
     document.getElementById('surveyStepWaterfall').style.display = 'block';
 
   } else if (surveySubStep === 'discovery') {
     if (bar)   bar.style.width = '100%';
-    if (label) label.textContent = 'Both done!';
+    if (label) label.textContent = isPaired() ? 'All done!' : 'Both done!';
     if (title) title.textContent = '';
     if (sub)   sub.textContent   = '';
     if (navBtns) navBtns.style.display = 'none';
@@ -3014,12 +3225,14 @@ function surveyStepNext() {
   } else if (surveySubStep === 'waterfall') {
     markPrefsSet();
     persistPrefs();
-    if (surveyIdx === 0) {
+    if (!isPaired() && surveyIdx === 0) {
+      // Solo mode: go to partner 2 survey
       surveyIdx = 1;
       surveySubStep = 'archetypes';
       if (!kinkPrefs[1] || Object.keys(kinkPrefs[1]).length === 0) kinkPrefs[1] = mkDefaultKinkPrefs();
       renderSurveyStep(); window.scrollTo(0,0);
     } else {
+      // Paired mode (own survey only) or partner 2 done: finish
       surveySubStep = 'discovery';
       renderSurveyStep(); window.scrollTo(0,0);
     }
@@ -3029,9 +3242,11 @@ function surveyStepNext() {
 function surveyStepBack() {
   if (surveySubStep === 'archetypes' && surveyIdx === 0) {
     goSetup();
-  } else if (surveySubStep === 'archetypes' && surveyIdx === 1) {
+  } else if (surveySubStep === 'archetypes' && surveyIdx === 1 && !isPaired()) {
     surveyIdx = 0; surveySubStep = 'waterfall';
     renderSurveyStep(); window.scrollTo(0,0);
+  } else if (surveySubStep === 'archetypes' && surveyIdx === 1 && isPaired()) {
+    goSetup();
   } else if (surveySubStep === 'waterfall') {
     surveySubStep = 'archetypes';
     renderSurveyStep(); window.scrollTo(0,0);
@@ -3039,9 +3254,6 @@ function surveyStepBack() {
 }
 
 function surveySkipToCards()    { surveySubStep = 'waterfall'; renderSurveyStep(); window.scrollTo(0,0); }
-function surveySkipToCategory() { surveySkipToCards(); }
-function surveySkipDeepDive()   { surveyStepNext(); }
-function surveyNext()           { surveyStepNext(); }
 
 // ─── Rating definitions (5-button strip) ─────────────────────────────────────
 const RATING_BTNS = [
@@ -3052,9 +3264,9 @@ const RATING_BTNS = [
   { v:'no',      label:'No',            cls:'pb-no'      },
 ];
 // Legacy constant aliases
-const INT_OPTIONS   = RATING_BTNS;
+var INT_OPTIONS   = RATING_BTNS;
 const EXP_OPTIONS   = [];
-const INTEREST_COLS = RATING_BTNS;
+var INTEREST_COLS = RATING_BTNS;
 const EXP_ROWS      = [];
 
 function partnerPronoun(pi) {
@@ -3276,22 +3488,6 @@ function buildWaterfallAdvanced(container, pi, pronoun) {
   });
 }
 
-// Legacy no-op stubs
-function buildCategorySliders() {}
-function setCatInterest(catId, interest, pi) {
-  const cat = KINK_CATS.find(c => c.id === catId); if (!cat) return;
-  cat.items.forEach(item => {
-    const ids = item.split ? [item.id+'_give',item.id+'_receive'] : [item.id];
-    ids.forEach(id => { kinkPrefs[pi][id] = interest; });
-  });
-}
-function setCatExperience() {}
-function buildDeepDive()    {}
-function appendDDItem()     {}
-function refreshDDItem()    {}
-function buildDeck()        {}
-function deckYes()          {}
-function deckNo()           {}
 function deckUndo()         {}
 function deckDetailConfirm(){}
 function _advanceDeck()     {}
@@ -3307,16 +3503,66 @@ function buildDiscoveryReveal() {
   if (!container) return;
   container.innerHTML = '';
 
-  const overlaps = ALL_KINK_ITEMS.filter(i => {
-    const a = kinkPrefs[0][i.id];
-    const b = kinkPrefs[1][i.id];
-    return (a === 'like' || a === 'fav') && (b === 'like' || b === 'fav') && !i.advanced;
-  });
-  const favFav = overlaps.filter(i => kinkPrefs[0][i.id] === 'fav' && kinkPrefs[1][i.id] === 'fav');
+  // Inject discovery header dynamically — only shown when matches exist (SV6)
+  function renderHeader(title, sub) {
+    const h = document.createElement('div');
+    h.style.cssText = 'text-align:center;margin-bottom:1rem;';
+    h.innerHTML =
+      '<div style="font-size:2rem;margin-bottom:.6rem;">✨</div>' +
+      '<h3 style="font-family:\'DM Serif Display\',serif;font-size:1.6rem;font-weight:400;color:var(--ink);margin-bottom:.35rem;">' + title + '</h3>' +
+      (sub ? '<p style="font-size:.82rem;color:var(--muted);line-height:1.5;margin-bottom:.9rem;">' + sub + '</p>' : '');
+    container.appendChild(h);
+  }
+
+  let overlaps = [];
+  let usedMutual = false;
+
+  if (isPaired() && _roomBlob && _roomBlob.mutualMatches) {
+    // Paired mode: use server-computed mutual matches (privacy-filtered)
+    usedMutual = true;
+    const mm = _roomBlob.mutualMatches;
+    overlaps = ALL_KINK_ITEMS.filter(i => {
+      if (i.advanced) return false;
+      const r = mm[i.id];
+      return r === 'like' || r === 'fav';
+    });
+  } else if (isPaired()) {
+    // Paired but partner hasn't completed preferences yet — show check-back message
+    container.innerHTML =
+      '<div style="text-align:center;padding:1.5rem .5rem;">' +
+        '<div style="font-size:1.5rem;margin-bottom:.6rem;">\u{1F491}</div>' +
+        '<div style="font-size:.88rem;font-weight:600;color:var(--ink);margin-bottom:.35rem;">Nearly there</div>' +
+        '<div style="font-size:.78rem;color:var(--muted);line-height:1.6;">Once your partner completes their preferences on their device, your shared highlights will appear here.</div>' +
+      '</div>';
+    setTimeout(() => {
+      const btn = document.createElement('button');
+      btn.className = 'btn btn-ink';
+      btn.style.cssText = 'width:100%;margin-top:.75rem;';
+      btn.textContent = 'Continue \u2192';
+      btn.onclick = finishSurvey;
+      container.appendChild(btn);
+    }, 300);
+    return;
+  } else {
+    // Solo mode: use local kinkPrefs for both partners
+    overlaps = ALL_KINK_ITEMS.filter(i => {
+      const a = kinkPrefs[0][i.id];
+      const b = kinkPrefs[1][i.id];
+      return (a === 'like' || a === 'fav') && (b === 'like' || b === 'fav') && !i.advanced;
+    });
+  }
+
+  const favFav = usedMutual
+    ? overlaps.filter(i => _roomBlob.mutualMatches[i.id] === 'fav')
+    : overlaps.filter(i => kinkPrefs[0][i.id] === 'fav' && kinkPrefs[1][i.id] === 'fav');
   const picks  = shuffle([...favFav, ...overlaps.filter(i => !favFav.includes(i))]).slice(0, 3);
 
   if (picks.length === 0) {
-    container.innerHTML = '<div style="font-size:.82rem;color:var(--muted);padding:.5rem 0;">No exact matches yet \u2014 Spark will still suggest scenes based on your preferences.</div>';
+    // SV6: No heading when there are no matches — avoids conflicting tone
+    const msg = document.createElement('div');
+    msg.style.cssText = 'font-size:.82rem;color:var(--muted);padding:.5rem 0;text-align:center;line-height:1.6;';
+    msg.textContent = 'No exact matches yet \u2014 Spark will still suggest scenes based on your preferences.';
+    container.appendChild(msg);
     setTimeout(() => {
       const btn = document.createElement('button');
       btn.className = 'btn btn-ink';
@@ -3327,14 +3573,22 @@ function buildDiscoveryReveal() {
     return;
   }
 
+  // SV6: Header only shown when there are actual matches
+  const headerTitle = isPaired() ? 'You\u2019re both into\u2026' : 'You both enjoy\u2026';
+  const headerSub   = isPaired() ? 'Things Spark found you share.' : 'Things you might not have known you share.';
+  renderHeader(headerTitle, headerSub);
+
   picks.forEach((item, i) => {
     const card = document.createElement('div');
     card.className = 'discovery-card';
-    const meta = CAT_META[item.cat] || { icon:'\u2736' };
+    const meta = CAT_META[item.cat] || { icon: '\u2736' };
+    const matchLevel = usedMutual
+      ? (_roomBlob.mutualMatches[item.id] === 'fav' ? 'both favourited this' : 'both said yes')
+      : (kinkPrefs[0][item.id]==='fav' && kinkPrefs[1][item.id]==='fav' ? 'both favourited this' : 'both said yes');
     card.innerHTML =
       '<div class="discovery-card-emoji">' + meta.icon + '</div>' +
       '<div class="discovery-card-title">' + esc(item.label.replace(' \u2014 Giving','').replace(' \u2014 Receiving','')) + '</div>' +
-      '<div class="discovery-card-sub">Both of you \u2014 ' + (kinkPrefs[0][item.id]==='fav'&&kinkPrefs[1][item.id]==='fav' ? 'both favourited this' : 'both said yes') + '</div>';
+      '<div class="discovery-card-sub">Both of you \u2014 ' + matchLevel + '</div>';
     container.appendChild(card);
     setTimeout(() => card.classList.add('revealed'), 200 + i * 350);
   });
@@ -3349,6 +3603,7 @@ function buildDiscoveryReveal() {
     requestAnimationFrame(() => { btn.style.opacity = '1'; });
   }, 200 + picks.length * 350 + 400);
 }
+
 
 function finishSurvey() {
   markPrefsSet();
@@ -3388,6 +3643,14 @@ function setKink(id, val) {
 //  MATCHES
 // ═══════════════════════════════════════════
 function showMatches() {
+  // R1: Context-aware heading — in paired mode partner may not have surveyed yet
+  const heading = document.getElementById('resultsHeading');
+  const sub     = document.getElementById('resultsSub');
+  if (heading) heading.textContent = isPaired() ? 'Your preferences' : 'Shared interests';
+  if (sub)     sub.textContent     = isPaired()
+    ? 'What you\u2019re into — scenes will blend your preferences with your partner\u2019s once they\u2019ve set up.'
+    : 'Only things you both said yes to or are interested in.';
+
   const favM = [], likeM = [], intM = [];
   const seen = new Set();
 
@@ -3727,10 +3990,10 @@ function sliceHtmlToTextLen(html, len) {
 
 // ─── Saved Scenes ────────────────────────────────────────────────────────────
 function loadSavedScenes() {
-  try { return JSON.parse(localStorage.getItem(C.LS.SAVED_SCENES) || '[]'); } catch { return []; }
+  try { return JSON.parse(_ls.getItem(C.LS.SAVED_SCENES) || '[]'); } catch { return []; }
 }
 function persistSavedScenes(arr) {
-  localStorage.setItem(C.LS.SAVED_SCENES, JSON.stringify(arr));
+  try { _ls.setItem(C.LS.SAVED_SCENES, JSON.stringify(arr)); } catch(e) { SparkLog.warn('persistSavedScenes failed', e.message); }
 }
 function saveCurrentScene() {
   if (!currentScene) return;
@@ -3748,15 +4011,33 @@ function saveCurrentScene() {
     finishA: currentScene._finishTextA || '',
     finishB: currentScene._finishTextB || '',
     note:   currentNote,
+    privateNote: '',   // populated via inline note input; Body 2: author-private
     piA: currentPiA, piB: currentPiB,
     nameA: currentA, nameB: currentB,
   };
   scenes.unshift(entry);
-  if (scenes.length > 20) scenes.splice(20); // cap at 20
+  if (scenes.length > 20) scenes.splice(20);
   persistSavedScenes(scenes);
-  // brief feedback
+  // Store id so commitSaveNote can find it
+  window._lastSavedId = entry.id;
   const btn = document.getElementById('saveSceneBtn');
-  if (btn) { btn.textContent = '✓ Saved'; btn.disabled = true; setTimeout(() => { btn.textContent = 'Save this one'; btn.disabled = false; }, 2000); }
+  if (btn) { btn.textContent = '✓ Saved'; btn.disabled = true; setTimeout(() => { btn.textContent = '♡ Save'; btn.disabled = false; }, 2500); }
+  // Show inline note input
+  const noteInline = document.getElementById('saveNoteInline');
+  const noteInput  = document.getElementById('saveNoteInput');
+  if (noteInline) { noteInline.style.display = 'block'; if (noteInput) { noteInput.value = ''; noteInput.focus(); } }
+}
+
+function commitSaveNote() {
+  const noteInput = document.getElementById('saveNoteInput');
+  const noteInline = document.getElementById('saveNoteInline');
+  const val = noteInput?.value.trim() || '';
+  if (val && window._lastSavedId) {
+    const saved = loadSavedScenes();
+    const match = saved.find(s => s.id === window._lastSavedId);
+    if (match) { match.privateNote = val; persistSavedScenes(saved); }
+  }
+  if (noteInline) noteInline.style.display = 'none';
 }
 
 function deleteSavedScene(id) {
@@ -3779,7 +4060,7 @@ function renderSavedScenesModal() {
   if (!list) return;
   const scenes = loadSavedScenes();
   if (scenes.length === 0) {
-    list.innerHTML = '<div style="text-align:center;color:var(--muted);font-size:.82rem;padding:1.5rem 0;">No saved scenes yet.<br>Tap <strong>Save for later</strong> during a scene.</div>';
+    list.innerHTML = '<div style="text-align:center;color:var(--muted);font-size:.82rem;padding:1.5rem 0;">Nothing saved yet.<br>Tap <strong>♡ Save</strong> below a scene to keep it here.</div>';
     return;
   }
   list.innerHTML = '';
@@ -3798,6 +4079,7 @@ function renderSavedScenesModal() {
         '<button onclick="deleteSavedScene(' + s.id + ')" style="background:none;border:none;font-size:.8rem;color:var(--muted);cursor:pointer;padding:.2rem .35rem;flex-shrink:0;" title="Delete">✕</button>' +
       '</div>' +
       '<div style="font-family:\'Fraunces\',serif;font-size:.85rem;line-height:1.65;color:var(--ink2);margin-top:.5rem;">' + (s.prep ? esc(s.prep).slice(0,120) + '…' : '') + '</div>' +
+      (s.privateNote ? '<div style="font-size:.72rem;color:var(--muted);font-style:italic;margin-top:.35rem;border-left:2px solid var(--border2);padding-left:.5rem;">' + esc(s.privateNote) + '</div>' : '') +
       '<button onclick="playSavedScene(' + s.id + ')" style="margin-top:.65rem;width:100%;padding:.55rem;background:var(--ink);border:none;border-radius:var(--rs);color:#fff;font-family:\'DM Sans\',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;">Do this one →</button>';
     list.appendChild(card);
   });
@@ -3809,8 +4091,19 @@ function playSavedScene(id) {
   if (!s) return;
   document.getElementById('savedScenesModal')?.classList.remove('open');
   // Restore minimal state
-  currentPiA = s.piA; currentPiB = s.piB;
-  currentA = s.nameA; currentB = s.nameB;
+  // Restore role indices — in two-phone mode, always put this device's user as piA
+  // to keep finish button labels consistent regardless of which device saved the scene
+  if (isPaired() && _myRole) {
+    // Determine which saved index corresponds to this device's role
+    const myRoleLetter = _myRole; // 'A' or 'B'
+    // The saved nameA/nameB correspond to piA=0, piB=1 at save time
+    // Re-pin piA to 0 (local user) for correct finish label assignment
+    currentPiA = 0; currentPiB = 1;
+    currentA = gN(0); currentB = gN(1);
+  } else {
+    currentPiA = s.piA; currentPiB = s.piB;
+    currentA = s.nameA; currentB = s.nameB;
+  }
   currentMood = s.mood;
   currentLocation = s.location || 'home';
   // Synthesise a minimal currentScene — restore all finish variants
@@ -3820,8 +4113,21 @@ function playSavedScene(id) {
     _finishTextA: s.finishA || '',
     _finishTextB: s.finishB || '',
   };
+
+  // B3-B: push this saved scene to partner's device via room blob on replay
+  // Private note stays local-only (stripped before push)
+  if (isPaired()) {
+    const shareEntry = { ...s };
+    delete shareEntry.privateNote; // author-private: never shared
+    shareEntry.privateNote_mine = ''; // placeholder so mergeRemoteSavedScenes knows it arrived
+    apiPatchRoom(_roomCode, { savedScenes: [shareEntry] }, _myRole).catch(() => {});
+  }
+
   showScreen('screenPlay');
   document.body.classList.add('header-compact');
+  // Reset tension tease (not shown for replays)
+  const ttw = document.getElementById('tensionTeaseWrap');
+  if (ttw) ttw.style.display = 'none';
   // Reset and display stages
   ['stagePrepWrap','stageSceneWrap'].forEach(id2 => {
     const el = document.getElementById(id2); if (el) el.style.display = 'none';
@@ -3842,6 +4148,16 @@ function playSavedScene(id) {
 
 /** Non-streaming JSON call using Haiku — for fast structured scene design (Call 1).
  *  Returns parsed JSON object or null on failure. */
+// Safe AbortSignal.timeout — falls back for iOS Safari < 16.4 (issue 14)
+function _abortSignal(ms) {
+  if (typeof AbortSignal !== 'undefined' && typeof AbortSignal.timeout === 'function') {
+    return AbortSignal.timeout(ms);
+  }
+  const ctrl = new AbortController();
+  setTimeout(() => ctrl.abort(), ms);
+  return ctrl.signal;
+}
+
 async function callClaudeJSON(systemPrompt, userPrompt) {
   const key = getApiKey();
   const endpoint = window._sparkProxyUrl;
@@ -3850,11 +4166,8 @@ async function callClaudeJSON(systemPrompt, userPrompt) {
   try {
     const resp = await fetch(endpoint, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(key !== '__proxy__' ? { 'x-api-key': key } : {}),
-        'anthropic-version': '2023-06-01',
-      },
+      signal: _abortSignal(15000),
+      headers: _sparkHeaders(),
       body: JSON.stringify({
         model:      C.MODEL_FAST,
         max_tokens: C.MAX_TOKENS_DESIGN,
@@ -3866,8 +4179,11 @@ async function callClaudeJSON(systemPrompt, userPrompt) {
     if (!resp.ok) { SparkLog.warn('callClaudeJSON HTTP ' + resp.status); return null; }
     const data = await resp.json();
     const text = (data.content || []).map(b => b.text || '').join('').trim();
-    // Strip markdown fences if present
-    const clean = text.replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'').trim();
+    // Strip markdown code fences (```json ... ``` or ``` ... ```)
+    const clean = text
+      .replace(/^```(?:json)?\s*/i, '')
+      .replace(/\s*```\s*$/, '')
+      .trim();
     return JSON.parse(clean);
   } catch(e) {
     SparkLog.warn('callClaudeJSON failed: ' + e.message);
@@ -4003,12 +4319,12 @@ async function callClaudeStream(systemPrompt, userPrompt, targetEl, onDone, maxT
     if (onDone) onDone('');
     return;
   }
-  dbStep('apiKey','ok',key==='__proxy__'?'via proxy':'sk-ant-…'+key.slice(-4));
+  dbStep('apiKey','ok', key === '__proxy__' ? 'via proxy env' : 'API key \u2713');
   psSet('key','ok', key==='__proxy__'?'proxy auth':'key ✓');
   const endpoint = window._sparkProxyUrl;
   if (!endpoint) {
     dbStep('proxy','fail','No proxy URL'); psSet('proxy','fail','no proxy');
-    if (showSceneError) showSceneError('No proxy URL — add your Railway URL in Settings.');
+    if (showSceneError) showSceneError('No proxy URL — add your deployment URL in Settings.');
     if (onDone) onDone('');
     return;
   }
@@ -4029,7 +4345,7 @@ async function callClaudeStream(systemPrompt, userPrompt, targetEl, onDone, maxT
   }
 
   const timeout = setTimeout(() => {
-    if (!finished) { if (showSceneError) showSceneError('Took too long — try again.'); done(''); }
+    if (!finished) { if (showSceneError) showSceneError('timeout'); done(''); }
   }, 45000);
 
   try {
@@ -4037,11 +4353,7 @@ async function callClaudeStream(systemPrompt, userPrompt, targetEl, onDone, maxT
     const resp = await fetch(endpoint, {
       method: 'POST',
       signal: myController.signal,
-      headers: {
-        'Content-Type': 'application/json',
-        ...(key !== '__proxy__' ? { 'x-api-key': key } : {}),
-        'anthropic-version': '2023-06-01',
-      },
+      headers: _sparkHeaders(),
       body: JSON.stringify({
         model: C.MODEL,
         max_tokens: maxTokens,
@@ -4057,7 +4369,7 @@ async function callClaudeStream(systemPrompt, userPrompt, targetEl, onDone, maxT
       let errMsg = 'Unknown error';
       try { const b = await resp.json(); errMsg = b?.error?.message || errMsg; } catch {}
       clearTimeout(timeout);
-      if (showSceneError) showSceneError('API error ' + resp.status + ': ' + errMsg);
+      if (showSceneError) showSceneError('API error ' + resp.status);
       done(''); return;
     }
 
@@ -4093,7 +4405,7 @@ async function callClaudeStream(systemPrompt, userPrompt, targetEl, onDone, maxT
       done(fullText);
     } else {
       dbStep('textReceived','fail','empty'); psSet('stream','fail','empty');
-      if (showSceneError) showSceneError('No content returned — check your API key and try again.');
+      if (showSceneError) showSceneError('empty');
       done('');
     }
 
@@ -4102,7 +4414,7 @@ async function callClaudeStream(systemPrompt, userPrompt, targetEl, onDone, maxT
     if (e.name === 'AbortError') { finished = true; streamController = null; return; }
     dbStep('fetchResponse','fail',e.message||'Network error');
     psSet('fetch','fail',(e.message||'error').slice(0,18));
-    if (showSceneError) showSceneError('Network error: ' + (e.message || 'connection failed'));
+    if (showSceneError) showSceneError('Network error: ' + (e.message || ''));
     done('');
   }
 }
@@ -4149,6 +4461,10 @@ function generateInPlace() {
   isGenerating = false;
   escalationRevealed = false;
   refusalRetries = 0;
+
+  // Reset tension tease
+  const ttw = document.getElementById('tensionTeaseWrap');
+  if (ttw) ttw.style.display = 'none';
 
   // Reset all stage panels so the waterfall works on every generation
   ['stagePrepWrap','stageSceneWrap'].forEach(id => {
@@ -4208,20 +4524,23 @@ function revealScene() {
     if (fb) {
       const nameA = document.getElementById('finishNameA');
       const nameB = document.getElementById('finishNameB');
+      const btnA  = document.getElementById('finishBtnA');
+      const btnB  = document.getElementById('finishBtnB');
       if (nameA) nameA.textContent = gN(currentPiA);
       if (nameB) nameB.textContent = gN(currentPiB);
+      if (btnA) btnA.style.display = 'block';
+      if (btnB) btnB.style.display = 'block';
       fb.style.display = 'block';
       fb.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
     // Show rating card after 3rd+ scene
     setTimeout(() => {
       const rateCard = document.getElementById('rateCard');
-      if (rateCard && sceneCount >= 3) rateCard.classList.add('visible');
+      // Show rating card after 2nd+ scene (first scene is too early to rate)
+      if (rateCard && sceneCount >= 2) setTimeout(() => rateCard.classList.add('visible'), 800);
     }, 800);
   });
 
-  // Show who should hold the phone
-  showPhoneHolder();
   SparkLog.info('scene:revealed');
 }
 
@@ -4255,14 +4574,16 @@ function retryScene() {
 }
 
 function showSceneError(rawMsg) {
-  // Map technical errors to human language
-  let msg = 'Something went wrong — tap to try again.';
-  if (rawMsg.includes('404')) msg = 'Scene not found — tap to try again.';
-  else if (rawMsg.includes('401') || rawMsg.includes('403')) msg = 'API key issue — check your connection in Settings.';
-  else if (rawMsg.includes('Failed to fetch') || rawMsg.includes('NetworkError') || rawMsg.includes('Network error')) msg = "Couldn't reach the AI — check your connection and try again.";
-  else if (rawMsg.includes('timeout') || rawMsg.includes('Timeout') || rawMsg.includes('AbortError')) msg = 'Took too long — try again.';
-  else if (rawMsg.includes('No proxy')) msg = 'Not connected — add your Railway URL in Settings.';
-  else if (rawMsg.includes('No API key')) msg = 'No API key — add one in Settings.';
+  // Map technical errors to warm, human language — keep diagnostics in debug only
+  let msg = 'Something slipped — tap to try again.';
+  if (rawMsg.includes('404')) msg = "That one got away — let's try again.";
+  else if (rawMsg.includes('401') || rawMsg.includes('403')) msg = 'Connection needs a check — tap Settings to fix it.';
+  else if (rawMsg.includes('Failed to fetch') || rawMsg.includes('NetworkError') || rawMsg.includes('Network error')) msg = "Just a moment — check your connection and try again.";
+  else if (rawMsg === 'timeout' || rawMsg.includes('timeout') || rawMsg.includes('Timeout') || rawMsg.includes('AbortError')) msg = "Just a moment — let's try that again.";
+  else if (rawMsg === 'empty') msg = "That didn't come through — let's try again.";
+  else if (rawMsg.includes('No proxy')) msg = 'Not quite connected yet — tap Settings to finish setup.';
+  else if (rawMsg.includes('No API key')) msg = 'Almost there — add your API key in Settings.';
+  else if (/API error [45]\d\d/.test(rawMsg)) msg = 'Something slipped on our end — tap to try again.';
 
   const banner = document.getElementById('sceneErrorBanner');
   const text   = document.getElementById('sceneErrorText');
@@ -4288,7 +4609,7 @@ function showSceneError(rawMsg) {
   // Show fallback text in stream area
   const st = document.getElementById('sceneStreamText');
   if (st && !st.textContent) {
-    st.textContent = 'Connection issue — tap "Try something else" to retry.';
+    st.textContent = "That didn't come through — tap below to try again.";
   }
 
   isGenerating = false;
@@ -4307,18 +4628,95 @@ function hideSceneError() {
 function generateScene() { generateFullScene(); }
 
 /** Determine who should hold the phone based on who is the receiver in the scene */
-function showPhoneHolder() {
-  const banner = document.getElementById('phoneHolderBanner');
-  if (!banner) return;
-  // The person reading the scene is typically the giver/initiator (piA)
-  // The receiver (piB) should put their phone down and be present
-  const reader = currentA || gN(currentPiA);
-  banner.textContent = '📱 ' + reader + ' — hold the phone and read aloud.';
-  banner.style.display = 'block';
-  setTimeout(() => { banner.style.opacity = '0'; setTimeout(() => { banner.style.display = 'none'; banner.style.opacity = '1'; }, 1200); }, 5000);
+/** showPhoneHolder — read-aloud dynamic retired; kept as no-op for safety */
+function showPhoneHolder() {}
+
+// ═══════════════════════════════════════════
+//  TENSION TEASE — per-person, on the prep screen
+// ═══════════════════════════════════════════
+// Each person on this device gets a different suggestion directed at their partner.
+// In solo mode: generates for piA (the initiator role this session).
+// In paired mode: generates for whoever is on this device (pi=0, my role).
+
+async function generateTensionTease(piA, piB, mood) {
+  const wrap   = document.getElementById('tensionTeaseWrap');
+  const textEl = document.getElementById('tensionTeaseText');
+  const subEl  = document.getElementById('tensionTeaseSub');
+  if (!wrap || !textEl) return;
+
+  // Reset and show loading state
+  textEl.textContent = '';
+  if (subEl) subEl.textContent = '';
+  wrap.style.display = 'block';
+  textEl.innerHTML = '<span style="color:var(--muted);font-size:.82rem;font-style:italic;">Finding something for you\u2026</span>';
+
+  const myName      = gN(piA);      // person on this device / initiator
+  const theirName   = gN(piB);      // receiver
+  const myPrefs     = buildCall1Prefs(piA);
+  const loc         = currentLocation && currentLocation !== 'home' ? currentLocation : 'at home';
+  const intensity   = mood || currentMood || 'light';
+  const intensityMap = {
+    light:  'Subtle and non-sexual — a physical gesture, touch, or loaded look. Nothing explicit.',
+    medium: 'Suggestive — physical with clear intent. Charged but not graphic.',
+    hard:   'Explicitly sexual — direct and specific.',
+  };
+  const scene       = currentScene?.title || '';
+  const theirBody   = ASSET_DEFS.filter(a => body[piB]?.[a.id]?.on).map(a => body[piB][a.id].name);
+
+  const system =
+    'You write a single, specific tension-building suggestion for one partner to use on the other BEFORE the main scene. ' +
+    'It should be doable right now, wherever they are, and build anticipation for what\'s coming. ' +
+    'This is for ' + myName + ' to do to/with ' + theirName + '. ' +
+    'Intensity: ' + (intensityMap[intensity] || intensityMap.light) + ' ' +
+    'Format: One instruction, 1-2 sentences. Second person, addressing ' + myName + ' directly. Warm, specific, physical. ' +
+    'Location: ' + loc + '. ' +
+    (scene ? 'The scene they\'re about to do: ' + scene + '. The tease should echo or build toward it. ' : '') +
+    (theirBody.length ? theirName + '\'s body: ' + theirBody.join(', ') + '. Reference these specifically. ' : '') +
+    'Their preferences: ' + myPrefs + ' ' +
+    'Return ONLY a JSON object: {"tease":"...","timing":"..."}  where tease is the instruction and timing is a short phrase like "In the next 10 minutes" or "Sometime today". No other text.';
+
+  const user = 'Write one tension tease for ' + myName + ' to use on ' + theirName + '. ' + intensity + ' intensity. ' + loc + '. JSON only.';
+
+  try {
+    const result = await callClaudeJSON(system, user);
+    if (result && result.tease) {
+      typewriterReveal(textEl, '<p>' + esc(result.tease) + '</p>', null);
+      if (subEl && result.timing) { subEl.textContent = ''; setTimeout(() => { subEl.textContent = result.timing; }, 400); }
+    } else {
+      typewriterReveal(textEl, '<p>' + esc(_tensionFallback(myName, theirName, intensity)) + '</p>', null);
+      if (subEl) { subEl.textContent = ''; setTimeout(() => { subEl.textContent = 'Before the scene'; }, 400); }
+    }
+  } catch(e) {
+    typewriterReveal(textEl, '<p>' + esc(_tensionFallback(myName, theirName, intensity)) + '</p>', null);
+    if (subEl) { subEl.textContent = ''; setTimeout(() => { subEl.textContent = 'Before the scene'; }, 400); }
+    SparkLog.warn('tensionTease:failed', e.message);
+  }
 }
 
-function generateFullScene() {
+function _tensionFallback(A, B, intensity) {
+  const opts = {
+    light:  [
+      A + ', find ' + B + ' and hold eye contact for five full seconds without saying a word.',
+      A + ', walk past ' + B + ' and drag one hand slowly across the back of their neck.',
+      A + ', sit close to ' + B + ' and rest your hand on their inner thigh for thirty seconds, then remove it.',
+    ],
+    medium: [
+      A + ', back ' + B + ' against a wall. Hold both wrists. Say nothing for ten seconds.',
+      A + ', pull ' + B + ' close and whisper exactly what you want to do to them tonight.',
+      A + ', grab ' + B + '\'s waistband and pull them flush against you for twenty seconds.',
+    ],
+    hard: [
+      A + ', use your hand on ' + B + ' hard for thirty seconds — then stop completely.',
+      A + ', describe in detail what your mouth is going to do to them. Take your time.',
+      A + ', deliver ten slow, deliberate strikes to ' + B + '\'s backside, then walk away without a word.',
+    ],
+  };
+  const list = opts[intensity] || opts.light;
+  return list[Math.floor(Math.random() * list.length)];
+}
+
+function generateFullScene() { generateFullScene_inner(); }
+function generateFullScene_inner() {
   if (isGenerating) return;
 
   // Reset debug state immediately so user sees pipeline start
@@ -4346,9 +4744,18 @@ function generateFullScene() {
 }
 
 function _generateFullSceneInner() {
-  // Randomly assign who initiates (will be confirmed/overridden by Call 1)
-  let piA = Math.random() < .5 ? 0 : 1;
-  let piB = 1 - piA;
+  // Assign initiator roles.
+  // In paired mode: pi=0 is always this device's user — preserve that mapping.
+  // In solo mode: randomly alternate to vary scenes.
+  let piA, piB;
+  if (isPaired()) {
+    // Local user (pi=0) is always the initiator in paired mode.
+    // buildCall1Prefs override uses mutualMatches for pi=1.
+    piA = 0; piB = 1;
+  } else {
+    piA = Math.random() < .5 ? 0 : 1;
+    piB = 1 - piA;
+  }
   currentPiA = piA; currentPiB = piB;
   currentA = gN(piA); currentB = gN(piB);
 
@@ -4612,15 +5019,25 @@ function _generateFullSceneInner() {
       if (genBar)  genBar.style.width = '100%';
       setTimeout(() => { if (genHint) genHint.style.display = 'none'; }, 300);
 
-      // Populate and reveal PREP stage
+      // Generate and show tension tease, then reveal PREP stage
       const prepWrap  = document.getElementById('stagePrepWrap');
       const prepEl    = document.getElementById('stagePrepText');
       const revealBtn = document.getElementById('revealSceneBtn');
+
+      // Fire tension tease generation (non-blocking — prep reveals regardless)
+      generateTensionTease(currentPiA, currentPiB, currentMood);
+
       setTimeout(() => {
         if (prepWrap) prepWrap.style.display = 'block';
         prepWrap?.scrollIntoView({ behavior: 'smooth', block: 'start' });
         if (prepEl) {
-          typewriterReveal(prepEl, formatNarrative(_prep || _scene || text.trim()), () => {
+          // Stage 1.8: anticipation beat — one quiet line, immersive voice only, view-layer
+          let prepHtml = formatNarrative(_prep || _scene || text.trim());
+          if (currentVoice === 'immersive') {
+            const beat = '<p style="font-family:\'DM Serif Display\',serif;font-size:.88rem;font-weight:400;font-style:italic;color:var(--muted);margin-bottom:.85rem;line-height:1.6;">Something good is on its way.</p>';
+            prepHtml = beat + prepHtml;
+          }
+          typewriterReveal(prepEl, prepHtml, () => {
             if (revealBtn) revealBtn.disabled = false;
           });
         }
@@ -4676,6 +5093,9 @@ function generateTheirTurn(finisherPi) {
   panel.style.display = 'block';
   panel.classList.add('visible');
   if (btn) { btn.disabled = true; btn.innerHTML = 'Writing\u2026'; }
+  // Disable "Try something else" during finish generation to prevent race condition
+  const newSceneBtnEl = document.getElementById('newSceneBtn');
+  if (newSceneBtnEl) newSceneBtnEl.disabled = true;
   setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 80);
 
   SparkLog.info('theirTurn:start', { receiver });
@@ -4716,6 +5136,9 @@ function generateTheirTurn(finisherPi) {
       btn.disabled = false;
       btn.innerHTML = 'Tell us how ' + receiver + ' finishes again \u2192';
     }
+    // Re-enable "Try something else" now that finish generation is complete
+    const newSceneBtnEl = document.getElementById('newSceneBtn');
+    if (newSceneBtnEl) { newSceneBtnEl.disabled = false; newSceneBtnEl.textContent = 'Try something else'; }
     if (text && text.trim()) {
       typewriterReveal(body, formatNarrative(text.trim()), null);
       SparkLog.info('theirTurn:done', { receiver, chars: text.length });
@@ -4955,7 +5378,8 @@ function onPropsNoneToggle() {
 function addCustomProp() {
   const input = document.getElementById('propsCustomInput');
   if (!input) return;
-  const val = input.value.trim();
+  // Strip any leading 'custom:' prefix and colons to prevent key collisions
+  const val = input.value.trim().replace(/^custom:/i, '').replace(/:/g, '').trim();
   if (!val || val.length > 40) return;
   customProps.add(val);
   props.add('custom:' + val);
@@ -5116,13 +5540,19 @@ function setRole(pi, role) {
 }
 
 function updateRoleLabels() {
-  // Keep role row names in sync with partner names
   const n0 = gN(0);
   const n1 = gN(1);
   const l0 = document.getElementById('roleLabel0');
   const l1 = document.getElementById('roleLabel1');
-  if (l0) l0.textContent = n0;
-  if (l1) l1.textContent = n1;
+  // In paired mode, clarify which role is "you" on this device
+  if (isPaired()) {
+    const myRole = _myRole; // 'A' or 'B'
+    if (l0) l0.textContent = (myRole === 'A' ? n0 + ' (you)' : n0);
+    if (l1) l1.textContent = (myRole === 'B' ? n1 + ' (you)' : n1);
+  } else {
+    if (l0) l0.textContent = n0;
+    if (l1) l1.textContent = n1;
+  }
 }
 
 // ═══════════════════════════════════════════
@@ -5173,6 +5603,12 @@ function setProxyStatus(state, message) {
     const hwt = document.getElementById('homeWarnText');
     if (hwt) hwt.textContent = state==='checking' ? 'Checking AI connection…' : 'AI not connected — scenes won\'t generate';
   }
+  // Pre-scene connection flag
+  const psWarn = document.getElementById('preSceneConnWarn');
+  if (psWarn) {
+    const bad = state==='err'||state==='none';
+    psWarn.style.display = bad ? 'flex' : 'none';
+  }
   // Auto-close AI panel when connected
   if (state==='ok') {
     const panel = document.getElementById('aiSetupPanel');
@@ -5208,7 +5644,7 @@ async function detectProxy() {
   try {
     const probe = await fetch(endpoint, {
       method: 'OPTIONS',
-      signal: AbortSignal.timeout(8000),
+      signal: _abortSignal(8000),
     });
 
     // Any response that isn't a network failure means the server is reachable.
@@ -5228,10 +5664,10 @@ async function detectProxy() {
     try {
       const authProbe = await fetch(endpoint, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'anthropic-version': '2023-06-01' },
+        headers: _sparkHeaders(),
         body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 1,
           messages: [{ role: 'user', content: 'ping' }] }),
-        signal: AbortSignal.timeout(10000),
+        signal: _abortSignal(10000),
       });
       authHandled = authProbe.status !== 401;
     } catch {}
@@ -5286,16 +5722,8 @@ loadPropsState();
   }, 500);
 })();
 
-(function initialRoute() {
-  const n1 = localStorage.getItem(C.LS.NAME1);
-  const n2 = localStorage.getItem(C.LS.NAME2);
-  if (n1) { const f=document.getElementById('name1'); if(f) f.value=n1; }
-  if (n2) { const f=document.getElementById('name2'); if(f) f.value=n2; }
-  if (n1 && n2) {
-    goHome();
-  }
-  // else: stay on setup screen (already active)
-})();
+// Body 2: routing now handled by sparkInitialRoute (defined above)
+sparkInitialRoute();
 
 // Persist names on input
 document.getElementById('name1')?.addEventListener('input', function() {
@@ -5333,7 +5761,7 @@ setTimeout(() => {
 
 // ─── Debug event log panel update hook ────────────────────────────────────
 // Patches SparkLog._push so the debug panel's event log stays live
-const _origPush = SparkLog._push.bind(SparkLog);
+var _origPush = SparkLog._push.bind(SparkLog);
 SparkLog._push = function(level, msg, data) {
   _origPush(level, msg, data);
   if (debugMode) {
@@ -5342,15 +5770,840 @@ SparkLog._push = function(level, msg, data) {
   }
 };
 
-// ─── Recovery: reset everything ───────────────────────────────────────────
+
+// ═══════════════════════════════════════════════════════════════════
+//  BODY 2 — PAIRING INFRASTRUCTURE
+// ═══════════════════════════════════════════════════════════════════
+
+// ─── Pairing state (local, device-specific) ──────────────────────
+var _roomCode  = _ls.getItem(C.LS.ROOM_CODE) || null;
+var _myRole    = _ls.getItem(C.LS.MY_ROLE)   || null; // 'A' | 'B'
+var _soloMode  = _ls.getItem(C.LS.SOLO_MODE) === '1'; // '0' = paired, '1' = solo, null = new user
+var _modeChosen = _ls.getItem(C.LS.SOLO_MODE) !== null; // has the user made a mode choice?
+var _roomTs    = _ls.getItem(C.LS.ROOM_TS)   || null;
+var _roomBlob  = null;       // last known room blob (privacy-filtered)
+var _syncTimer = null;
+const SYNC_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
+
+function isPaired()  { return !!_roomCode && !!_myRole; }
+function isSoloMode(){ return _soloMode; }
+
+// ─── Proxy URL helper (works with or without trailing /v1/messages) ──
+function getRoomBaseUrl() {
+  const raw = window._sparkProxyUrl || localStorage.getItem(C.LS.PROXY_URL) || '';
+  return raw.replace(/\/v1\/messages$/, '');
+}
+
+// ─── Room API calls ───────────────────────────────────────────────
+async function apiCreateRoom() {
+  const base = getRoomBaseUrl();
+  if (!base) throw new Error('No proxy URL configured');
+  const r = await fetch(base + '/room/create', { method: 'POST' });
+  if (!r.ok) throw new Error('Server error ' + r.status);
+  return r.json();
+}
+
+async function apiJoinRoom(code) {
+  const base = getRoomBaseUrl();
+  if (!base) throw new Error('No proxy URL configured');
+  const r = await fetch(base + '/room/join', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ code }),
+  });
+  if (r.status === 404) throw new Error('Room not found — check the code and try again.');
+  if (r.status === 410) throw new Error('This code has expired. Ask your partner to create a new space.');
+  if (!r.ok) throw new Error('Server error ' + r.status);
+  return r.json();
+}
+
+async function apiGetRoom(code, myRole) {
+  const base = getRoomBaseUrl();
+  if (!base) return null;
+  const r = await fetch(base + '/room/' + code, {
+    headers: { 'x-spark-role': myRole || '' },
+  });
+  if (r.status === 404) return null;
+  if (!r.ok) throw new Error('Server error ' + r.status);
+  return r.json();
+}
+
+async function apiPatchRoom(code, patch, myRole) {
+  const base = getRoomBaseUrl();
+  if (!base) return null;
+  const r = await fetch(base + '/room/' + code, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-spark-role': myRole || '' },
+    body: JSON.stringify({ patch, updatedAt: _roomTs }),
+  });
+  if (r.status === 404) return null;
+  if (r.status === 409) {
+    // Conflict — server is newer; accept server state
+    const data = await r.json();
+    return data;
+  }
+  if (!r.ok) throw new Error('Server error ' + r.status);
+  return r.json();
+}
+
+// ─── QR code generation ──────────────────────────────────────────
+var _expiryTimer = null;
+
+function _renderPairingQR(code) {
+  const wrap   = document.getElementById('qrCodeWrap');
+  const canvas = document.getElementById('qrCodeCanvas');
+  const hint   = document.getElementById('qrHint');
+  if (!wrap || !canvas) return;
+  // Build deep-link URL — partner scans and lands on the join screen with code pre-filled
+  const base = window.location.origin + window.location.pathname.replace(/\/$/, '');
+  const joinUrl = base + '?join=' + code;
+  canvas.innerHTML = '';
+  try {
+    if (typeof QRCode === 'undefined') throw new Error('QRCode not loaded');
+    new QRCode(canvas, {
+      text: joinUrl, width: 180, height: 180,
+      colorDark: '#1a1714', colorLight: '#faf8f5',
+      correctLevel: QRCode.CorrectLevel.M,
+    });
+    wrap.style.display = 'block';
+    if (hint) hint.style.display = 'block';
+  } catch(e) {
+    SparkLog.warn('QR render failed', e.message); // degrades silently — code+copy still works
+  }
+}
+
+function _startExpiryCountdown(totalSeconds) {
+  if (_expiryTimer) clearInterval(_expiryTimer);
+  const hintEl = document.getElementById('pairExpiryHint');
+  let remaining = totalSeconds;
+  function tick() {
+    remaining--;
+    if (!hintEl) return;
+    if (remaining <= 0) {
+      clearInterval(_expiryTimer);
+      hintEl.textContent = 'This code has expired — create a new space to get a fresh code.';
+      hintEl.style.color = 'var(--blush)';
+      if (_partnerPollTimer) { clearInterval(_partnerPollTimer); _partnerPollTimer = null; }
+      return;
+    }
+    const mins = Math.floor(remaining / 60);
+    const secs = String(remaining % 60).padStart(2, '0');
+    hintEl.textContent = 'Code expires in ' + mins + ':' + secs;
+    hintEl.style.color = remaining < 120 ? 'var(--blush)' : 'var(--muted)';
+  }
+  tick();
+  _expiryTimer = setInterval(tick, 1000);
+}
+
+// ─── Deep-link auto-join ──────────────────────────────────────────
+// If the URL contains ?join=XXXXXXXXXX, auto-fill the join screen and trigger join
+function checkDeepLink() {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const joinCode = (params.get('join') || '').toUpperCase().trim();
+    if (joinCode.length !== 10) return false;
+    // Clean the URL bar without reloading
+    window.history.replaceState({}, '', window.location.pathname);
+    // If already paired to this room, ignore
+    if (isPaired() && _roomCode === joinCode) return false;
+    // Navigate to join flow and pre-fill
+    openPairingFromHome();
+    startJoinRoom();
+    setTimeout(() => {
+      const input = document.getElementById('joinCodeInput');
+      if (input) {
+        input.value = joinCode;
+        // Short pause so the user can see the code before auto-joining
+        setTimeout(() => joinRoom(), 800);
+      }
+    }, 400);
+    return true;
+  } catch(e) {
+    SparkLog.warn('deepLink:failed', e.message);
+    return false;
+  }
+}
+
+// ─── Welcome screen routing ───────────────────────────────────────
+// ─── Mode choice (welcome screen) ────────────────────────────────
+function chooseWelcomePath(path) {
+  if (path === 'paired') {
+    _soloMode = false;
+    localStorage.setItem(C.LS.SOLO_MODE, '0');
+    openPairingFromHome(); // go straight to pair flow
+  } else {
+    _soloMode = true;
+    localStorage.setItem(C.LS.SOLO_MODE, '1');
+    showSetupForSoloOrPaired();
+    showScreen('screenSetup');
+  }
+}
+
+// ─── Single source of truth for mode-conditional UI ──────────────
+// Call this whenever mode or pairing state changes.
+function showSetupForSoloOrPaired() {
+  const $ = id => document.getElementById(id);
+  const paired = isPaired();
+  const solo   = _soloMode && !paired;
+
+  // My details label
+  if ($('myDetailsLabel')) $('myDetailsLabel').textContent = 'Your details';
+
+  // Partner section visibility
+  if ($('partnerDetailsSection')) $('partnerDetailsSection').style.display = (paired || solo) ? 'block' : 'none';
+  if ($('partnerLinkedMsg'))      $('partnerLinkedMsg').style.display      = paired ? 'block' : 'none';
+  if ($('partnerManualCard'))     $('partnerManualCard').style.display     = solo   ? 'block' : 'none';
+  if ($('prefsExportSection'))    $('prefsExportSection').style.display    = solo   ? 'block' : 'none';
+  if ($('partnerPairedBadge'))    $('partnerPairedBadge').style.display    = paired ? 'inline-block' : 'none';
+
+  // Pairing management section
+  if ($('pairingMgmtUnpaired'))  $('pairingMgmtUnpaired').style.display  = (!paired) ? 'block' : 'none';
+  if ($('pairingMgmtPaired'))    $('pairingMgmtPaired').style.display    = paired    ? 'block' : 'none';
+  if ($('pairingMgmtCode'))      $('pairingMgmtCode').textContent        = _roomCode || '';
+
+  // Mode-switch row in settings
+  updateModeSwitch();
+
+  // S1: Fine-tune copy — "our" only makes sense in solo mode
+  const ftBtn = document.getElementById('fineTuneBtn');
+  if (ftBtn) ftBtn.textContent = (paired || !solo) ? 'Fine-tune my tastes \u2192' : 'Fine-tune our tastes \u2192';
+
+  // Export code (solo only)
+  if (solo) updatePrefsExportCode();
+}
+
+// ─── Mode-switch in settings ──────────────────────────────────────
+function updateModeSwitch() {
+  const el = document.getElementById('modeSwitchStatus');
+  if (!el) return;
+  const paired = isPaired();
+  const solo   = _soloMode && !paired;
+  const ff = 'font-family:\"DM Sans\",sans-serif';
+  if (paired) {
+    el.innerHTML = '\u{1F4F1} Two-device mode &mdash; Room <strong>' + (_roomCode||'') + '</strong> &nbsp;'
+      + '<button onclick="leaveRoom()" style="background:none;border:none;font-size:.7rem;color:var(--blush);cursor:pointer;' + ff + ';padding:.1rem .3rem;">Leave</button>';
+  } else if (solo) {
+    el.innerHTML = '\u{1F4F1} One-device mode &nbsp;'
+      + '<button onclick="switchToPairedMode()" style="background:none;border:none;font-size:.7rem;color:var(--sky);cursor:pointer;' + ff + ';padding:.1rem .3rem;">Switch to two-device \u2192</button>';
+  } else {
+    el.innerHTML = '\u{1F4F1} Two-device mode &nbsp;'
+      + '<button onclick="switchToSoloMode()" style="background:none;border:none;font-size:.7rem;color:var(--sky);cursor:pointer;' + ff + ';padding:.1rem .3rem;">Switch to one-device \u2192</button>';
+  }
+}
+
+function switchToPairedMode() {
+  // Preserve solo prefs (kinkPrefs[1] etc) in localStorage so they survive the switch
+  persistPrefs();
+  _soloMode = false;
+  localStorage.setItem(C.LS.SOLO_MODE, '0');
+  showSetupForSoloOrPaired();
+  openPairingFromHome();
+}
+
+function _doSwitchToSolo() {
+  _doLeaveRoom();
+  _soloMode = true; _modeChosen = true;
+  localStorage.setItem(C.LS.SOLO_MODE, '1');
+  showSetupForSoloOrPaired();
+}
+function switchToSoloMode() {
+  if (isPaired()) {
+    showConfirmSheet("Switch to one device?", "You'll leave the paired space.", 'Switch', _doSwitchToSolo);
+    return;
+  }
+  _soloMode = true;
+  localStorage.setItem(C.LS.SOLO_MODE, '1');
+  showSetupForSoloOrPaired();
+}
+
+// ─── Create room flow ─────────────────────────────────────────────
+async function startCreateRoom() {
+  const choiceDiv = document.getElementById('pairingPathChoice');
+  if (choiceDiv) choiceDiv.style.display = 'none';
+  document.getElementById('pairingTitle').textContent = 'Your space is ready';
+  document.getElementById('pairingSub').textContent = 'Share this code with your partner. They\'ll enter it on their device.';
+  document.getElementById('pairingCreate').style.display = 'block';
+  document.getElementById('pairingJoin').style.display = 'none';
+  const statusEl = document.getElementById('pairCreateStatus');
+  const codeEl   = document.getElementById('pairCodeValue');
+  if (statusEl) { statusEl.textContent = ''; statusEl.className = 'pair-status'; }
+  if (codeEl) { codeEl.textContent = 'Generating…'; codeEl.style.opacity = '.35'; }
+  try {
+    const data = await apiCreateRoom();
+    _roomCode = data.code;
+    _myRole   = 'A';
+    _roomTs   = data.updatedAt;
+    localStorage.setItem(C.LS.ROOM_CODE, _roomCode);
+    localStorage.setItem(C.LS.MY_ROLE,   _myRole);
+    localStorage.setItem(C.LS.ROOM_TS,   _roomTs);
+    if (codeEl) { codeEl.textContent = _roomCode; codeEl.style.opacity = '1'; codeEl.style.fontSize = ''; codeEl.style.letterSpacing = ''; }
+    if (statusEl) { statusEl.textContent = 'Waiting for your partner to join…'; }
+    // Render QR code and start expiry countdown
+    _renderPairingQR(_roomCode);
+    _startExpiryCountdown(30 * 60);
+    // Poll for partner joining (check every 8s, stops at ~28 min to match server expiry)
+    _waitForPartner();
+  } catch(e) {
+    statusEl.textContent = 'Couldn\'t create space — check your connection in Settings.';
+    statusEl.className = 'pair-status err';
+    SparkLog.warn('createRoom failed', e.message);
+  }
+}
+
+var _partnerPollTimer = null;
+var _partnerPollCount = 0;
+const PARTNER_POLL_MAX = 210; // ~28 min at 8s intervals — matches 30-min server expiry
+
+async function _waitForPartner() {
+  if (_partnerPollTimer) clearInterval(_partnerPollTimer);
+  _partnerPollCount = 0;
+  _partnerPollTimer = setInterval(async () => {
+    _partnerPollCount++;
+    if (_partnerPollCount > PARTNER_POLL_MAX) {
+      clearInterval(_partnerPollTimer); _partnerPollTimer = null;
+      const statusEl = document.getElementById('pairCreateStatus');
+      if (statusEl && !statusEl.classList.contains('ok')) {
+        statusEl.textContent = 'Code still active — your partner can join anytime using the code above.';
+        statusEl.className = 'pair-status';
+      }
+      return;
+    }
+    try {
+      const data = await apiGetRoom(_roomCode, 'A');
+      if (!data) return;
+      const blob = data.blob || {};
+      if (blob.prefs && blob.prefs.B) {
+        clearInterval(_partnerPollTimer);
+        _partnerPollTimer = null;
+        document.getElementById('pairCreateStatus').textContent = '\u2713 Your partner has joined!';
+        document.getElementById('pairCreateStatus').className = 'pair-status ok';
+        setTimeout(() => { proceedAfterPairing(); }, 1200);
+      }
+    } catch {}
+  }, 8000);
+}
+
+// ─── Join room flow ───────────────────────────────────────────────
+function startJoinRoom() {
+  const choiceDiv = document.getElementById('pairingPathChoice');
+  if (choiceDiv) choiceDiv.style.display = 'none';
+  document.getElementById('pairingTitle').textContent = 'Join your partner\'s space';
+  document.getElementById('pairingSub').textContent = 'Enter the 10-character code your partner shared with you.';
+  document.getElementById('pairingCreate').style.display = 'none';
+  document.getElementById('pairingJoin').style.display = 'block';
+}
+
+async function joinRoom() {
+  const input = document.getElementById('joinCodeInput');
+  const code = (input?.value || '').toUpperCase().trim();
+  const statusEl = document.getElementById('pairJoinStatus');
+  if (code.length !== 10) {
+    statusEl.textContent = 'Enter the full 10-character code.';
+    statusEl.className = 'pair-status err';
+    return;
+  }
+  statusEl.textContent = 'Connecting…';
+  statusEl.className = 'pair-status';
+  try {
+    await apiJoinRoom(code);
+    _roomCode = code;
+    _myRole   = 'B';
+    localStorage.setItem(C.LS.ROOM_CODE, _roomCode);
+    localStorage.setItem(C.LS.MY_ROLE,   _myRole);
+    statusEl.textContent = '✓ Joined!';
+    statusEl.className = 'pair-status ok';
+    // Push this device's prefs into the room right away
+    await pushMyPrefsToRoom();
+    setTimeout(() => { proceedAfterPairing(); }, 800);
+  } catch(e) {
+    statusEl.textContent = e.message || 'Couldn\'t join — check the code.';
+    statusEl.className = 'pair-status err';
+    SparkLog.warn('joinRoom failed', e.message);
+  }
+}
+
+function proceedAfterPairing() {
+  if (_partnerPollTimer) { clearInterval(_partnerPollTimer); _partnerPollTimer = null; }
+  if (_expiryTimer) { clearInterval(_expiryTimer); _expiryTimer = null; }
+  showSetupForSoloOrPaired();
+  updateHomePairedUI();
+  showScreen('screenSetup');
+  startRoomSync();
+}
+
+function skipPairingForNow() {
+  if (_partnerPollTimer) { clearInterval(_partnerPollTimer); _partnerPollTimer = null; }
+  _soloMode = true;
+  localStorage.setItem(C.LS.SOLO_MODE, '1');
+  showSetupForSoloOrPaired();
+  showScreen('screenSetup');
+}
+
+function openPairingFromHome() {
+  showScreen('screenPairing');
+  document.getElementById('pairingTitle').textContent = 'Connect your devices';
+  document.getElementById('pairingSub').textContent = 'Create a space and share the code, or join your partner\'s space.';
+  document.getElementById('pairingCreate').style.display = 'none';
+  document.getElementById('pairingJoin').style.display = 'none';
+  const choiceDiv = document.getElementById('pairingPathChoice');
+  if (choiceDiv) choiceDiv.style.display = 'block';
+}
+
+// ─── Leave room ───────────────────────────────────────────────────
+function leaveRoom() {
+  showConfirmSheet('Leave the paired space?', 'You can reconnect later with a new code.', 'Leave', _doLeaveRoom); }
+function _doLeaveRoom() {
+  if (_syncTimer) { clearInterval(_syncTimer); _syncTimer = null; }
+  if (_partnerPollTimer) { clearInterval(_partnerPollTimer); _partnerPollTimer = null; }
+  if (_expiryTimer) { clearInterval(_expiryTimer); _expiryTimer = null; }
+  localStorage.removeItem(C.LS.ROOM_CODE);
+  localStorage.removeItem(C.LS.MY_ROLE);
+  localStorage.removeItem(C.LS.ROOM_TS);
+  // After leaving, default back to solo mode (one device)
+  _soloMode = true;
+  _modeChosen = true;
+  localStorage.setItem(C.LS.SOLO_MODE, '1');
+  showSetupForSoloOrPaired();
+  updateHomePairedUI();
+  SparkLog.info('room:left');
+}
+
+// ─── Room sync ────────────────────────────────────────────────────
+async function syncRoom() {
+  if (!isPaired()) return;
+  try {
+    const data = await apiGetRoom(_roomCode, _myRole);
+    if (!data) return;
+    _roomTs   = data.updatedAt;
+    _roomBlob = data.blob;
+    localStorage.setItem(C.LS.ROOM_TS, _roomTs);
+    // Apply partner name from room blob (display only, never raw prefs)
+    applyRoomBlobLocally(_roomBlob);
+    updateRoomSyncBar(true);
+    SparkLog.info('room:synced', { code: _roomCode, ts: _roomTs });
+  } catch(e) {
+    updateRoomSyncBar(false);
+    SparkLog.warn('room:syncFailed', e.message);
+  }
+}
+
+async function manualSyncRoom() {
+  updateRoomSyncBar(null); // show syncing state
+  await syncRoom();
+}
+
+function startRoomSync() {
+  if (_syncTimer) clearInterval(_syncTimer);
+  if (!isPaired()) return;
+  syncRoom(); // immediate sync on start
+  _syncTimer = setInterval(syncRoom, SYNC_INTERVAL_MS);
+}
+
+function updateRoomSyncBar(ok) {
+  const bar  = document.getElementById('roomSyncBar');
+  const dot  = document.getElementById('roomSyncDot');
+  const text = document.getElementById('roomSyncText');
+  if (!bar) return;
+  if (!isPaired()) { bar.classList.remove('visible'); return; }
+  bar.classList.add('visible');
+  if (ok === null) {
+    if (dot) dot.className = 'room-sync-dot pulse';
+    if (text) text.textContent = 'Syncing…';
+  } else if (ok) {
+    if (dot) dot.className = 'room-sync-dot';
+    const partnerName = _roomBlob?.partnerName?.[_myRole === 'A' ? 'B' : 'A'] || 'your partner';
+    if (text) text.textContent = 'Connected with ' + partnerName;
+  } else {
+    if (dot) { dot.className = 'room-sync-dot'; dot.style.background = 'var(--amber)'; }
+    if (text) text.textContent = 'Connection issue — tap Refresh';
+  }
+}
+
+// Apply non-sensitive room blob data locally
+function applyRoomBlobLocally(blob) {
+  if (!blob) return;
+  // Update partner display name from room blob (Partner B's name as set by them)
+  if (blob.names) {
+    const otherRole = _myRole === 'A' ? 'B' : 'A';
+    const partnerName = blob.names[otherRole];
+    if (partnerName) {
+      // Reflect in name2 field if not actively editing
+      const n2 = document.getElementById('name2');
+      if (n2 && document.activeElement !== n2) n2.value = partnerName;
+      localStorage.setItem(C.LS.NAME2, partnerName);
+    }
+  }
+  // Saved moments sync (Body 2: share saved scenes to room — author-private notes stay local)
+  if (blob.savedScenes) {
+    mergeRemoteSavedScenes(blob.savedScenes);
+  }
+}
+
+function mergeRemoteSavedScenes(remoteScenes) {
+  if (!Array.isArray(remoteScenes)) return;
+  const local = loadSavedScenes();
+  const localIds = new Set(local.map(s => s.id));
+  let changed = false;
+  for (const rs of remoteScenes) {
+    if (!localIds.has(rs.id)) {
+      // Strip other partner's private note before merging
+      const cleaned = { ...rs, privateNote: rs.privateNote_mine || '' };
+      delete cleaned.privateNote_mine;
+      local.push(cleaned);
+      changed = true;
+    }
+  }
+  if (changed) {
+    local.sort((a,b) => b.id - a.id);
+    if (local.length > 20) local.splice(20);
+    persistSavedScenes(local);
+  }
+}
+
+// ─── Push this device's prefs into the room ───────────────────────
+async function pushMyPrefsToRoom() {
+  if (!isPaired()) return;
+  const myPrefs = kinkPrefs[0]; // index 0 always = this user's prefs
+  const myName  = document.getElementById('name1')?.value.trim() || localStorage.getItem(C.LS.NAME1) || '';
+  const myGender = document.getElementById('gender1')?.value || '';
+  const patch = {
+    prefs: { [_myRole]: myPrefs },
+    names: { [_myRole]: myName },
+    genders: { [_myRole]: myGender },
+  };
+  try {
+    const data = await apiPatchRoom(_roomCode, patch, _myRole);
+    if (data) { _roomTs = data.updatedAt; localStorage.setItem(C.LS.ROOM_TS, _roomTs); }
+  } catch(e) {
+    SparkLog.warn('room:pushFailed', e.message);
+  }
+}
+
+// ─── Wrap persistPrefs to also push to room ────────────────────────
+var _pushPrefsTimer = null;
+var _origPersistPrefs = persistPrefs;
+function persistPrefs() {
+  _origPersistPrefs();
+  if (isPaired()) {
+    // Debounce: wait 1.5s after last change before writing to server (ISS 1)
+    clearTimeout(_pushPrefsTimer);
+    _pushPrefsTimer = setTimeout(() => { pushMyPrefsToRoom().catch(() => {}); }, 1500);
+  } else if (_soloMode) {
+    updatePrefsExportCode();
+  }
+}
+
+// ─── Prefs export/import ──────────────────────────────────────────
+function buildPrefsExportPayload() {
+  // Encode partner 2 (index 1) prefs for transfer
+  const prefs  = kinkPrefs[1] || {};
+  const name   = document.getElementById('name2')?.value.trim() || '';
+  const gender = document.getElementById('gender2')?.value || '';
+  const archs  = [...(activeArchetypes[1] || [])];
+  const assets = body[1] ? JSON.parse(JSON.stringify(body[1])) : {};
+  const payload = { v: 1, name, gender, prefs, archs, assets };
+  return btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+}
+
+function updatePrefsExportCode() {
+  const el = document.getElementById('prefsExportCode');
+  if (!el) return;
+  try {
+    const code = buildPrefsExportPayload();
+    el.textContent = code; // textContent clears child placeholder span
+  } catch(e) {
+    el.textContent = '';
+    SparkLog.warn('prefsExport failed', e.message);
+  }
+}
+
+function copyPrefsExportCode() {
+  const el = document.getElementById('prefsExportCode');
+  if (!el || !el.textContent) return;
+  navigator.clipboard?.writeText(el.textContent).then(() => {
+    const btn = el.parentElement?.querySelector('button');
+    if (btn) { const t = btn.textContent; btn.textContent = '✓ Copied!'; setTimeout(() => btn.textContent = t, 2000); }
+  }).catch(() => {});
+}
+
+async function copyRoomCode() {
+  const code = _roomCode || document.getElementById('pairCodeValue')?.textContent;
+  if (!code || code === '——') return;
+  await navigator.clipboard?.writeText(code).catch(() => {});
+  const btn = document.querySelector('.pair-code-hint')?.nextElementSibling;
+  if (btn) { const t = btn.textContent; btn.textContent = '✓ Copied!'; setTimeout(() => btn.textContent = t, 2000); }
+}
+
+function importPrefsCode() {
+  const input = document.getElementById('prefsImportInput');
+  const val = input?.value.trim();
+  if (!val) return;
+  try {
+    const payload = JSON.parse(decodeURIComponent(escape(atob(val))));
+    if (payload.v !== 1) throw new Error('Unknown version');
+
+    // Validate name
+    if (payload.name && typeof payload.name === 'string') {
+      const f = document.getElementById('name2');
+      if (f) { f.value = payload.name.slice(0,20); localStorage.setItem(C.LS.NAME2, f.value); }
+    }
+    // Validate gender against known values only
+    const validGenders = ['male','female','other',''];
+    if (payload.gender !== undefined && validGenders.includes(payload.gender)) {
+      const f = document.getElementById('gender2');
+      if (f) { f.value = payload.gender; onGenderChange(1); }
+    }
+    // Validate prefs: only copy keys that exist in ALL_KINK_ITEMS with known rating values
+    if (payload.prefs && typeof payload.prefs === 'object' && !Array.isArray(payload.prefs)) {
+      const validIds = new Set(ALL_KINK_ITEMS.map(i => i.id));
+      const validRatings = new Set(['fav','like','int','no','partner']);
+      const safePrefs = Object.create(null);
+      for (const [k, v] of Object.entries(payload.prefs)) {
+        if (validIds.has(k) && validRatings.has(v)) safePrefs[k] = v;
+      }
+      kinkPrefs[1] = safePrefs;
+    }
+    // Validate archetypes against known archetype IDs
+    if (payload.archs && Array.isArray(payload.archs)) {
+      const validArchIds = new Set(ARCHETYPES.map(a => a.id));
+      activeArchetypes[1] = new Set(payload.archs.filter(id => typeof id === 'string' && validArchIds.has(id)));
+    }
+    // Validate assets against known ASSET_DEF IDs
+    if (payload.assets && typeof payload.assets === 'object' && !Array.isArray(payload.assets)) {
+      const validAssetIds = new Set(ASSET_DEFS.map(a => a.id));
+      const safeAssets = Object.create(null);
+      for (const [k, v] of Object.entries(payload.assets)) {
+        if (validAssetIds.has(k) && v && typeof v === 'object') {
+          safeAssets[k] = { on: !!v.on, name: typeof v.name === 'string' ? v.name.slice(0,30) : k };
+        }
+      }
+      body[1] = safeAssets;
+    }
+
+    persistPrefs();
+    if (input) input.value = '';
+    showToast('✓ Partner preferences imported!');
+    SparkLog.info('prefs:imported');
+  } catch(e) {
+    showToast('That code didn\'t work — copy the full code from your partner\'s device.');
+    SparkLog.warn('prefs:importFailed', e.message);
+  }
+}
+
+// ─── UI state helpers ─────────────────────────────────────────────
+function updateHomePairedUI() {
+  const pairBtn      = document.getElementById('homePairBtn');
+  const pairedStatus = document.getElementById('homePairedStatus');
+  const syncBar      = document.getElementById('roomSyncBar');
+  const moodTitle    = document.getElementById('homeMoodBtnTitle');
+  if (isPaired()) {
+    if (pairBtn)      pairBtn.style.display      = 'none';
+    if (pairedStatus) pairedStatus.style.display = 'inline';
+    if (syncBar)      updateRoomSyncBar(true);
+    if (moodTitle)    moodTitle.textContent       = "I'm in the Mood"; // D3: paired mode
+  } else {
+    // H1: only show "Connect devices" when user chose two-device mode but hasn't connected yet
+    const wantsToConnect = !_soloMode && _modeChosen;
+    if (pairBtn)      pairBtn.style.display      = wantsToConnect ? 'block' : 'none';
+    if (pairedStatus) pairedStatus.style.display = 'none';
+    if (syncBar)      syncBar.classList.remove('visible');
+    if (moodTitle)    moodTitle.textContent       = "We're in the Mood";
+  }
+}
+
+// ─── getN override to also consult room blob for partner name ─────
+// gN already reads from name1/name2 inputs and localStorage;
+// if paired, also check room blob for partner's self-set name
+var _origGN = gN;
+function gN(pi) {
+  const base = _origGN(pi);
+  if (!isPaired() || !_roomBlob) return base;
+  const piRole = pi === 0 ? _myRole : (_myRole === 'A' ? 'B' : 'A');
+  const roomName = _roomBlob?.names?.[piRole];
+  return roomName || base;
+}
+
+// ─── buildCall1Prefs override: merge room prefs for partner ───────
+// Decision (b): generating device gets transient merged prefs for API call only
+var _origBuildCall1Prefs = buildCall1Prefs;
+function buildCall1Prefs(pi) {
+  // pi=0 is always "this user"; pi=1 is "partner"
+  if (!isPaired() || pi === 0) return _origBuildCall1Prefs(pi);
+  // For the partner (pi=1), merge from room mutualMatches if available,
+  // otherwise fall back to local kinkPrefs[1] (transient — never displayed)
+  // This is option (b): generating device uses merged prefs only for the API call
+  if (_roomBlob?.mutualMatches) {
+    // Build a synthetic pref set from mutual matches only
+    const name = gN(1);
+    const roomGender = _roomBlob?.genders?.[_myRole === 'A' ? 'B' : 'A'] || '';
+    const matches = _roomBlob.mutualMatches;
+    const favs=[], likes=[], wants=[];
+    ALL_KINK_ITEMS.forEach(item => {
+      if (item.advanced) return;
+      const r = matches[item.id];
+      if (!r) return;
+      const lbl = item.label.replace(/ — (Giving|Receiving)$/, t => t.includes('Giving') ? ' (giving)' : ' (receiving)');
+      if (r === 'fav') favs.push(lbl);
+      else if (r === 'like') likes.push(lbl);
+      else if (r === 'int') wants.push(lbl);
+    });
+    const parts = ['Name: ' + name];
+    if (roomGender) parts.push('Gender: ' + roomGender);
+    if (favs.length)  parts.push('LOVES: ' + favs.join(', '));
+    if (likes.length) parts.push('Likes: ' + likes.join(', '));
+    if (wants.length) parts.push('WANTS TO TRY: ' + wants.join(', '));
+    return parts.join('\n');
+  }
+  // Fallback: local kinkPrefs[1] (solo mode or before first sync)
+  return _origBuildCall1Prefs(pi);
+}
+
+// ─── Survey: in paired mode, only run for pi=0 (this user) ────────
+var _origShowSurveyScreen = showSurveyScreen;
+function showSurveyScreen(piOverride) {
+  // If paired, lock surveyIdx to 0 (own prefs only)
+  if (isPaired()) surveyIdx = 0;
+  _origShowSurveyScreen(piOverride !== undefined ? piOverride : surveyIdx);
+}
+
+// setupContinue: B2 override removed — base function handles all modes correctly
+
+// ─── initialRoute override: welcome screen for truly new users ────
+function sparkInitialRoute() {
+  // Check for QR / deep-link join code in URL first
+  if (checkDeepLink()) return;
+
+  const n1 = localStorage.getItem(C.LS.NAME1);
+  const n2 = localStorage.getItem(C.LS.NAME2);
+  if (n1) { const f=document.getElementById('name1'); if(f) f.value=n1; }
+  if (n2) { const f=document.getElementById('name2'); if(f) f.value=n2; }
+
+  if (isPaired()) {
+    // Returning paired user
+    showSetupForSoloOrPaired();
+    updateHomePairedUI();
+    startRoomSync();
+    if (n1) { goHome(); return; }
+    showScreen('screenSetup');
+    return;
+  }
+  if (_modeChosen && _soloMode && n1) {
+    // Returning solo user
+    showSetupForSoloOrPaired();
+    goHome();
+    return;
+  }
+  if (_modeChosen && !_soloMode && n1) {
+    // User chose paired mode but hasn't connected yet — go to setup
+    showSetupForSoloOrPaired();
+    goHome();
+    return;
+  }
+  if (n1 && !_modeChosen) {
+    // Pre-Body-2 user: treat as solo, mode choice not yet made
+    _soloMode = true;
+    _modeChosen = true;
+    localStorage.setItem(C.LS.SOLO_MODE, '1');
+    showSetupForSoloOrPaired();
+    goHome();
+    return;
+  }
+  // Brand new user — show welcome screen
+  showScreen('screenWelcome');
+}
+
+// ─── Reusable confirm sheet (replaces native confirm/alert) ─────
+var _confirmCallback = null;
+
+function showConfirmSheet(title, sub, okLabel, onConfirm) {
+  document.getElementById('confirmSheetTitle').textContent = title;
+  document.getElementById('confirmSheetSub').textContent   = sub || '';
+  document.getElementById('confirmSheetOk').textContent    = okLabel || 'Confirm';
+  _confirmCallback = onConfirm;
+  document.getElementById('confirmSheet').classList.add('open');
+}
+
+function closeConfirmSheet(e) {
+  if (e && e.target !== document.getElementById('confirmSheet')) return;
+  document.getElementById('confirmSheet').classList.remove('open');
+  _confirmCallback = null;
+}
+
+function confirmSheetAction() {
+  document.getElementById('confirmSheet').classList.remove('open');
+  if (_confirmCallback) { const cb = _confirmCallback; _confirmCallback = null; cb(); }
+}
+
+function showToast(msg, durationMs) {
+  const el = document.getElementById('toastNotification');
+  if (!el) return;
+  el.textContent = msg;
+  el.style.opacity = '1';
+  el.style.transform = 'translateX(-50%) translateY(0)';
+  clearTimeout(el._timer);
+  el._timer = setTimeout(() => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateX(-50%) translateY(2rem)';
+  }, durationMs || 2200);
+}
+
+// ─── Recovery: reset everything ──────────────────────────────────
 function resetEverything() {
-  if (!confirm('Clear all data and restart? This removes names, preferences, and settings.')) return;
+  showConfirmSheet('Reset all data?', 'This removes names, preferences, and settings. Cannot be undone.', 'Reset', _doResetEverything); }
+function _doResetEverything() {
   SparkLog.info('User triggered full reset');
-  // Clear all known keys
+
+  // 1. Clear localStorage and sessionStorage
   Object.values(C.LS).forEach(k => { localStorage.removeItem(k); sessionStorage.removeItem(k); });
-  // Also clear session-only keys not in C.LS
-  ['spark_fail_count'].forEach(k => sessionStorage.removeItem(k));
-  window.location.reload();
+  ['spark_experience','spark_archetypes','spark_survey_step','spark_my_name',
+   'spark_notifs_enabled','spark_notif_intensity','spark_notif_last_sent',
+   'spark_fail_count'].forEach(k => { localStorage.removeItem(k); sessionStorage.removeItem(k); });
+
+  // 2. Stop all timers and clear pairing state
+  if (_syncTimer) { clearInterval(_syncTimer); _syncTimer = null; }
+  if (_partnerPollTimer) { clearInterval(_partnerPollTimer); _partnerPollTimer = null; }
+  if (_expiryTimer) { clearInterval(_expiryTimer); _expiryTimer = null; }
+  if (notifInterval) { clearInterval(notifInterval); notifInterval = null; }
+  _roomCode = null; _myRole = null; _roomBlob = null; _roomTs = null;
+  _soloMode = false; _modeChosen = false;
+  notifsEnabled = false;
+
+  // 3. Reset all runtime state variables
+  kinkPrefs[0] = {}; kinkPrefs[1] = {};
+  activeArchetypes[0] = new Set(); activeArchetypes[1] = new Set();
+  body[0] = {}; body[1] = {};
+  currentScene = null; currentA = ''; currentB = '';
+  currentMood = null; currentLocation = 'home';
+  currentNote = ''; currentAvoid = '';
+  sceneCount = 0; surveyIdx = 0;
+  isGenerating = false;
+  if (streamController) { try { streamController.abort(); } catch {} streamController = null; }
+
+  // 4. Reset all form fields
+  ['name1','name2','gender1','gender2','proxyUrl','apiKey','proxySecret'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (el.tagName === 'SELECT') el.selectedIndex = 0;
+    else el.value = '';
+  });
+  const dbg = document.getElementById('debugMode'); if (dbg) dbg.checked = false;
+  debugMode = false;
+
+  // 5. Reset UI state
+  document.body.classList.remove('header-compact');
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const notifBtn = document.getElementById('notifToggleBtn'); if (notifBtn) notifBtn.textContent = 'Enable';
+  const notifCfg = document.getElementById('notifConfig'); if (notifCfg) notifCfg.style.display = 'none';
+  const pipeBar  = document.getElementById('pipelineBar');  if (pipeBar)  pipeBar.classList.remove('debug-visible');
+
+  // 6. Re-run initial setup and route to welcome screen
+  window._sparkProxyUrl = null;
+  window._sparkProxyAuthHandled = false;
+  setProxyStatus('none', 'Enter your proxy URL above');
+  buildAssetGrid(0); buildAssetGrid(1);
+  buildShortcutGrid();
+  showScreen('screenWelcome');
+  showToast('All data cleared');
 }
 
 </script>
@@ -5359,46 +6612,16 @@ function resetEverything() {
 <div class="exit-sheet-overlay" id="exitSheet" onclick="closeExitSheet(event)">
   <div class="exit-sheet">
     <div class="exit-sheet-handle"></div>
-    <div class="exit-sheet-title">Leave this scene?</div>
-    <div class="exit-sheet-sub">Your current scene will still be here if you come back.</div>
+    <div class="exit-sheet-title">Pause your scene?</div>
+    <div class="exit-sheet-sub">The scene stays ready — tap "Return to scene" on the home screen to come back.</div>
     <div class="exit-sheet-btns">
-      <button class="btn btn-ink" onclick="closeExitSheet();goSetup()">Pause — go to settings</button>
+      <button class="btn btn-ink" onclick="closeExitSheet();goSetup()">Go to settings</button>
       <button class="btn btn-outline" onclick="closeExitSheet()">Keep going</button>
     </div>
   </div>
 </div>
 
-<!-- ════════ AMBUSH / TEASE MODAL ════════ -->
-<div class="modal-overlay" id="ambushModal" onclick="closeAmbushModal(event)">
-  <div class="modal-sheet">
-    <div class="modal-handle"></div>
-    <div class="modal-title">Tease them</div>
-    <div class="modal-sub">A quick move — right now, wherever you are.</div>
-    <!-- Intensity pills — aligned with main scene system -->
-    <div class="int-pills" id="ambushIntensityPills" style="display:flex;gap:.4rem;margin-bottom:1rem;">
-      <div class="int-pill active" data-level="light" onclick="setAmbushIntensity('light',this)" style="flex:1;padding:.55rem .4rem;border:1.5px solid var(--border);border-radius:var(--rs);background:var(--bg);text-align:center;cursor:pointer;transition:all .18s;font-family:'DM Sans',sans-serif;">
-        <div class="int-pill-icon" style="font-size:1rem;margin-bottom:.15rem;">🌸</div>
-        <span class="int-pill-name" style="font-size:.72rem;font-weight:600;display:block;color:var(--ink2);">Light</span>
-        <span class="int-pill-hint" style="font-size:.62rem;color:var(--muted);display:block;">Subtle</span>
-      </div>
-      <div class="int-pill" data-level="medium" onclick="setAmbushIntensity('medium',this)" style="flex:1;padding:.55rem .4rem;border:1.5px solid var(--border);border-radius:var(--rs);background:var(--bg);text-align:center;cursor:pointer;transition:all .18s;font-family:'DM Sans',sans-serif;">
-        <div class="int-pill-icon" style="font-size:1rem;margin-bottom:.15rem;">🔥</div>
-        <span class="int-pill-name" style="font-size:.72rem;font-weight:600;display:block;color:var(--ink2);">Medium</span>
-        <span class="int-pill-hint" style="font-size:.62rem;color:var(--muted);display:block;">Suggestive</span>
-      </div>
-      <div class="int-pill" data-level="hard" onclick="setAmbushIntensity('hard',this)" style="flex:1;padding:.55rem .4rem;border:1.5px solid var(--border);border-radius:var(--rs);background:var(--bg);text-align:center;cursor:pointer;transition:all .18s;font-family:'DM Sans',sans-serif;">
-        <div class="int-pill-icon" style="font-size:1rem;margin-bottom:.15rem;">⚡</div>
-        <span class="int-pill-name" style="font-size:.72rem;font-weight:600;display:block;color:var(--ink2);">Explicit</span>
-        <span class="int-pill-hint" style="font-size:.62rem;color:var(--muted);display:block;">Graphic</span>
-      </div>
-    </div>
-    <div id="ambushList"></div>
-    <div style="display:flex;gap:.5rem;margin-top:.75rem;">
-      <button class="btn btn-outline" onclick="renderAmbushList()" style="flex:1;">↻ Different teases</button>
-      <button class="btn btn-outline" onclick="closeAmbushModal()" style="flex:0 0 auto;padding:.65rem 1rem;">Done</button>
-    </div>
-  </div>
-</div>
+
 
 <!-- ════════ ESCALATION PANEL (inside scene card, injected by JS) ════════ -->
 <!-- Note: escalationPanel is dynamically shown inside sceneCard by JS -->
@@ -5412,12 +6635,28 @@ function resetEverything() {
 <div class="modal-overlay" id="savedScenesModal" onclick="closeSavedScenesModal(event)">
   <div class="modal-sheet" style="max-height:90vh;overflow:hidden;display:flex;flex-direction:column;">
     <div class="modal-handle"></div>
-    <div class="modal-title">Saved scenes</div>
-    <div class="modal-sub">Scenes you put aside for when the moment is right.</div>
+    <div class="modal-title">Moments you've shared</div>
+    <div class="modal-sub">Scenes you've saved — tap any to replay.</div>
     <div id="savedScenesList" style="flex:1;overflow-y:auto;padding-bottom:.5rem;"></div>
     <button class="btn btn-outline" onclick="document.getElementById('savedScenesModal').classList.remove('open')" style="margin-top:.75rem;width:100%;flex-shrink:0;">Close</button>
   </div>
 </div>
+
+<!-- ════════ CONFIRM SHEET (reusable) ════════ -->
+<div class="exit-sheet-overlay" id="confirmSheet" onclick="closeConfirmSheet(event)">
+  <div class="exit-sheet">
+    <div class="exit-sheet-handle"></div>
+    <div class="exit-sheet-title" id="confirmSheetTitle">Are you sure?</div>
+    <div class="exit-sheet-sub" id="confirmSheetSub"></div>
+    <div class="exit-sheet-btns">
+      <button class="btn btn-ink" id="confirmSheetOk" onclick="confirmSheetAction()">Confirm</button>
+      <button class="btn btn-outline" onclick="closeConfirmSheet()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ TOAST (reusable) ════════ -->
+<div id="toastNotification" style="position:fixed;bottom:5rem;left:50%;transform:translateX(-50%) translateY(2rem);background:var(--ink);color:#fff;font-family:'DM Sans',sans-serif;font-size:.78rem;padding:.55rem 1.1rem;border-radius:50px;opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;z-index:500;white-space:nowrap;"></div>
 
 </body>
 </html>

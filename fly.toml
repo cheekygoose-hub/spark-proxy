@@ -1,0 +1,34 @@
+# Fly.io deployment config for Spark proxy
+# Deploy: fly launch (first time) or fly deploy (updates)
+# Set API key: fly secrets set ANTHROPIC_API_KEY=sk-ant-...
+
+app = "spark-proxy"          # change this to your app name
+primary_region = "syd"       # Sydney — change to your nearest region
+
+[build]
+
+[env]
+  PORT = "8080"
+  DB_PATH = "/data/rooms.db"
+
+[mounts]
+  source = "spark_data"
+  destination = "/data"
+
+[[services]]
+  internal_port = 8080
+  protocol = "tcp"
+
+  [[services.ports]]
+    handlers = ["http"]
+    port = 80
+    force_https = true
+
+  [[services.ports]]
+    handlers = ["tls", "http"]
+    port = 443
+
+  [services.concurrency]
+    type = "connections"
+    hard_limit = 25
+    soft_limit = 20
