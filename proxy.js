@@ -174,7 +174,9 @@ const server = http.createServer((req, res) => {
 
   // Serve the app
   if (req.method === 'GET' && (req.url === '/' || req.url === '/index.html')) {
-    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.writeHead(200);
     res.end(HTML);
     return;
   }
