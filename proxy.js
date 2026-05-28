@@ -166,18 +166,29 @@ function filterBlobForRole(blob, myRole) {
 
 // ── Serve the Spark app HTML ──────────────────────────────────────────────
 const HTML_PATH = path.join(__dirname, 'index.html');
-let HTML;
-try { HTML = fs.readFileSync(HTML_PATH, 'utf8'); } catch { HTML = '<h1>index.html not found</h1>'; }
+const FALLBACK_HTML = '<h1>index.html not found</h1>';
+
+// Read once at boot to log a fingerprint (helps confirm what's actually deployed)
+try {
+  const _boot = fs.readFileSync(HTML_PATH, 'utf8');
+  const _hasFix = _boot.includes('persistPrefs = function persistPrefs(');
+  console.log('[Spark] index.html loaded:', _boot.length, 'bytes | hoisting-fix present:', _hasFix);
+} catch (e) {
+  console.log('[Spark] WARNING: could not read index.html at boot:', e.message);
+}
 
 // ── Request router ────────────────────────────────────────────────────────
 const server = http.createServer((req, res) => {
 
-  // Serve the app
+  // Serve the app — read fresh each time so a redeploy is always reflected
   if (req.method === 'GET' && (req.url === '/' || req.url === '/index.html')) {
+    let html;
+    try { html = fs.readFileSync(HTML_PATH, 'utf8'); } catch { html = FALLBACK_HTML; }
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate'); // stop browser/CDN caching stale HTML
     res.writeHead(200);
-    res.end(HTML);
+    res.end(html);
     return;
   }
 
