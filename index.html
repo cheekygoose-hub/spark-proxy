@@ -1839,6 +1839,36 @@ function $req(id) {
 // ═══════════════════════════════════════════
 function showCriticalError(message, stack) {
   SparkLog.error('Critical: ' + message, stack);
+
+  // When debug mode is on, show a persistent banner at the top of the viewport
+  // visible on ANY screen — not just the scene area.
+  if (typeof debugMode !== 'undefined' && debugMode) {
+    let banner = document.getElementById('debugErrorBanner');
+    if (!banner) {
+      banner = document.createElement('div');
+      banner.id = 'debugErrorBanner';
+      banner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9999;'
+        + 'background:#7a1f1f;color:#fff;font-family:monospace;font-size:11px;'
+        + 'padding:8px 12px;line-height:1.4;max-height:40vh;overflow-y:auto;'
+        + 'box-shadow:0 2px 8px rgba(0,0,0,.4);white-space:pre-wrap;word-break:break-word;';
+      const dismiss = document.createElement('button');
+      dismiss.textContent = '✕ dismiss';
+      dismiss.style.cssText = 'float:right;background:#fff;color:#7a1f1f;border:none;'
+        + 'border-radius:4px;padding:2px 8px;font-size:10px;cursor:pointer;margin-left:8px;font-family:monospace;';
+      dismiss.onclick = () => banner.remove();
+      banner.appendChild(dismiss);
+      const content = document.createElement('div');
+      content.id = 'debugErrorBannerContent';
+      banner.appendChild(content);
+      (document.body || document.documentElement).appendChild(banner);
+    }
+    const content = document.getElementById('debugErrorBannerContent');
+    if (content) {
+      const entry = '⚠ ' + message + (stack ? '\n' + stack.split('\n').slice(0,3).join('\n') : '');
+      content.textContent = (content.textContent ? content.textContent + '\n\n' : '') + entry;
+    }
+  }
+
   // Show error in stream area if visible, otherwise console only
   const streamEl = document.getElementById(C.EL.STREAM_TEXT);
   const cardEl   = document.getElementById(C.EL.SCENE_CARD);
@@ -6282,7 +6312,7 @@ async function pushMyPrefsToRoom() {
 // ─── Wrap persistPrefs to also push to room ────────────────────────
 var _pushPrefsTimer = null;
 var _origPersistPrefs = persistPrefs;
-function persistPrefs() {
+persistPrefs = function persistPrefs() {
   _origPersistPrefs();
   if (isPaired()) {
     // Debounce: wait 1.5s after last change before writing to server (ISS 1)
@@ -6291,7 +6321,7 @@ function persistPrefs() {
   } else if (_soloMode) {
     updatePrefsExportCode();
   }
-}
+};
 
 // ─── Prefs export/import ──────────────────────────────────────────
 function buildPrefsExportPayload() {
@@ -6415,18 +6445,18 @@ function updateHomePairedUI() {
 // gN already reads from name1/name2 inputs and localStorage;
 // if paired, also check room blob for partner's self-set name
 var _origGN = gN;
-function gN(pi) {
+gN = function gN(pi) {
   const base = _origGN(pi);
   if (!isPaired() || !_roomBlob) return base;
   const piRole = pi === 0 ? _myRole : (_myRole === 'A' ? 'B' : 'A');
   const roomName = _roomBlob?.names?.[piRole];
   return roomName || base;
-}
+};
 
 // ─── buildCall1Prefs override: merge room prefs for partner ───────
 // Decision (b): generating device gets transient merged prefs for API call only
 var _origBuildCall1Prefs = buildCall1Prefs;
-function buildCall1Prefs(pi) {
+buildCall1Prefs = function buildCall1Prefs(pi) {
   // pi=0 is always "this user"; pi=1 is "partner"
   if (!isPaired() || pi === 0) return _origBuildCall1Prefs(pi);
   // For the partner (pi=1), merge from room mutualMatches if available,
@@ -6456,15 +6486,15 @@ function buildCall1Prefs(pi) {
   }
   // Fallback: local kinkPrefs[1] (solo mode or before first sync)
   return _origBuildCall1Prefs(pi);
-}
+};
 
 // ─── Survey: in paired mode, only run for pi=0 (this user) ────────
 var _origShowSurveyScreen = showSurveyScreen;
-function showSurveyScreen(piOverride) {
+showSurveyScreen = function showSurveyScreen(piOverride) {
   // If paired, lock surveyIdx to 0 (own prefs only)
   if (isPaired()) surveyIdx = 0;
   _origShowSurveyScreen(piOverride !== undefined ? piOverride : surveyIdx);
-}
+};
 
 // setupContinue: B2 override removed — base function handles all modes correctly
 
