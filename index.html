@@ -1274,7 +1274,7 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
   <div class="home-warn" id="homeWarn">
     <span class="home-warn-icon">⚠</span>
     <span id="homeWarnText">AI not connected — scenes won't generate</span>
-    <button onclick="goSetup();toggleAiPanel(true)">Fix</button>
+    <button onclick="goSetupAndOpenAI()">Fix</button>
   </div>
   <div class="home-screen">
     <button class="home-btn home-btn-scene" id="homeMoodBtn" onclick="goPreScene(true);window.scrollTo(0,0)">
@@ -1301,7 +1301,7 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
   <div id="preSceneConnWarn" style="display:none;background:var(--amber-bg);border:1px solid var(--amber-mid);border-radius:var(--rs);padding:.65rem 1rem;margin-bottom:.85rem;align-items:center;gap:.6rem;font-size:.78rem;color:var(--amber);">
     <span style="font-size:1rem;flex-shrink:0;">⚠</span>
     <span style="flex:1;">AI not connected — scenes won't generate until this is fixed.</span>
-    <button onclick="goSetup();toggleAiPanel(true)" style="background:var(--amber);border:none;border-radius:6px;color:#fff;font-family:'DM Sans',sans-serif;font-size:.7rem;font-weight:600;padding:.25rem .6rem;cursor:pointer;white-space:nowrap;flex-shrink:0;">Fix →</button>
+    <button onclick="goSetupAndOpenAI()" style="background:var(--amber);border:none;border-radius:6px;color:#fff;font-family:'DM Sans',sans-serif;font-size:.7rem;font-weight:600;padding:.25rem .6rem;cursor:pointer;white-space:nowrap;flex-shrink:0;">Fix →</button>
   </div>
   <div class="prescreen-hero">
     <h2>Set the mood</h2>
@@ -1906,6 +1906,16 @@ function toggleAiPanel(forceOpen) {
   const open    = forceOpen !== undefined ? forceOpen : !isOpen;
   panel.classList.toggle('open', open);
   if (chevron) chevron.classList.toggle('open', open);
+}
+
+function goSetupAndOpenAI() {
+  goSetup();
+  // Wait for goSetup to render the screen, then open + scroll to AI panel
+  setTimeout(() => {
+    toggleAiPanel(true);
+    const panel = document.getElementById('aiSetupPanel');
+    if (panel) panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 80);
 }
 
 function toggleMoreOptions() {
@@ -6127,9 +6137,13 @@ async function joinRoom() {
   const input = document.getElementById('joinCodeInput');
   const code = (input?.value || '').toUpperCase().trim();
   const statusEl = document.getElementById('pairJoinStatus');
+  if (code.length === 0) {
+    if (statusEl) { statusEl.textContent = 'Please enter a code.'; statusEl.className = 'pair-status err'; }
+    if (input) { input.style.borderColor = 'var(--blush)'; input.focus(); input.addEventListener('input', () => { input.style.borderColor = ''; }, { once:true }); }
+    return;
+  }
   if (code.length !== 10) {
-    statusEl.textContent = 'Enter the full 10-character code.';
-    statusEl.className = 'pair-status err';
+    if (statusEl) { statusEl.textContent = 'Enter the full 10-character code.'; statusEl.className = 'pair-status err'; }
     return;
   }
   statusEl.textContent = 'Connecting…';
