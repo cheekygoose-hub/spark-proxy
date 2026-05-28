@@ -6581,59 +6581,79 @@ function showToast(msg, durationMs) {
 function resetEverything() {
   showConfirmSheet('Reset all data?', 'This removes names, preferences, and settings. Cannot be undone.', 'Reset', _doResetEverything); }
 function _doResetEverything() {
-  SparkLog.info('User triggered full reset');
+  try { SparkLog.info('User triggered full reset'); } catch {}
 
-  // 1. Clear localStorage and sessionStorage
-  Object.values(C.LS).forEach(k => { localStorage.removeItem(k); sessionStorage.removeItem(k); });
-  ['spark_experience','spark_archetypes','spark_survey_step','spark_my_name',
-   'spark_notifs_enabled','spark_notif_intensity','spark_notif_last_sent',
-   'spark_fail_count'].forEach(k => { localStorage.removeItem(k); sessionStorage.removeItem(k); });
+  // 1. Clear localStorage and sessionStorage (most important — do first, guarded)
+  try {
+    Object.values(C.LS).forEach(k => { try { localStorage.removeItem(k); sessionStorage.removeItem(k); } catch {} });
+    ['spark_experience','spark_archetypes','spark_survey_step','spark_my_name',
+     'spark_notifs_enabled','spark_notif_intensity','spark_notif_last_sent',
+     'spark_fail_count'].forEach(k => { try { localStorage.removeItem(k); sessionStorage.removeItem(k); } catch {} });
+    // Belt-and-braces: clear every spark_* key that exists
+    try {
+      for (let i = localStorage.length - 1; i >= 0; i--) {
+        const k = localStorage.key(i);
+        if (k && k.indexOf('spark_') === 0) localStorage.removeItem(k);
+      }
+    } catch {}
+  } catch(e) { try { SparkLog.warn('reset:storage', e.message); } catch {} }
 
   // 2. Stop all timers and clear pairing state
-  if (_syncTimer) { clearInterval(_syncTimer); _syncTimer = null; }
-  if (_partnerPollTimer) { clearInterval(_partnerPollTimer); _partnerPollTimer = null; }
-  if (_expiryTimer) { clearInterval(_expiryTimer); _expiryTimer = null; }
-  if (notifInterval) { clearInterval(notifInterval); notifInterval = null; }
-  _roomCode = null; _myRole = null; _roomBlob = null; _roomTs = null;
-  _soloMode = false; _modeChosen = false;
-  notifsEnabled = false;
+  try {
+    if (_syncTimer) { clearInterval(_syncTimer); _syncTimer = null; }
+    if (_partnerPollTimer) { clearInterval(_partnerPollTimer); _partnerPollTimer = null; }
+    if (_expiryTimer) { clearInterval(_expiryTimer); _expiryTimer = null; }
+    if (typeof notifInterval !== 'undefined' && notifInterval) { clearInterval(notifInterval); notifInterval = null; }
+    _roomCode = null; _myRole = null; _roomBlob = null; _roomTs = null;
+    _soloMode = false; _modeChosen = false;
+    if (typeof notifsEnabled !== 'undefined') notifsEnabled = false;
+  } catch(e) { try { SparkLog.warn('reset:timers', e.message); } catch {} }
 
   // 3. Reset all runtime state variables
-  kinkPrefs[0] = {}; kinkPrefs[1] = {};
-  activeArchetypes[0] = new Set(); activeArchetypes[1] = new Set();
-  body[0] = {}; body[1] = {};
-  currentScene = null; currentA = ''; currentB = '';
-  currentMood = null; currentLocation = 'home';
-  currentNote = ''; currentAvoid = '';
-  sceneCount = 0; surveyIdx = 0;
-  isGenerating = false;
-  if (streamController) { try { streamController.abort(); } catch {} streamController = null; }
+  try {
+    kinkPrefs[0] = {}; kinkPrefs[1] = {};
+    activeArchetypes[0] = new Set(); activeArchetypes[1] = new Set();
+    body[0] = {}; body[1] = {};
+    currentScene = null; currentA = ''; currentB = '';
+    currentMood = null; currentLocation = 'home';
+    currentNote = ''; currentAvoid = '';
+    sceneCount = 0; surveyIdx = 0;
+    isGenerating = false;
+    if (streamController) { try { streamController.abort(); } catch {} streamController = null; }
+  } catch(e) { try { SparkLog.warn('reset:state', e.message); } catch {} }
 
   // 4. Reset all form fields
-  ['name1','name2','gender1','gender2','proxyUrl','apiKey','proxySecret'].forEach(id => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    if (el.tagName === 'SELECT') el.selectedIndex = 0;
-    else el.value = '';
-  });
-  const dbg = document.getElementById('debugMode'); if (dbg) dbg.checked = false;
-  debugMode = false;
+  try {
+    ['name1','name2','gender1','gender2','proxyUrl','apiKey','proxySecret'].forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (el.tagName === 'SELECT') el.selectedIndex = 0;
+      else el.value = '';
+    });
+    const dbg = document.getElementById('debugMode'); if (dbg) dbg.checked = false;
+    debugMode = false;
+  } catch(e) { try { SparkLog.warn('reset:fields', e.message); } catch {} }
 
   // 5. Reset UI state
-  document.body.classList.remove('header-compact');
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  const notifBtn = document.getElementById('notifToggleBtn'); if (notifBtn) notifBtn.textContent = 'Enable';
-  const notifCfg = document.getElementById('notifConfig'); if (notifCfg) notifCfg.style.display = 'none';
-  const pipeBar  = document.getElementById('pipelineBar');  if (pipeBar)  pipeBar.classList.remove('debug-visible');
+  try {
+    document.body.classList.remove('header-compact');
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    const notifBtn = document.getElementById('notifToggleBtn'); if (notifBtn) notifBtn.textContent = 'Enable';
+    const notifCfg = document.getElementById('notifConfig'); if (notifCfg) notifCfg.style.display = 'none';
+    const pipeBar  = document.getElementById('pipelineBar');  if (pipeBar)  pipeBar.classList.remove('debug-visible');
+    window._sparkProxyUrl = null;
+    window._sparkProxyAuthHandled = false;
+    setProxyStatus('none', 'Enter your proxy URL above');
+    buildAssetGrid(0); buildAssetGrid(1);
+    buildShortcutGrid();
+  } catch(e) { try { SparkLog.warn('reset:ui', e.message); } catch {} }
 
-  // 6. Re-run initial setup and route to welcome screen
-  window._sparkProxyUrl = null;
-  window._sparkProxyAuthHandled = false;
-  setProxyStatus('none', 'Enter your proxy URL above');
-  buildAssetGrid(0); buildAssetGrid(1);
-  buildShortcutGrid();
-  showScreen('screenWelcome');
-  showToast('All data cleared');
+  // 6. Route to welcome screen — ALWAYS runs, even if steps above failed
+  try { showScreen('screenWelcome'); } catch(e) {
+    // Last-resort fallback: hard reload
+    try { window.location.reload(); } catch {}
+  }
+  try { showToast('All data cleared'); } catch {}
 }
 
 </script>
