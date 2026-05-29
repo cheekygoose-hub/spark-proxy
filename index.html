@@ -4553,7 +4553,9 @@ function revealScene() {
   }
   const formattedHtml = formatNarrative(sceneText);
 
-  sceneWrap.style.display = 'block';
+  sceneWrap.style.display    = 'block';
+  sceneWrap.style.visibility = 'visible';
+  sceneWrap.style.opacity    = '1';
   if (revealBtn) revealBtn.style.display = 'none';
 
   setTimeout(() => sceneWrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
@@ -5067,9 +5069,19 @@ function _generateFullSceneInner() {
       // Fire tension tease generation (non-blocking — prep reveals regardless)
       generateTensionTease(currentPiA, currentPiB, currentMood);
 
+      // Defensive: ensure sceneCard is visible (belt-and-braces against any prior hide)
+      if (card) { card.style.display = 'block'; card.style.visibility = 'visible'; card.style.opacity = '1'; }
+
       setTimeout(() => {
-        if (prepWrap) prepWrap.style.display = 'block';
+        if (!prepWrap) {
+          SparkLog.warn('scene:prepWrapMissing', 'stagePrepWrap element not found after scene done');
+          return;
+        }
+        prepWrap.style.display    = 'block';
+        prepWrap.style.visibility = 'visible';
+        prepWrap.style.opacity    = '1';
         prepWrap?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        SparkLog.info('scene:prepShown', { prepLen: (_prep||'').length, sceneLen: (_scene||'').length });
         if (prepEl) {
           // Stage 1.8: anticipation beat — one quiet line, immersive voice only, view-layer
           let prepHtml = formatNarrative(_prep || _scene || text.trim());
