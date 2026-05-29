@@ -618,7 +618,7 @@ header{text-align:center;margin-bottom:2.5rem;padding-top:.5rem}
 .play-text-link:hover{color:var(--ink2);}
 .play-text-link:disabled{opacity:.4;cursor:not-allowed;}
 #stagePrepWrap,#stageSceneWrap{
-  animation:stageReveal .35s cubic-bezier(.16,1,.3,1);
+  animation:stageReveal .35s cubic-bezier(.16,1,.3,1) forwards;
 }
 @keyframes stageReveal{
   from{opacity:0;transform:translateY(10px);}
@@ -6674,12 +6674,13 @@ function _doResetEverything() {
     buildShortcutGrid();
   } catch(e) { try { SparkLog.warn('reset:ui', e.message); } catch {} }
 
-  // 6. Route to welcome screen — ALWAYS runs, even if steps above failed
-  try { showScreen('screenWelcome'); } catch(e) {
-    // Last-resort fallback: hard reload
-    try { window.location.reload(); } catch {}
+  // 6. Hard reload — storage is already cleared, reload starts fresh at welcome screen
+  // This is the most reliable way to guarantee a completely clean state
+  try { window.location.reload(); } catch(e) {
+    // If reload somehow fails, try showScreen as last resort
+    try { showScreen('screenWelcome'); } catch {}
   }
-  try { showToast('All data cleared'); } catch {}
+  // Note: showToast won't fire after reload — that's fine, the fresh page is confirmation enough
 }
 
 </script>
